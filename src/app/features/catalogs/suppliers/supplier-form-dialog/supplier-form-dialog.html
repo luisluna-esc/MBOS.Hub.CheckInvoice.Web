@@ -1,0 +1,142 @@
+<app-dialog
+  [title]="(isEdit ? 'suppliers.form.editTitle' : 'suppliers.form.newTitle') | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    @if (isEdit) {
+      <div class="flex flex-col gap-1">
+        <span class="text-sm font-medium text-foreground">{{ 'suppliers.form.code' | translate }}</span>
+        <span class="text-sm text-muted-foreground">{{ supplierCode }}</span>
+      </div>
+    }
+
+    @if (linkedClient(); as linked) {
+      <div class="rounded-md border border-border bg-background p-3 text-sm text-foreground">
+        {{ 'suppliers.form.alsoClient' | translate: { name: linked.name } }}
+      </div>
+    }
+
+    @if (!isEdit && !decisionsConfirmed()) {
+      @if (preStage() === 'choose') {
+        <div class="flex flex-col items-center gap-3 py-2">
+          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+              (click)="chooseNew()"
+            >
+              {{ 'suppliers.form.choiceNew' | translate }}
+            </button>
+            <button
+              type="button"
+              class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+              (click)="chooseLink()"
+            >
+              {{ 'suppliers.form.choiceLink' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (preStage() === 'link') {
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
+          <app-tooltip class="self-start" [text]="'suppliers.form.back' | translate" position="right">
+            <button
+              type="button"
+              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-primary hover:bg-brand-300"
+              [attr.aria-label]="'suppliers.form.back' | translate"
+              (click)="backToChoose()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+                <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </app-tooltip>
+
+          @if (linkedParty(); as linked) {
+            <div class="flex items-center justify-between gap-2 text-sm">
+              <span class="text-foreground">{{ 'suppliers.form.linkedToClient' | translate: { name: linked.name } }}</span>
+              <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearLinkedParty()">
+                {{ 'suppliers.form.unlink' | translate }}
+              </button>
+            </div>
+          } @else {
+            <app-party-search-input
+              mode="client"
+              [label]="'suppliers.form.linkExistingClient' | translate"
+              (picked)="onClientPicked($event)"
+            />
+          }
+        </div>
+      }
+    }
+
+    @if (!isEdit && decisionsConfirmed() && linkedParty(); as linked) {
+      <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-background p-3 text-sm">
+        <span class="text-foreground">{{ 'suppliers.form.linkedToClient' | translate: { name: linked.name } }}</span>
+        <button type="button" class="text-xs font-medium text-primary hover:underline" (click)="onEditDecisions()">
+          {{ 'suppliers.form.editDecisions' | translate }}
+        </button>
+      </div>
+    }
+
+    @if (decisionsConfirmed()) {
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <app-input formControlName="name" [label]="'suppliers.form.name' | translate" [required]="true" [maxLength]="150" />
+        <app-input formControlName="legalName" [label]="'suppliers.form.legalName' | translate" [required]="true" [maxLength]="150" />
+        <app-input formControlName="taxId" [label]="'suppliers.form.taxId' | translate" [required]="true" [maxLength]="20" />
+        <app-select
+          formControlName="countryId"
+          [label]="'suppliers.form.country' | translate"
+          [options]="countryOptions()"
+          [required]="true"
+        />
+        <app-input formControlName="phone" [label]="'suppliers.form.phone' | translate" [required]="true" [maxLength]="20" />
+        <app-input formControlName="mobilePhone" [label]="'suppliers.form.mobilePhone' | translate" [maxLength]="20" />
+        <app-input formControlName="email" type="email" [label]="'suppliers.form.email' | translate" [required]="true" [maxLength]="150" />
+      </div>
+
+      <app-input formControlName="address" [label]="'suppliers.form.address' | translate" [maxLength]="255" />
+      <app-input formControlName="notes" [label]="'suppliers.form.notes' | translate" [maxLength]="255" />
+
+      <app-checkbox formControlName="isActive">{{ 'suppliers.form.isActive' | translate }}</app-checkbox>
+
+      @if (!linkedParty() && !linkedClient()) {
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
+          <div class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <span>{{ 'suppliers.form.linkSectionTitle' | translate }}</span>
+            <app-tooltip [text]="'suppliers.form.linkSectionHint' | translate" position="bottom">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                <path d="M12 17V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="currentColor" />
+                <path
+                  d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </app-tooltip>
+          </div>
+          <app-checkbox [formControl]="alsoRegisterAsClient">{{ 'suppliers.form.alsoRegisterAsClient' | translate }}</app-checkbox>
+          @if (alsoRegisterAsClientValue()) {
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <app-select
+                [formControl]="clientDistrictId"
+                [label]="'suppliers.form.clientDistrict' | translate"
+                [options]="districtOptions()"
+              />
+              <app-select
+                [formControl]="clientChurchId"
+                [label]="'suppliers.form.clientChurch' | translate"
+                [options]="churchOptions()"
+              />
+            </div>
+          }
+        </div>
+      }
+    }
+  </form>
+</app-dialog>

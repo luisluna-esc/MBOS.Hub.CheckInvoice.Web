@@ -1,0 +1,56 @@
+<div class="flex w-full flex-col gap-1">
+  @if (label()) {
+    <label [for]="inputId" class="text-sm font-medium text-foreground">{{ label() }}</label>
+  }
+
+  <input
+    #origin="cdkOverlayOrigin"
+    cdkOverlayOrigin
+    [id]="inputId"
+    type="text"
+    autocomplete="off"
+    [value]="query()"
+    (input)="onInput($event)"
+    (focus)="open.set(true)"
+    class="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+  />
+
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="origin"
+    [cdkConnectedOverlayOpen]="open() && (loading() || results().length > 0 || query().trim().length > 0)"
+    [cdkConnectedOverlayPositions]="overlayPositions"
+    [cdkConnectedOverlayWidth]="origin.elementRef.nativeElement.offsetWidth"
+    [cdkConnectedOverlayHasBackdrop]="true"
+    cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+    (backdropClick)="close()"
+    (detach)="close()"
+  >
+    <div class="min-w-[16rem] overflow-hidden rounded-md border border-border bg-surface shadow-lg">
+      <ul role="listbox" class="max-h-60 overflow-auto py-1">
+        @if (query().trim().length > 0 && query().trim().length < minQueryLength) {
+          <li class="px-3 py-2 text-sm text-muted-foreground">
+            {{ 'partySearch.minChars' | translate: { count: minQueryLength } }}
+          </li>
+        } @else if (loading()) {
+          <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'partySearch.loading' | translate }}</li>
+        } @else {
+          @for (row of results(); track row.partyId) {
+            <li
+              role="option"
+              class="cursor-pointer px-3 py-2 text-sm text-foreground transition-colors hover:bg-brand-300"
+              (click)="select(row)"
+            >
+              <div>{{ row.name }}</div>
+              @if (row.taxId) {
+                <div class="text-xs text-muted-foreground">{{ 'partySearch.taxId' | translate }}: {{ row.taxId }}</div>
+              }
+            </li>
+          } @empty {
+            <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'partySearch.noResults' | translate }}</li>
+          }
+        }
+      </ul>
+    </div>
+  </ng-template>
+</div>

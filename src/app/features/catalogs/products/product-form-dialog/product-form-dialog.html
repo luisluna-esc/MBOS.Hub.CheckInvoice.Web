@@ -1,0 +1,45 @@
+<app-dialog
+  [title]="(isEdit ? 'products.form.editTitle' : 'products.form.newTitle') | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    @if (isEdit) {
+      <div class="flex flex-col gap-1">
+        <span class="text-sm font-medium text-foreground">{{ 'products.form.code' | translate }}</span>
+        <span class="text-sm text-muted-foreground">{{ productCode }}</span>
+      </div>
+    }
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <app-input formControlName="name" [label]="'products.form.name' | translate" [required]="true" [maxLength]="200" />
+      <app-select
+        formControlName="departmentId"
+        [label]="'products.form.department' | translate"
+        [options]="departmentOptions()"
+      />
+      <app-select
+        formControlName="subDepartmentId"
+        [label]="'products.form.subDepartment' | translate"
+        [options]="subDepartmentOptions()"
+      />
+      <app-select
+        formControlName="mediaTypeId"
+        [label]="'products.form.mediaType' | translate"
+        [options]="mediaTypeOptions()"
+      />
+      <app-input
+        formControlName="price"
+        type="number"
+        [label]="'products.form.price' | translate"
+        placeholder="0.00"
+        [required]="true"
+        [min]="0"
+        [decimals]="2"
+      />
+    </div>
+
+    <app-checkbox formControlName="isActive">{{ 'products.form.isActive' | translate }}</app-checkbox>
+  </form>
+</app-dialog>

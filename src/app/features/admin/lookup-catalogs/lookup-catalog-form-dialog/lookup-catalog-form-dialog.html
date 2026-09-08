@@ -1,0 +1,24 @@
+<app-dialog [title]="title()" [saveDisabled]="saveDisabled()" (save)="onSave()" (cancel)="onCancel()">
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    @if (config.hasCode) {
+      <app-input
+        formControlName="code"
+        [label]="'lookupCatalogs.form.code' | translate"
+        [required]="true"
+        [maxLength]="config.codeMaxLength ?? 20"
+      />
+    }
+    <app-input
+      formControlName="name"
+      [label]="'lookupCatalogs.form.name' | translate"
+      [required]="true"
+      [maxLength]="config.nameMaxLength"
+    />
+    @if (config.hasAddress) {
+      <app-input formControlName="address" [label]="'lookupCatalogs.form.address' | translate" [maxLength]="255" />
+    }
+    @if (config.hasIsActive) {
+      <app-checkbox formControlName="isActive">{{ 'lookupCatalogs.form.isActive' | translate }}</app-checkbox>
+    }
+  </form>
+</app-dialog>

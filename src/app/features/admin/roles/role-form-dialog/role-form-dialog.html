@@ -1,0 +1,12 @@
+<app-dialog
+  [title]="(isEdit ? 'roles.form.editTitle' : 'roles.form.newTitle') | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <app-input formControlName="name" [label]="'roles.form.name' | translate" [required]="true" [maxLength]="50" />
+    <app-input formControlName="description" [label]="'roles.form.description' | translate" [maxLength]="255" />
+    <app-checkbox formControlName="isActive">{{ 'roles.form.isActive' | translate }}</app-checkbox>
+  </form>
+</app-dialog>

@@ -1,0 +1,26 @@
+<app-dialog
+  [title]="('users.roles.title' | translate) + ': ' + data.user.firstName + ' ' + data.user.lastName"
+  [saveLabel]="'dialog.close' | translate"
+  [saveDisabled]="false"
+  [showCancel]="false"
+  (save)="close()"
+  (cancel)="close()"
+>
+  @if (loading()) {
+    <p class="text-sm text-muted-foreground">{{ 'users.roles.loading' | translate }}</p>
+  } @else if (allRoles().length === 0) {
+    <p class="text-sm text-muted-foreground">{{ 'users.roles.empty' | translate }}</p>
+  } @else {
+    <div class="flex flex-col gap-2">
+      @for (role of allRoles(); track role.roleId) {
+        <app-checkbox
+          [ngModel]="isAssigned(role.roleId)"
+          [disabled]="isPending(role.roleId)"
+          (ngModelChange)="toggle(role.roleId)"
+        >
+          {{ role.name }}
+        </app-checkbox>
+      }
+    </div>
+  }
+</app-dialog>

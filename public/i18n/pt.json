@@ -1,0 +1,1126 @@
+{
+  "language": {
+    "select": "Idioma",
+    "es": "Espanhol",
+    "en": "Inglês",
+    "pt": "Português"
+  },
+  "nav": {
+    "home": "Início",
+    "receipts": "Entradas",
+    "issues": "Saídas",
+    "issueVoidRequests": "Anulações",
+    "receiptVoidRequests": "Anulações de Entradas",
+    "accountReceivables": "Contas a Receber",
+    "reports": "Relatórios",
+    "reportsFinancial": "Relatório Financeiro",
+    "reportsStock": "Estoque - Armazém",
+    "reportsStockByDepartment": "Estoque - Departamento",
+    "reportsKardex": "Kardex Físico Valorizado",
+    "reportsInventoryCount": "Levantamento de Inventário",
+    "reportsIssues": "Saídas de Armazém",
+    "reportsReceipts": "Entradas de Armazém",
+    "reportsKardexByProduct": "Kardex por Material",
+    "reportsPastorField": "Campo Pastor",
+    "reportsAccountReceivables": "Carteira de Contas a Receber",
+    "myAccount": "Minha Conta",
+    "transfers": "Transferências",
+    "transfersNew": "Nova Transferência",
+    "transfersSent": "Realizadas",
+    "transfersReceived": "Recebidas",
+    "geography": "Geografia",
+    "districts": "Distritos",
+    "churches": "Igrejas",
+    "admin": "Administração",
+    "roles": "Funções",
+    "permissions": "Permissões",
+    "users": "Usuários",
+    "catalogs": "Catálogos",
+    "suppliers": "Fornecedores",
+    "products": "Produtos",
+    "clients": "Clientes",
+    "settings": "Configuração do Sistema",
+    "settingsCountries": "Países",
+    "settingsDocumentTypes": "Tipos de Documento",
+    "settingsChurchTypes": "Tipos de Igreja",
+    "settingsPrintTypes": "Tipos de Impressão",
+    "settingsIssueTypes": "Tipos de Saída",
+    "settingsReceiptTypes": "Tipos de Entrada",
+    "settingsMediaTypes": "Tipos de Mídia",
+    "settingsDepartments": "Departamentos",
+    "settingsSubDepartments": "Subdepartamentos",
+    "settingsMissions": "Missões",
+    "settingsProvinces": "Províncias",
+    "settingsSpecialCases": "Casos Especiais",
+    "settingsVoidReasons": "Motivos de Anulação",
+    "settingsWarehouses": "Armazéns"
+  },
+  "partySearch": {
+    "loading": "Buscando...",
+    "taxId": "NIT",
+    "noResults": "Sem resultados.",
+    "minChars": "Digite pelo menos {{count}} caracteres para buscar."
+  },
+  "productPicker": {
+    "title": "Selecionar produto",
+    "filters": {
+      "name": "Nome",
+      "code": "Código"
+    },
+    "columns": {
+      "code": "Código",
+      "name": "Nome"
+    },
+    "select": "Selecionar"
+  },
+  "products": {
+    "title": "Produtos",
+    "new": "Novo produto",
+    "filters": {
+      "search": "Buscar por nome",
+      "department": "Departamento",
+      "status": "Status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "code": "Código",
+      "name": "Nome",
+      "department": "Departamento",
+      "price": "Preço",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "form": {
+      "newTitle": "Novo produto",
+      "editTitle": "Editar produto",
+      "code": "Código",
+      "name": "Nome",
+      "department": "Departamento",
+      "subDepartment": "Subdepartamento",
+      "mediaType": "Unidade de Medida",
+      "price": "Preço",
+      "isActive": "Ativo",
+      "success": "Produto salvo com sucesso.",
+      "error": "Não foi possível salvar o produto."
+    },
+    "delete": {
+      "title": "Excluir produto",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Produto excluído com sucesso.",
+      "error": "Não foi possível excluir o produto."
+    }
+  },
+  "districts": {
+    "title": "Distritos",
+    "new": "Novo distrito",
+    "filters": {
+      "search": "Buscar por nome",
+      "status": "Status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "code": "Código",
+      "name": "Nome",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "form": {
+      "newTitle": "Novo distrito",
+      "editTitle": "Editar distrito",
+      "code": "Código",
+      "name": "Nome",
+      "mission": "Sucursal",
+      "province": "Província",
+      "isActive": "Ativo",
+      "success": "Distrito salvo com sucesso.",
+      "error": "Não foi possível salvar o distrito."
+    },
+    "delete": {
+      "title": "Excluir distrito",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Distrito excluído com sucesso.",
+      "error": "Não foi possível excluir o distrito."
+    }
+  },
+  "churches": {
+    "title": "Igrejas",
+    "new": "Nova igreja",
+    "filters": {
+      "search": "Buscar por nome",
+      "district": "Distrito",
+      "type": "Tipo",
+      "status": "Status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "code": "Código",
+      "name": "Nome",
+      "district": "Distrito",
+      "type": "Tipo",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "form": {
+      "newTitle": "Nova igreja",
+      "editTitle": "Editar igreja",
+      "code": "Código",
+      "name": "Nome",
+      "district": "Distrito",
+      "type": "Tipo",
+      "isActive": "Ativo",
+      "success": "Igreja salva com sucesso.",
+      "error": "Não foi possível salvar a igreja."
+    },
+    "delete": {
+      "title": "Excluir igreja",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Igreja excluída com sucesso.",
+      "error": "Não foi possível excluir a igreja."
+    }
+  },
+  "lookupCatalogs": {
+    "new": "Novo",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "columns": {
+      "code": "Código",
+      "name": "Nome",
+      "address": "Endereço",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "form": {
+      "code": "Código",
+      "name": "Nome",
+      "address": "Endereço",
+      "isActive": "Ativo",
+      "newTitle": "Novo: {{title}}",
+      "editTitle": "Editar: {{title}}",
+      "success": "Salvo com sucesso.",
+      "error": "Não foi possível salvar."
+    },
+    "delete": {
+      "title": "Excluir registro",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Excluído com sucesso.",
+      "error": "Não foi possível excluir. Pode estar em uso em outro registro."
+    },
+    "countries": { "title": "Países" },
+    "documentTypes": { "title": "Tipos de Documento" },
+    "churchTypes": { "title": "Tipos de Igreja" },
+    "printTypes": { "title": "Tipos de Impressão" },
+    "issueTypes": { "title": "Tipos de Saída" },
+    "receiptTypes": { "title": "Tipos de Entrada" },
+    "mediaTypes": { "title": "Tipos de Mídia" },
+    "departments": { "title": "Departamentos" },
+    "subDepartments": { "title": "Subdepartamentos" },
+    "missions": { "title": "Missões" },
+    "provinces": { "title": "Províncias" },
+    "specialCases": { "title": "Casos Especiais" },
+    "voidReasons": { "title": "Motivos de Anulação" },
+    "warehouses": { "title": "Armazéns" }
+  },
+  "roles": {
+    "title": "Funções",
+    "new": "Nova função",
+    "filters": {
+      "search": "Buscar por nome",
+      "status": "Status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "name": "Nome",
+      "description": "Descrição",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir",
+      "permissions": "Permissões",
+      "menus": "Menus"
+    },
+    "form": {
+      "newTitle": "Nova função",
+      "editTitle": "Editar função",
+      "name": "Nome",
+      "description": "Descrição",
+      "isActive": "Ativo",
+      "success": "Função salva com sucesso.",
+      "error": "Não foi possível salvar a função."
+    },
+    "delete": {
+      "title": "Excluir função",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Função excluída com sucesso.",
+      "error": "Não foi possível excluir a função."
+    },
+    "permissions": {
+      "title": "Permissões",
+      "loading": "Carregando...",
+      "empty": "Não há permissões disponíveis.",
+      "error": "Não foi possível atualizar a permissão.",
+      "locked": "A função M-BOS sempre mantém acesso completo; suas permissões não podem ser alteradas."
+    },
+    "menus": {
+      "title": "Menus visíveis",
+      "general": "Geral",
+      "loading": "Carregando...",
+      "empty": "Não há itens de menu disponíveis.",
+      "error": "Não foi possível atualizar o menu.",
+      "hint": "Marque aqui os módulos que esta função pode ver. Um módulo sem nenhuma função marcada não é visto por ninguém."
+    }
+  },
+  "permissions": {
+    "title": "Permissões",
+    "new": "Nova permissão",
+    "filters": {
+      "search": "Buscar por nome",
+      "module": "Módulo",
+      "status": "Status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "code": "Código",
+      "name": "Nome",
+      "module": "Módulo",
+      "description": "Descrição",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "form": {
+      "newTitle": "Nova permissão",
+      "editTitle": "Editar permissão",
+      "code": "Código",
+      "name": "Nome",
+      "module": "Módulo",
+      "description": "Descrição",
+      "isActive": "Ativo",
+      "success": "Permissão salva com sucesso.",
+      "error": "Não foi possível salvar a permissão."
+    },
+    "delete": {
+      "title": "Excluir permissão",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Permissão excluída com sucesso.",
+      "error": "Não foi possível excluir a permissão."
+    }
+  },
+  "users": {
+    "title": "Usuários",
+    "new": "Novo usuário",
+    "filters": {
+      "search": "Buscar por nome, usuário ou e-mail",
+      "status": "Status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "name": "Nome",
+      "username": "Usuário",
+      "email": "E-mail",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir",
+      "roles": "Funções"
+    },
+    "form": {
+      "newTitle": "Novo usuário",
+      "editTitle": "Editar usuário",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "email": "E-mail",
+      "username": "Usuário",
+      "password": "Senha",
+      "passwordHint": "Deixe em branco para manter a senha atual.",
+      "isActive": "Ativo",
+      "success": "Usuário salvo com sucesso.",
+      "error": "Não foi possível salvar o usuário."
+    },
+    "delete": {
+      "title": "Excluir usuário",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Usuário excluído com sucesso.",
+      "error": "Não foi possível excluir o usuário."
+    },
+    "roles": {
+      "title": "Funções",
+      "loading": "Carregando...",
+      "empty": "Não há funções disponíveis.",
+      "error": "Não foi possível atualizar a função."
+    }
+  },
+  "common": {
+    "logout": "Sair",
+    "loading": "Carregando..."
+  },
+  "home": {
+    "greeting": "Olá, {{username}}",
+    "placeholder": "Este é o ponto de partida do painel. Em breve você poderá navegar aqui para inventário, finanças e mais.",
+    "dashboard": {
+      "issuesThisMonth": "Saídas do mês",
+      "receiptsThisMonth": "Entradas do mês",
+      "pendingReceivable": "Pendente a receber",
+      "paymentsThisMonth": "Pagamentos do mês",
+      "issuesChartTitle": "Saídas por mês (últimos 6 meses)",
+      "receivableChartTitle": "Contas a Receber: pendente vs pago"
+    }
+  },
+  "dialog": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "confirm": "Confirmar"
+  },
+  "table": {
+    "empty": "Nenhum dado para exibir.",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "pageInfo": "Página {{page}} de {{total}}",
+    "pageSize": "Por página:",
+    "actions": "Opções"
+  },
+  "filters": {
+    "search": "Buscar",
+    "clear": "Limpar"
+  },
+  "errorState": {
+    "400": {
+      "title": "Solicitação inválida",
+      "description": "Não foi possível processar a solicitação. Verifique os dados e tente novamente."
+    },
+    "401": {
+      "title": "Não autorizado",
+      "description": "Você precisa entrar para acessar este conteúdo."
+    },
+    "403": {
+      "title": "Acesso negado",
+      "description": "Você não tem permissão para ver esta seção."
+    },
+    "404": {
+      "title": "Página não encontrada",
+      "description": "O conteúdo que você procura não existe ou foi movido."
+    },
+    "500": {
+      "title": "Erro do servidor",
+      "description": "Ocorreu um problema inesperado. Tente novamente mais tarde."
+    },
+    "503": {
+      "title": "Serviço indisponível",
+      "description": "O serviço não está disponível no momento. Tente novamente mais tarde."
+    },
+    "default": {
+      "title": "Ocorreu um erro",
+      "description": "Algo deu errado. Tente novamente."
+    }
+  },
+  "receipts": {
+    "title": "Entradas",
+    "new": "Nova entrada",
+    "supplierPicker": {
+      "title": "Selecionar fornecedor",
+      "description": "Busque o fornecedor por nome, razão social ou NIT para continuar com o registro da entrada.",
+      "search": "Nome, razão social ou NIT",
+      "taxId": "NIT",
+      "fullName": "Nome completo",
+      "select": "Selecionar",
+      "createSupplier": "Criar fornecedor"
+    },
+    "filters": {
+      "warehouse": "Armazém",
+      "supplier": "Fornecedor",
+      "receiptType": "Tipo de entrada",
+      "invoiceNumber": "N° da fatura"
+    },
+    "columns": {
+      "rowNumber": "N°",
+      "voucherNumber": "Número de Comprovante",
+      "issueDate": "Data de Emissão",
+      "createdAt": "Data de Registro",
+      "invoiceNumber": "N° da Fatura",
+      "warehouse": "Armazém",
+      "supplier": "Fornecedor",
+      "invoiceTotal": "Total (Bs.)",
+      "createdBy": "Usuário",
+      "status": "Status",
+      "statusPending": "Pendente de Aprovação",
+      "statusNormal": "Normal",
+      "statusVoided": "Anulada",
+      "statusVoidPending": "Anulação pendente",
+      "statusVoidedTooltip": "Motivo da anulação: {{reason}}",
+      "statusVoidPendingTooltip": "Motivo da solicitação: {{reason}}"
+    },
+    "actions": {
+      "viewDetails": "Ver detalhe",
+      "print": "Imprimir",
+      "requestVoid": "Solicitar anulação",
+      "requestVoidDisabledVoided": "Esta entrada já está anulada",
+      "requestVoidDisabledPending": "Já existe uma solicitação de anulação pendente para esta entrada"
+    },
+    "printError": "Não foi possível gerar o comprovante de impressão.",
+    "form": {
+      "title": "Nova entrada",
+      "warehouse": "Armazém",
+      "supplier": "Fornecedor",
+      "receiptType": "Tipo de entrada",
+      "invoiceNumber": "N° da fatura",
+      "taxId": "NIT",
+      "supplierLocked": "Fornecedor selecionado.",
+      "invoiceTotal": "Total da fatura",
+      "issueDate": "Data de Emissão",
+      "description": "Descrição",
+      "continue": "Continuar",
+      "lines": "Linhas",
+      "addLine": "Adicionar linha",
+      "removeLine": "Remover",
+      "noLines": "Adicione pelo menos uma linha.",
+      "selectProduct": "Selecionar produto",
+      "rowNumber": "N°",
+      "totalCost": "Custo Total (Bs.)",
+      "detail": "Detalhe",
+      "exceedsTotal": "A soma das linhas não pode superar o Total da fatura.",
+      "product": "Produto",
+      "quantity": "Quantidade",
+      "unitCost": "Custo Unitário (Bs.)",
+      "workOrder": "Ordem de trabalho",
+      "success": "Entrada registrada com sucesso.",
+      "error": "Não foi possível registrar a entrada."
+    },
+    "details": {
+      "title": "Detalhe da entrada",
+      "loading": "Carregando...",
+      "empty": "Esta entrada não tem linhas.",
+      "total": "Total"
+    }
+  },
+  "issues": {
+    "title": "Saídas",
+    "new": "Nova saída",
+    "clientPicker": {
+      "title": "Selecionar cliente",
+      "description": "Busque o cliente por nome para continuar com o registro da saída.",
+      "search": "Nome",
+      "taxId": "NIT",
+      "fullName": "Nome completo",
+      "email": "E-mail",
+      "select": "Selecionar",
+      "createClient": "Criar cliente"
+    },
+    "filters": {
+      "warehouse": "Armazém",
+      "client": "Cliente",
+      "issueType": "Tipo de saída"
+    },
+    "columns": {
+      "rowNumber": "N°",
+      "voucherNumber": "Número de Comprovante",
+      "issueDate": "Data de Emissão",
+      "createdAt": "Data de Registro",
+      "warehouse": "Armazém",
+      "client": "Cliente",
+      "description": "Descrição",
+      "total": "Total (Bs.)",
+      "createdBy": "Usuário",
+      "status": "Status",
+      "statusNormal": "Normal",
+      "statusVoided": "Anulada",
+      "statusVoidPending": "Anulação pendente",
+      "statusVoidedTooltip": "Motivo da anulação: {{reason}}",
+      "statusVoidPendingTooltip": "Motivo da solicitação: {{reason}}"
+    },
+    "actions": {
+      "viewDetails": "Ver detalhe",
+      "print": "Imprimir",
+      "requestVoid": "Solicitar anulação",
+      "requestVoidDisabledVoided": "Esta saída já está anulada",
+      "requestVoidDisabledPending": "Já existe uma solicitação de anulação pendente para esta saída"
+    },
+    "printError": "Não foi possível gerar o comprovante de impressão.",
+    "printDialog": {
+      "title": "Imprimir comprovante",
+      "printType": "Tipo de impressão",
+      "confirm": "Imprimir"
+    },
+    "form": {
+      "title": "Nova saída",
+      "print": "Imprimir",
+      "warehouse": "Armazém",
+      "warehousePeriod": "Período de Armazém",
+      "client": "Cliente",
+      "clientLocked": "Cliente selecionado.",
+      "documentType": "Tipo de Documento",
+      "clientTaxId": "Carteira de Identidade",
+      "email": "E-mail",
+      "issueType": "Tipo de saída",
+      "printType": "Tipo de impressão",
+      "complement": "Complemento",
+      "issueDate": "Data de Emissão",
+      "description": "Descrição",
+      "sendToAccountsReceivable": "Enviar para contas a receber",
+      "paymentType": "Forma de pagamento",
+      "paymentTypes": {
+        "cash": "À vista",
+        "credit": "Crédito",
+        "installments": "Parcelado"
+      },
+      "paymentDetail": "Descrição (opcional)",
+      "dueDate": "Data de vencimento",
+      "continue": "Continuar",
+      "editHeader": "Editar",
+      "lines": "Linhas",
+      "addLine": "Adicionar linha",
+      "removeLine": "Remover",
+      "noLines": "Adicione pelo menos uma linha.",
+      "selectProduct": "Selecionar produto",
+      "rowNumber": "N°",
+      "available": "Disponível",
+      "exceedsStock": "A quantidade excede o estoque disponível.",
+      "type": "Unidade de Medida",
+      "sector": "Setor",
+      "stock": "Estoque",
+      "code": "Código",
+      "unitCost": "Custo Unitário (Bs.)",
+      "totalCost": "Total (Bs.)",
+      "product": "Produto",
+      "quantity": "Quantidade",
+      "success": "Saída registrada com sucesso.",
+      "error": "Não foi possível registrar a saída."
+    },
+    "details": {
+      "title": "Detalhe da saída",
+      "loading": "Carregando...",
+      "empty": "Esta saída não tem linhas.",
+      "total": "Total"
+    }
+  },
+  "issueVoidRequests": {
+    "title": "Anulações",
+    "filters": {
+      "status": "Status"
+    },
+    "status": {
+      "pending": "Pendente",
+      "approved": "Aprovada",
+      "rejected": "Rejeitada"
+    },
+    "columns": {
+      "issue": "Saída",
+      "issueDate": "Data da saída",
+      "client": "Cliente",
+      "reason": "Motivo",
+      "detail": "Detalhe",
+      "requestedBy": "Solicitado por",
+      "requestedAt": "Data da solicitação",
+      "status": "Status"
+    },
+    "actions": {
+      "viewIssue": "Ver saída",
+      "approve": "Aprovar",
+      "reject": "Rejeitar"
+    },
+    "dialog": {
+      "title": "Solicitar anulação",
+      "reason": "Motivo",
+      "detail": "Detalhe (opcional)",
+      "reasonRequired": "Escolha um motivo para continuar.",
+      "success": "Solicitação de anulação enviada.",
+      "error": "Não foi possível enviar a solicitação."
+    },
+    "review": {
+      "approveTitle": "Aprovar anulação",
+      "rejectTitle": "Rejeitar anulação",
+      "approveHint": "Ao aprovar, a saída fica marcada como anulada e o estoque descontado é devolvido.",
+      "rejectHint": "Ao rejeitar, a saída continua como está. Informe o motivo da rejeição.",
+      "notesRequired": "Motivo da rejeição",
+      "notesOptional": "Notas (opcional)",
+      "approveSuccess": "Anulação aprovada. O estoque foi devolvido.",
+      "rejectSuccess": "Solicitação rejeitada.",
+      "error": "Não foi possível processar a revisão."
+    }
+  },
+  "receiptVoidRequests": {
+    "title": "Anulações de Entradas",
+    "filters": {
+      "status": "Status"
+    },
+    "status": {
+      "pending": "Pendente",
+      "approved": "Aprovada",
+      "rejected": "Rejeitada"
+    },
+    "columns": {
+      "receipt": "Entrada",
+      "receiptDate": "Data da entrada",
+      "supplier": "Fornecedor",
+      "reason": "Motivo",
+      "detail": "Detalhe",
+      "requestedBy": "Solicitado por",
+      "requestedAt": "Data da solicitação",
+      "status": "Status"
+    },
+    "actions": {
+      "viewReceipt": "Ver entrada",
+      "approve": "Aprovar",
+      "reject": "Rejeitar"
+    },
+    "dialog": {
+      "title": "Solicitar anulação",
+      "reason": "Motivo",
+      "detail": "Detalhe (opcional)",
+      "reasonRequired": "Escolha um motivo para continuar.",
+      "success": "Solicitação de anulação enviada.",
+      "error": "Não foi possível enviar a solicitação."
+    },
+    "review": {
+      "approveTitle": "Aprovar anulação",
+      "rejectTitle": "Rejeitar anulação",
+      "approveHint": "Ao aprovar, a entrada fica marcada como anulada e o estoque que ela havia adicionado é descontado.",
+      "rejectHint": "Ao rejeitar, a entrada continua como está. Informe o motivo da rejeição.",
+      "notesRequired": "Motivo da rejeição",
+      "notesOptional": "Notas (opcional)",
+      "approveSuccess": "Anulação aprovada. O estoque foi descontado.",
+      "rejectSuccess": "Solicitação rejeitada.",
+      "error": "Não foi possível processar a revisão."
+    }
+  },
+  "accountReceivables": {
+    "title": "Contas a Receber",
+    "filters": {
+      "client": "Cliente",
+      "status": "Status"
+    },
+    "status": {
+      "pending": "Pendente",
+      "paid": "Paga"
+    },
+    "paymentTypes": {
+      "cash": "À vista",
+      "credit": "Crédito",
+      "installments": "Parcelado"
+    },
+    "columns": {
+      "issue": "Saída",
+      "issueDate": "Data da saída",
+      "client": "Cliente",
+      "paymentType": "Tipo de pagamento",
+      "paymentDetail": "Descrição",
+      "dueDate": "Data limite",
+      "total": "Total",
+      "outstandingBalance": "Saldo pendente",
+      "status": "Status"
+    },
+    "actions": {
+      "viewDetails": "Ver detalhe",
+      "registerPayment": "Registrar pagamento",
+      "alreadyPaid": "Esta conta já está paga",
+      "readOnlyRole": "Sua função é somente leitura, não pode registrar pagamentos"
+    },
+    "payment": {
+      "title": "Registrar pagamento",
+      "outstandingHint": "Saldo pendente: {{amount}} Bs.",
+      "amount": "Valor",
+      "amountRequired": "Informe um valor válido.",
+      "method": "Método de pagamento",
+      "notes": "Notas",
+      "success": "Pagamento registrado.",
+      "error": "Não foi possível registrar o pagamento."
+    },
+    "detail": {
+      "title": "Detalhe da conta a receber",
+      "loading": "Carregando...",
+      "payments": "Pagamentos",
+      "noPayments": "Esta conta não tem pagamentos registrados.",
+      "paymentDate": "Data do pagamento",
+      "paymentAmount": "Valor pago",
+      "paymentMethod": "Método",
+      "balanceAfter": "Saldo pendente"
+    }
+  },
+  "portal": {
+    "myAccount": {
+      "title": "Minha Conta",
+      "section1": "Contas a Receber",
+      "summary": {
+        "totalOutstanding": "Total pendente",
+        "pendingCount": "Dívidas pendentes",
+        "deliveryCount": "Entregas registradas"
+      },
+      "filters": {
+        "issue": "N° da Saída",
+        "dateFrom": "De",
+        "dateTo": "Até"
+      },
+      "deliveries": "Histórico de entregas",
+      "payments": "Histórico de pagamentos",
+      "columns": {
+        "issue": "Saída",
+        "issueDate": "Data",
+        "dueDate": "Data limite",
+        "outstandingBalance": "Saldo pendente",
+        "status": "Status",
+        "total": "Total",
+        "paymentDate": "Data do pagamento",
+        "paymentAmount": "Valor pago",
+        "paymentMethod": "Método de pagamento"
+      },
+      "actions": {
+        "viewProducts": "Ver produtos"
+      }
+    }
+  },
+  "reports": {
+    "title": "Relatórios",
+    "financialDashboard": {
+      "title": "Relatório Financeiro",
+      "description": "Resumo mensal em PDF, com gráficos.",
+      "hint": "Saídas, Entradas, pendente a receber e pagamentos do mês, mais gráficos dos últimos 6 meses.",
+      "download": "Baixar PDF",
+      "downloading": "Gerando...",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "stock": {
+      "title": "Estoque - Armazém",
+      "description": "Movimento líquido por produto no período, valorizado ao custo médio.",
+      "hint": "Entradas menos Saídas mais Transferências, agrupado por Categoria e Subcategoria.",
+      "warehouse": "Armazém",
+      "dateFrom": "Data inicial",
+      "dateTo": "Data final",
+      "selectPrompt": "Selecione um armazém para gerar o relatório.",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "stockByDepartment": {
+      "title": "Estoque - Departamento",
+      "description": "Movimento líquido por produto no período, valorizado ao custo médio.",
+      "hint": "Entradas menos Saídas mais Transferências, agrupado por Subcategoria e filtrável por Categoria.",
+      "warehouse": "Armazém",
+      "department": "Categoria",
+      "dateFrom": "Data inicial",
+      "dateTo": "Data final",
+      "selectPrompt": "Selecione um armazém para gerar o relatório.",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "kardex": {
+      "title": "Kardex Físico Valorizado",
+      "description": "Saldo inicial, Entradas, Saídas e Saldo final por produto no período.",
+      "hint": "Valorizado ao custo médio ponderado, agrupado por Subcategoria.",
+      "warehouse": "Armazém",
+      "dateFrom": "Data inicial",
+      "dateTo": "Data final",
+      "selectPrompt": "Selecione um armazém para gerar o relatório.",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "inventoryCount": {
+      "title": "Levantamento de Inventário",
+      "mode": "Tipo de relatório",
+      "modeTemplate": "Modelo em branco (para contar)",
+      "modeResult": "Resultado da contagem",
+      "descriptionTemplate": "Modelo em branco para contar fisicamente no papel.",
+      "hintTemplate": "Código, Descrição e Quantidade do sistema já preenchidos. Quantidade Física e Diferença são preenchidas à mão; ainda não cria nenhum levantamento.",
+      "descriptionResult": "Quantidade de sistema vs. física e diferença do levantamento vigente.",
+      "hintResult": "Agrupado por Categoria e Subcategoria, no armazém e período filtrado.",
+      "warehouse": "Armazém",
+      "dateFrom": "Data inicial",
+      "dateTo": "Data final",
+      "selectPrompt": "Selecione um armazém para gerar o relatório.",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "issues": {
+      "title": "Saídas de Armazém",
+      "description": "Detalhe de cada linha de Saída no período.",
+      "hint": "Não é agrupado por produto: cada linha é um movimento individual, agrupado por Categoria e Subcategoria.",
+      "warehouse": "Armazém",
+      "dateFrom": "Data inicial",
+      "dateTo": "Data final",
+      "selectPrompt": "Selecione um armazém para gerar o relatório.",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "receipts": {
+      "title": "Entradas de Armazém",
+      "description": "Detalhe de cada linha de Entrada no período.",
+      "hint": "Não é agrupado por produto: cada linha é um movimento individual, agrupado por Categoria e Subcategoria.",
+      "warehouse": "Armazém",
+      "dateFrom": "Data inicial",
+      "dateTo": "Data final",
+      "selectPrompt": "Selecione um armazém para gerar o relatório.",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "kardexByProduct": {
+      "title": "Kardex por Material",
+      "description": "Ficha kardex de um produto: cada Entrada e Saída com seu saldo acumulado.",
+      "hint": "Não inclui Transferências. O saldo inicial e cada linha se explicam somente por Entradas e Saídas do produto no armazém selecionado.",
+      "product": "Produto",
+      "warehouse": "Armazém",
+      "dateFrom": "Data inicial",
+      "dateTo": "Data final",
+      "selectPrompt": "Selecione um produto e um armazém para gerar o kardex.",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "pastorField": {
+      "title": "Campo Pastor",
+      "description": "Ficha imprimível de um pastor/cliente: suas contas a receber e seu histórico de entregas e depósitos.",
+      "hint": "\"Depósito\" aqui é um Pagamento contra uma Conta a Receber, igual à tela de autoatendimento do Pastor. O filtro de data afeta apenas as tabelas de Entregas e Depósitos; as Contas a Receber sempre são mostradas por completo.",
+      "client": "Pastor / Cliente",
+      "dateFrom": "Data inicial",
+      "dateTo": "Data final",
+      "selectPrompt": "Selecione um pastor ou cliente para gerar o relatório.",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    },
+    "accountReceivables": {
+      "title": "Carteira de Contas a Receber",
+      "description": "Carteira completa de contas a receber de todos os clientes, com filtros de cliente, status e data limite.",
+      "client": "Cliente",
+      "allClients": "Todos os clientes",
+      "status": "Status",
+      "allStatuses": "Todos os status",
+      "dateFrom": "Data limite de",
+      "dateTo": "Data limite até",
+      "error": "Não foi possível gerar o relatório. Tente novamente."
+    }
+  },
+  "transfers": {
+    "titleSent": "Transferências Realizadas",
+    "titleReceived": "Transferências Recebidas",
+    "new": "Nova transferência",
+    "filters": {
+      "sourceWarehouse": "Almoxarifado origem",
+      "destinationWarehouse": "Almoxarifado destino",
+      "status": "Status",
+      "dateFrom": "De",
+      "dateTo": "Até"
+    },
+    "columns": {
+      "rowNumber": "No.",
+      "voucherNumber": "N° Transferência",
+      "sourceWarehouse": "Almoxarifado origem",
+      "destinationWarehouse": "Almoxarifado destino",
+      "sender": "Enviado por",
+      "receiver": "Recebido por",
+      "transferDate": "Data",
+      "notes": "Notas",
+      "status": "Status",
+      "statusApproved": "Aprovado",
+      "statusPending": "Pendente de aprovação"
+    },
+    "actions": {
+      "viewDetails": "Ver detalhe",
+      "print": "Imprimir",
+      "approve": "Aprovar",
+      "approveConfirmTitle": "Aprovar registro",
+      "approveConfirmMessage": "Ao aprovar você confirma que revisou este registro. Isso não altera o estoque nem o custo do produto, apenas fica marcado como revisado.",
+      "approveSuccess": "Registro aprovado.",
+      "approveError": "Não foi possível aprovar a transferência."
+    },
+    "printError": "Não foi possível gerar o comprovante de impressão.",
+    "form": {
+      "title": "Nova transferência",
+      "print": "Imprimir",
+      "sourceWarehouse": "Almoxarifado origem",
+      "destinationWarehouse": "Almoxarifado destino",
+      "receiver": "Receptor",
+      "sentBy": "Enviado por",
+      "notes": "Notas",
+      "sameWarehouseError": "O almoxarifado destino deve ser diferente do de origem.",
+      "continue": "Continuar",
+      "editHeader": "Editar",
+      "lines": "Linhas",
+      "addLine": "Adicionar linha",
+      "removeLine": "Remover",
+      "noLines": "Adicione pelo menos uma linha.",
+      "selectProduct": "Selecionar produto",
+      "rowNumber": "No.",
+      "available": "Disponível",
+      "product": "Produto",
+      "quantity": "Quantidade",
+      "exceedsStock": "A quantidade excede o estoque disponível.",
+      "unitPrice": "Preço Unit. (Bs.)",
+      "total": "Total (Bs.)",
+      "success": "Transferência registrada com sucesso.",
+      "error": "Não foi possível registrar a transferência."
+    },
+    "receiveForm": {
+      "new": "Registrar recepção",
+      "title": "Registrar transferência recebida",
+      "destinationWarehouse": "Almoxarifado destino",
+      "sender": "Enviado por",
+      "senderHint": "Descreva quem enviou esta mercadoria (não faz parte deste sistema).",
+      "success": "Recepção registrada com sucesso.",
+      "error": "Não foi possível registrar a recepção."
+    },
+    "details": {
+      "title": "Detalhe da transferência",
+      "loading": "Carregando...",
+      "empty": "Esta transferência não tem linhas.",
+      "total": "Total",
+      "pendingNotice": "Este registro ainda não foi revisado. Uma transferência recebida é apenas um registro informativo: nunca altera o estoque nem o custo do produto."
+    }
+  },
+  "clients": {
+    "title": "Clientes",
+    "new": "Novo cliente",
+    "portalAccess": {
+      "pendingLink": "Pastores sem acesso",
+      "pendingTitle": "Pastores sem acesso ao portal",
+      "pendingDescription": "Clientes marcados como Pastor que ainda não têm uma conta para entrar no portal.",
+      "pendingEmpty": "Não há pastores pendentes de acesso.",
+      "grant": "Conceder acesso ao portal",
+      "error": "Não foi possível conceder o acesso.",
+      "grantedTitle": "Acesso concedido",
+      "grantedMessage": "O acesso ao portal foi concedido a \"{{name}}\".",
+      "username": "Usuário",
+      "temporaryPassword": "Senha temporária",
+      "manualDeliveryNote": "Ainda não enviamos isso por e-mail automaticamente. Copie e entregue ao pastor manualmente.",
+      "reusedAccountNote": "Já existia uma conta com este e-mail, ela foi vinculada diretamente em vez de criar uma nova."
+    },
+    "filters": {
+      "search": "Buscar por nome",
+      "district": "Distrito",
+      "status": "Status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "taxId": "Carteira de Identidade",
+      "name": "Nome",
+      "email": "E-mail",
+      "mobilePhone": "Celular",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "form": {
+      "newTitle": "Novo cliente",
+      "editTitle": "Editar cliente",
+      "name": "Nome Completo",
+      "documentType": "Tipo de Documento",
+      "taxId": "Carteira de Identidade",
+      "complement": "Complemento",
+      "complementHint": "Só se aplica se o tipo de documento for NIT.",
+      "specialCase": "Casos Especiais",
+      "specialCaseNone": "Nenhuma",
+      "email": "E-mail",
+      "mobilePhone": "Celular",
+      "district": "Distrito",
+      "church": "Igreja",
+      "isActive": "Ativo",
+      "isPastor": "É Pastor",
+      "success": "Cliente salvo com sucesso.",
+      "successWithSupplier": "Cliente salvo com sucesso. Também registrado como Fornecedor.",
+      "error": "Não foi possível salvar o cliente.",
+      "continue": "Continuar",
+      "editDecisions": "Editar",
+      "choiceNew": "Cliente novo",
+      "choiceLink": "Já existe como Fornecedor",
+      "choiceSpecial": "Caso especial",
+      "back": "Voltar",
+      "linkSectionTitle": "Também é Fornecedor?",
+      "linkSectionHint": "Um Fornecedor e um Cliente podem ser a mesma pessoa ou empresa. Se você vincular ou registrar aqui, eles compartilham o mesmo Nome, NIT, E-mail e Telefone: editar de um lado atualiza o outro também.",
+      "linkExistingSupplier": "Já existe como Fornecedor? Selecione para vincular",
+      "linkedToSupplier": "Isso vinculará com o Fornecedor \"{{name}}\": mesmo Nome, NIT, E-mail e Telefone.",
+      "unlink": "Remover vínculo",
+      "alsoSupplier": "Também registrado como Fornecedor: \"{{name}}\"",
+      "alsoRegisterAsSupplier": "Também registrar como Fornecedor",
+      "supplierCountry": "País (Fornecedor)",
+      "supplierLegalName": "Razão Social (Fornecedor)"
+    },
+    "delete": {
+      "title": "Excluir cliente",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Cliente excluído com sucesso.",
+      "error": "Não foi possível excluir o cliente."
+    }
+  },
+  "suppliers": {
+    "title": "Fornecedores",
+    "new": "Novo fornecedor",
+    "filters": {
+      "search": "Buscar por nome",
+      "country": "País",
+      "status": "Status",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "code": "Código",
+      "legalName": "Razão Social",
+      "taxId": "NIT",
+      "country": "País",
+      "phone": "Telefone",
+      "email": "Email",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "form": {
+      "newTitle": "Novo fornecedor",
+      "editTitle": "Editar fornecedor",
+      "name": "Nome",
+      "code": "Código",
+      "legalName": "Razão social",
+      "taxId": "NIT",
+      "country": "País",
+      "phone": "Telefone",
+      "mobilePhone": "Celular",
+      "email": "E-mail",
+      "address": "Endereço",
+      "notes": "Notas",
+      "isActive": "Ativo",
+      "success": "Fornecedor salvo com sucesso.",
+      "successWithClient": "Fornecedor salvo com sucesso. Também registrado como Cliente.",
+      "error": "Não foi possível salvar o fornecedor.",
+      "continue": "Continuar",
+      "editDecisions": "Editar",
+      "choiceNew": "Fornecedor novo",
+      "choiceLink": "Já existe como Cliente",
+      "back": "Voltar",
+      "linkSectionTitle": "Também é Cliente?",
+      "linkSectionHint": "Um Cliente e um Fornecedor podem ser a mesma pessoa ou empresa. Se você vincular ou registrar aqui, eles compartilham o mesmo Nome, NIT, E-mail e Telefone: editar de um lado atualiza o outro também.",
+      "linkExistingClient": "Já existe como Cliente? Selecione para vincular",
+      "linkedToClient": "Isso vinculará com o Cliente \"{{name}}\": mesmo Nome, NIT, E-mail e Telefone.",
+      "unlink": "Remover vínculo",
+      "alsoClient": "Também registrado como Cliente: \"{{name}}\"",
+      "alsoRegisterAsClient": "Também registrar como Cliente",
+      "clientDistrict": "Distrito (Cliente)",
+      "clientChurch": "Igreja (Cliente)"
+    },
+    "delete": {
+      "title": "Excluir fornecedor",
+      "message": "Tem certeza de que deseja excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "success": "Fornecedor excluído com sucesso.",
+      "error": "Não foi possível excluir o fornecedor."
+    }
+  },
+  "login": {
+    "title": "Entrar",
+    "welcomeTitle": "Bem-vindo de volta",
+    "welcomeDescription": "Gerencie o inventário e as finanças da missão em um só lugar, de forma simples e segura.",
+    "usernameOrEmail": "Usuário ou e-mail",
+    "password": "Senha",
+    "submit": "Entrar",
+    "error": "Não foi possível entrar."
+  }
+}

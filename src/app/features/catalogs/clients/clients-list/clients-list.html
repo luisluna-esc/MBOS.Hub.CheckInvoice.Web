@@ -1,0 +1,42 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold text-foreground">{{ 'clients.title' | translate }}</h1>
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        class="rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface"
+        (click)="openPastorsPending()"
+      >
+        {{ 'clients.portalAccess.pendingLink' | translate }}
+      </button>
+      <button
+        type="button"
+        class="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+        (click)="openCreate()"
+      >
+        {{ 'clients.new' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
+
+  @if (errorCode()) {
+    <div class="rounded-lg border border-border">
+      <app-error-state [code]="errorCode()!" />
+    </div>
+  } @else {
+    <app-table
+      [columns]="columns()"
+      [rows]="rows()"
+      [actions]="actions()"
+      [totalRecords]="totalRecords()"
+      [pageNumber]="pageNumber()"
+      [pageSize]="pageSize()"
+      [emptyMessage]="'table.empty' | translate"
+      [loading]="loading()"
+      (pageChange)="onPageChange($event)"
+      (pageSizeChange)="onPageSizeChange($event)"
+    />
+  }
+</div>

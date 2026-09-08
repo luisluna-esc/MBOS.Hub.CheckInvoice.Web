@@ -1,0 +1,268 @@
+<div class="w-full overflow-x-auto rounded-md border border-border">
+  <table class="w-full min-w-full divide-y divide-border text-sm">
+    <thead class="bg-surface">
+      <tr>
+        @for (column of columns(); track column.key) {
+          <th
+            class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground"
+            [class.text-center]="column.align === 'center'"
+            [class.text-right]="column.align === 'right'"
+          >
+            {{ column.header }}
+          </th>
+        }
+        @if (actions().length > 0) {
+          <th class="whitespace-nowrap px-3 py-2 text-center font-semibold text-foreground">
+            {{ 'table.actions' | translate }}
+          </th>
+        }
+      </tr>
+    </thead>
+
+    <tbody class="divide-y divide-border">
+      @if (loading()) {
+        @for (skeletonRow of skeletonRows(); track $index) {
+          <tr>
+            @for (column of columns(); track column.key) {
+              <td class="px-3 py-2">
+                <app-skeleton height="1rem" width="80%" />
+              </td>
+            }
+            @if (actions().length > 0) {
+              <td class="px-3 py-2">
+                <div class="flex justify-center">
+                  <app-skeleton height="1.25rem" width="1.25rem" rounded="full" />
+                </div>
+              </td>
+            }
+          </tr>
+        }
+      } @else if (rows().length === 0) {
+        <tr>
+          <td
+            [attr.colspan]="columns().length + (actions().length > 0 ? 1 : 0)"
+            class="px-3 py-6 text-center text-muted-foreground"
+          >
+            {{ emptyMessage() ?? ('table.empty' | translate) }}
+          </td>
+        </tr>
+      } @else {
+        @for (row of rows(); track $index; let rowIndex = $index) {
+          <tr>
+            @for (column of columns(); track column.key) {
+              <td
+                class="px-3 py-2 text-foreground"
+                [class.text-center]="column.align === 'center'"
+                [class.text-right]="column.align === 'right'"
+              >
+                @if (column.editable) {
+                  @if (column.type === 'select') {
+                    <app-select
+                      [options]="column.options ?? []"
+                      [ngModel]="getCellValue(row, column, rowIndex)"
+                      (ngModelChange)="onCellChange(row, column, $event)"
+                    />
+                  } @else {
+                    <app-input
+                      [type]="column.type === 'number' ? 'number' : 'text'"
+                      [ngModel]="getCellValue(row, column, rowIndex)"
+                      (ngModelChange)="onCellChange(row, column, $event)"
+                    />
+                  }
+                } @else if (column.tooltip) {
+                  <app-tooltip [text]="getCellTooltip(row, column, rowIndex)">
+                    {{ getCellValue(row, column, rowIndex) }}
+                  </app-tooltip>
+                } @else {
+                  {{ getCellValue(row, column, rowIndex) }}
+                }
+              </td>
+            }
+            @if (actions().length > 0) {
+              <td class="whitespace-nowrap px-3 py-2 text-center">
+                <div class="flex justify-center gap-1">
+                  @for (action of actions(); track action.label) {
+                    <app-tooltip [text]="getActionTooltip(action, row)" position="left">
+                      <button
+                        type="button"
+                        class="rounded p-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                        [class.text-foreground]="action.variant !== 'danger'"
+                        [class.hover:bg-brand-300]="action.variant !== 'danger'"
+                        [class.text-danger]="action.variant === 'danger'"
+                        [class.hover:bg-danger/10]="action.variant === 'danger'"
+                        [disabled]="action.disabled ? action.disabled(row) : false"
+                        [attr.aria-label]="getActionTooltip(action, row)"
+                        (click)="action.onClick(row)"
+                      >
+                        @switch (action.icon) {
+                          @case ('view') {
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                              <path
+                                d="M9 4.45962C9.91153 4.16968 10.9104 4 12 4C16.1819 4 19.028 6.49956 20.7251 8.70433C21.575 9.80853 22 10.3606 22 12C22 13.6394 21.575 14.1915 20.7251 15.2957C19.028 17.5004 16.1819 20 12 20C7.81811 20 4.97196 17.5004 3.27489 15.2957C2.42496 14.1915 2 13.6394 2 12C2 10.3606 2.42496 9.80853 3.27489 8.70433C3.75612 8.07914 4.32973 7.43025 5 6.82137"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                              <path
+                                d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                              />
+                            </svg>
+                          }
+                          @case ('edit') {
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                              <path
+                                d="M12.2424 20H17.5758M4.48485 16.5L15.8242 5.25607C16.5395 4.54674 17.6798 4.5061 18.4438 5.16268V5.16268C19.2877 5.8879 19.3462 7.17421 18.5716 7.97301L7.39394 19.5L4 20L4.48485 16.5Z"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          }
+                          @case ('delete') {
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                              <path d="M20.5001 6H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path
+                                d="M18.8332 8.5L18.3732 15.3991C18.1962 18.054 18.1077 19.3815 17.2427 20.1907C16.3777 21 15.0473 21 12.3865 21H11.6132C8.95235 21 7.62195 21 6.75694 20.1907C5.89194 19.3815 5.80344 18.054 5.62644 15.3991L5.1665 8.5"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                              <path d="M9.5 11L10 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path d="M14.5 11L14 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path
+                                d="M6.5 6C6.55588 6 6.58382 6 6.60915 5.99936C7.43259 5.97849 8.15902 5.45491 8.43922 4.68032C8.44784 4.65649 8.45667 4.62999 8.47434 4.57697L8.57143 4.28571C8.65431 4.03708 8.69575 3.91276 8.75071 3.8072C8.97001 3.38607 9.37574 3.09364 9.84461 3.01877C9.96213 3 10.0932 3 10.3553 3H13.6447C13.9068 3 14.0379 3 14.1554 3.01877C14.6243 3.09364 15.03 3.38607 15.2493 3.8072C15.3043 3.91276 15.3457 4.03708 15.4286 4.28571L15.5257 4.57697C15.5433 4.62992 15.5522 4.65651 15.5608 4.68032C15.841 5.45491 16.5674 5.97849 17.3909 5.99936C17.4162 6 17.4441 6 17.5 6"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                              />
+                            </svg>
+                          }
+                          @case ('verified') {
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                              <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                              <path
+                                d="M3.02907 13.0776C2.7032 12.3958 2.7032 11.6032 3.02907 10.9214C3.16997 10.6266 3.41023 10.3447 3.89076 9.78084C4.08201 9.55642 4.17764 9.44421 4.25796 9.32437C4.44209 9.04965 4.56988 8.74114 4.63393 8.41669C4.66188 8.27515 4.6736 8.12819 4.69706 7.83426C4.75599 7.09576 4.78546 6.72651 4.89427 6.41844C5.14594 5.70591 5.7064 5.14546 6.41893 4.89378C6.72699 4.78497 7.09625 4.7555 7.83475 4.69657C8.12868 4.67312 8.27564 4.66139 8.41718 4.63344C8.74163 4.56939 9.05014 4.4416 9.32485 4.25747C9.4447 4.17715 9.55691 4.08152 9.78133 3.89027C10.3452 3.40974 10.6271 3.16948 10.9219 3.02859C11.6037 2.70271 12.3963 2.70271 13.0781 3.02859C13.3729 3.16948 13.6548 3.40974 14.2187 3.89027C14.4431 4.08152 14.5553 4.17715 14.6752 4.25747C14.9499 4.4416 15.2584 4.56939 15.5828 4.63344C15.7244 4.66139 15.8713 4.67312 16.1653 4.69657C16.9038 4.7555 17.273 4.78497 17.5811 4.89378C18.2936 5.14546 18.8541 5.70591 19.1058 6.41844M4.89427 17.5806C5.14594 18.2931 5.7064 18.8536 6.41893 19.1053C6.72699 19.2141 7.09625 19.2435 7.83475 19.3025C8.12868 19.3259 8.27564 19.3377 8.41718 19.3656C8.74163 19.4297 9.05014 19.5574 9.32485 19.7416C9.44469 19.8219 9.55691 19.9175 9.78133 20.1088C10.3452 20.5893 10.6271 20.8296 10.9219 20.9705C11.6037 21.2963 12.3963 21.2963 13.0781 20.9705C13.3729 20.8296 13.6548 20.5893 14.2187 20.1088C14.4431 19.9175 14.5553 19.8219 14.6752 19.7416C14.9499 19.5574 15.2584 19.4297 15.5828 19.3656C15.7244 19.3377 15.8713 19.3259 16.1653 19.3025C16.9038 19.2435 17.273 19.2141 17.5811 19.1053C18.2936 18.8536 18.8541 18.2931 19.1058 17.5806C19.2146 17.2725 19.244 16.9033 19.303 16.1648C19.3264 15.8709 19.3381 15.7239 19.3661 15.5824C19.4301 15.2579 19.5579 14.9494 19.7421 14.6747C19.8224 14.5548 19.918 14.4426 20.1093 14.2182C20.5898 13.6543 20.8301 13.3724 20.971 13.0776C21.2968 12.3958 21.2968 11.6032 20.971 10.9214"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          }
+                          @case ('create') {
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                              <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path
+                                d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          }
+                          @case ('menu') {
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                              <path d="M10.5 14L17 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path d="M7 14H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path d="M7 10.5H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path d="M7 17.5H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path d="M10.5 10.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path d="M10.5 17.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path
+                                d="M8 3.5C8 2.67157 8.67157 2 9.5 2H14.5C15.3284 2 16 2.67157 16 3.5V4.5C16 5.32843 15.3284 6 14.5 6H9.5C8.67157 6 8 5.32843 8 4.5V3.5Z"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                              />
+                              <path
+                                d="M21 16.0002C21 18.8286 21 20.2429 20.1213 21.1215C19.2426 22.0002 17.8284 22.0002 15 22.0002H9C6.17157 22.0002 4.75736 22.0002 3.87868 21.1215C3 20.2429 3 18.8286 3 16.0002V13.0002M16 4.00195C18.175 4.01406 19.3529 4.11051 20.1213 4.87889C21 5.75757 21 7.17179 21 10.0002V12.0002M8 4.00195C5.82497 4.01406 4.64706 4.11051 3.87868 4.87889C3.11032 5.64725 3.01385 6.82511 3.00174 9"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          }
+                          @case ('print') {
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                              <path
+                                d="M22 12C22 14.8284 22 16.2426 21.1213 17.1213C20.48 17.7626 19.5535 17.9359 18 17.9827M6 17.9827C4.44655 17.9359 3.51998 17.7626 2.87868 17.1213C2 16.2426 2 14.8284 2 12C2 9.17157 2 7.75736 2.87868 6.87868C3.75736 6 5.17157 6 8 6H16C18.8284 6 20.2426 6 21.1213 6.87868C21.4211 7.17848 21.6186 7.54062 21.7487 8"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                              <path
+                                d="M17.9827 6C17.9359 4.44655 17.7626 3.51998 17.1213 2.87868C16.2426 2 14.8284 2 12 2C9.17157 2 7.75736 2 6.87868 2.87868C6.23738 3.51998 6.06413 4.44655 6.01732 6M18 12V16C18 18.8284 18 20.2426 17.1213 21.1213C16.48 21.7626 15.5535 21.9359 14 21.9827M6 12V16C6 18.8284 6 20.2426 6.87868 21.1213C7.51998 21.7626 8.44655 21.9359 10 21.9827"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                              <path
+                                d="M12 11.0003C15.4115 11.0003 17.8729 11.7128 19.5 12.4434M4.5 12.4434C5.40307 12.0379 6.56314 11.638 8 11.3623"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          }
+                          @case ('void') {
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                              <path d="M18.5 5.5L5.50002 18.4998" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                              <path
+                                d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          }
+                          @default {
+                            <span class="text-xs font-medium">{{ action.label }}</span>
+                          }
+                        }
+                      </button>
+                    </app-tooltip>
+                  }
+                </div>
+              </td>
+            }
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+
+  @if (totalRecords() > 0) {
+    <div class="flex items-center justify-between border-t border-border bg-surface px-3 py-2 text-xs text-muted-foreground">
+      <div class="flex items-center gap-3">
+        <span>{{ 'table.pageInfo' | translate: { page: pageNumber(), total: totalPages() } }}</span>
+        <div class="flex items-center gap-1">
+          <span>{{ 'table.pageSize' | translate }}</span>
+          <span class="h-9 w-16 overflow-hidden">
+            <app-select
+              [options]="pageSizeSelectOptions()"
+              [ngModel]="pageSizeValue()"
+              (ngModelChange)="onPageSizeChange($event)"
+            />
+          </span>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="rounded border border-border px-2 py-1 transition-colors hover:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          [disabled]="pageNumber() <= 1"
+          (click)="goToPage(pageNumber() - 1)"
+        >
+          {{ 'table.previous' | translate }}
+        </button>
+        <button
+          type="button"
+          class="rounded border border-border px-2 py-1 transition-colors hover:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          [disabled]="pageNumber() >= totalPages()"
+          (click)="goToPage(pageNumber() + 1)"
+        >
+          {{ 'table.next' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

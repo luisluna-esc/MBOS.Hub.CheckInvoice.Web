@@ -1,0 +1,117 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { DialogService } from '../../../../core/dialog/dialog.service';
+import { LanguageService } from '../../../../core/i18n/language.service';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
+import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
+import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { ClientFormDialog, ClientFormDialogData } from '../../../catalogs/clients/client-form-dialog/client-form-dialog';
+import { Client, ClientFilters } from '../../../catalogs/clients/client.models';
+import { ClientService } from '../../../catalogs/clients/client.service';
+
+@Component({
+  selector: 'app-issue-client-picker',
+  imports: [Filters, Table, ErrorState, TranslatePipe],
+  templateUrl: './issue-client-picker.html',
+})
+export class IssueClientPicker {
+  private readonly clientService = inject(ClientService);
+  private readonly languageService = inject(LanguageService);
+  private readonly dialogService = inject(DialogService);
+  private readonly router = inject(Router);
+
+  protected readonly rows = signal<Client[]>([]);
+  protected readonly totalRecords = signal(0);
+  protected readonly pageNumber = signal(1);
+  protected readonly pageSize = signal(5);
+  protected readonly errorCode = signal<number | null>(null);
+  protected readonly loading = signal(false);
+
+  private currentFilters: ClientFilters = {};
+
+  protected readonly filterFields = computed<FilterField[]>(() => [
+    {
+      key: 'searchCriteria',
+      label: this.languageService.t('issues.clientPicker.search'),
+      type: 'text',
+    },
+  ]);
+
+  protected readonly columns = computed<TableColumn<Client>[]>(() => [
+    { key: 'taxId', header: this.languageService.t('issues.clientPicker.taxId'), format: (value) => (value as string) || '—' },
+    { key: 'name', header: this.languageService.t('issues.clientPicker.fullName') },
+    { key: 'email', header: this.languageService.t('issues.clientPicker.email'), format: (value) => (value as string) || '—' },
+  ]);
+
+  protected readonly actions = computed<TableAction<Client>[]>(() => [
+    {
+      label: this.languageService.t('issues.clientPicker.select'),
+      icon: 'create',
+      onClick: (row) => this.selectClient(row),
+    },
+  ]);
+
+  constructor() {
+    void this.load();
+  }
+
+  private async load(): Promise<void> {
+    this.errorCode.set(null);
+    this.loading.set(true);
+    try {
+      const result = await this.clientService.list(this.pageNumber(), this.pageSize(), this.currentFilters);
+      this.rows.set(result.items);
+      this.totalRecords.set(result.totalRecords);
+    } catch (error) {
+      this.errorCode.set(error instanceof HttpErrorResponse ? error.status : 500);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  protected onSearch(values: FilterValues): void {
+    this.currentFilters = {
+      searchCriteria: values['searchCriteria'] ?? undefined,
+    };
+    this.pageNumber.set(1);
+    void this.load();
+  }
+
+  protected onClear(): void {
+    this.currentFilters = {};
+    this.pageNumber.set(1);
+    void this.load();
+  }
+
+  protected onPageChange(page: number): void {
+    this.pageNumber.set(page);
+    void this.load();
+  }
+
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.pageNumber.set(1);
+    void this.load();
+  }
+
+  protected onCancel(): void {
+    void this.router.navigate(['/issues']);
+  }
+
+  protected createClient(): void {
+    const ref = this.dialogService.open<number | null, ClientFormDialogData, ClientFormDialog>(ClientFormDialog, {
+      data: { client: null },
+    });
+    ref.closed.subscribe((clientId) => {
+      if (clientId) {
+        void this.router.navigate(['/issues/new/details'], { state: { clientId } });
+      }
+    });
+  }
+
+  private selectClient(row: Client): void {
+    void this.router.navigate(['/issues/new/details'], { state: { clientId: row.clientId } });
+  }
+}

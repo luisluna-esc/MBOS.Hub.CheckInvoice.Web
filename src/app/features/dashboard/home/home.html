@@ -1,0 +1,55 @@
+<div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-2">
+    <h1 class="text-2xl font-semibold text-foreground">{{ 'home.greeting' | translate: { username: username() } }}</h1>
+    <p class="text-sm text-muted-foreground">{{ 'home.placeholder' | translate }}</p>
+  </div>
+
+  @if (showDashboard()) {
+    @if (errorCode()) {
+      <div class="rounded-lg border border-border">
+        <app-error-state [code]="errorCode()!" />
+      </div>
+    } @else if (loading()) {
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-4">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="rounded-md border border-border p-4">
+            <app-skeleton height="0.75rem" width="60%" />
+            <div class="mt-2">
+              <app-skeleton height="1.5rem" width="80%" />
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (data(); as d) {
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-4">
+        <div class="rounded-md border border-border p-4">
+          <span class="text-sm text-muted-foreground">{{ 'home.dashboard.issuesThisMonth' | translate }}</span>
+          <p class="text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalIssuesThisMonth) }}</p>
+        </div>
+        <div class="rounded-md border border-border p-4">
+          <span class="text-sm text-muted-foreground">{{ 'home.dashboard.receiptsThisMonth' | translate }}</span>
+          <p class="text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalReceiptsThisMonth) }}</p>
+        </div>
+        <div class="rounded-md border border-border p-4">
+          <span class="text-sm text-muted-foreground">{{ 'home.dashboard.pendingReceivable' | translate }}</span>
+          <p class="text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalPendingReceivable) }}</p>
+        </div>
+        <div class="rounded-md border border-border p-4">
+          <span class="text-sm text-muted-foreground">{{ 'home.dashboard.paymentsThisMonth' | translate }}</span>
+          <p class="text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalPaymentsThisMonth) }}</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="flex flex-col gap-3 rounded-md border border-border p-4">
+          <h2 class="text-sm font-semibold text-foreground">{{ 'home.dashboard.issuesChartTitle' | translate }}</h2>
+          <app-bar-chart [items]="issuesByMonthItems()" />
+        </div>
+        <div class="flex flex-col gap-3 rounded-md border border-border p-4">
+          <h2 class="text-sm font-semibold text-foreground">{{ 'home.dashboard.receivableChartTitle' | translate }}</h2>
+          <app-bar-chart [items]="receivableStatusItems()" />
+        </div>
+      </div>
+    }
+  }
+</div>

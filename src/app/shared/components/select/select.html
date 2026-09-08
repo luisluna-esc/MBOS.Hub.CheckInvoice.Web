@@ -1,0 +1,91 @@
+<div class="flex w-full flex-col gap-1">
+  @if (label()) {
+    <label [id]="selectId + '-label'" class="text-sm font-medium text-foreground">
+      {{ label() }}
+    </label>
+  }
+
+  <button
+    #origin="cdkOverlayOrigin"
+    cdkOverlayOrigin
+    type="button"
+    [id]="selectId"
+    [disabled]="disabled()"
+    [attr.aria-haspopup]="'listbox'"
+    [attr.aria-expanded]="open()"
+    [attr.aria-labelledby]="label() ? selectId + '-label' : null"
+    [attr.aria-invalid]="showError"
+    class="flex w-full items-center justify-between rounded-md border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+    [class.border-border]="!showError"
+    [class.border-danger]="showError"
+    (click)="toggle()"
+  >
+    <span [class.text-muted-foreground]="!selectedOption()">
+      {{ selectedOption()?.label ?? placeholder() }}
+    </span>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="size-4 shrink-0 text-muted-foreground"
+    >
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  </button>
+
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="origin"
+    [cdkConnectedOverlayOpen]="open()"
+    [cdkConnectedOverlayPositions]="overlayPositions"
+    [cdkConnectedOverlayHasBackdrop]="true"
+    cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+    (backdropClick)="close()"
+    (detach)="close()"
+  >
+    <div class="min-w-[12rem] overflow-hidden rounded-md border border-border bg-surface shadow-lg">
+      @if (showSearch()) {
+        <div class="border-b border-border p-1.5">
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+            placeholder="Buscar..."
+            autocomplete="off"
+            class="w-full rounded border border-border bg-background px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+      }
+      <ul role="listbox" class="max-h-60 overflow-auto py-1">
+        @for (option of filteredOptions(); track option.value) {
+          <li
+            role="option"
+            [attr.aria-selected]="option.value === value()"
+            class="cursor-pointer px-3 py-2 text-sm transition-colors"
+            [class.bg-primary]="option.value === value()"
+            [class.text-primary-foreground]="option.value === value()"
+            [class.text-foreground]="option.value !== value()"
+            [class.hover:bg-brand-300]="option.value !== value()"
+            (click)="selectOption(option)"
+          >
+            {{ option.label }}
+          </li>
+        } @empty {
+          <li class="px-3 py-2 text-sm text-muted-foreground">Sin resultados.</li>
+        }
+      </ul>
+    </div>
+  </ng-template>
+
+  @if (showError) {
+    <p class="min-h-4 text-xs text-danger">{{ errorMessage }}</p>
+  } @else if (hint()) {
+    <p class="min-h-4 text-xs text-muted-foreground">{{ hint() }}</p>
+  } @else {
+    <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
+  }
+</div>

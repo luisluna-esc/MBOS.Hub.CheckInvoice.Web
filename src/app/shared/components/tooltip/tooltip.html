@@ -1,0 +1,12 @@
+<ng-content />
+
+@if (text()) {
+  <span
+    role="tooltip"
+    class="pointer-events-none absolute z-20 hidden w-max max-w-64 rounded-lg border border-border bg-surface px-3 py-2 text-left text-xs leading-relaxed whitespace-normal text-foreground shadow-lg group-hover:block"
+    [class]="bubbleClasses()"
+  >
+    <span class="absolute size-2 rotate-45 border-border bg-surface" [class]="arrowClasses()"></span>
+    {{ text() }}
+  </span>
+}

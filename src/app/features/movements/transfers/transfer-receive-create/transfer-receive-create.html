@@ -1,0 +1,158 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+      [attr.aria-label]="'dialog.cancel' | translate"
+      (click)="onCancel()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+        <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <h1 class="text-xl font-semibold text-foreground">{{ 'transfers.receiveForm.title' | translate }}</h1>
+  </div>
+
+  <form [formGroup]="headerForm" class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <app-select
+        formControlName="destinationWarehouseId"
+        [label]="'transfers.receiveForm.destinationWarehouse' | translate"
+        [options]="warehouseOptions()"
+        [required]="true"
+      />
+      <app-input
+        formControlName="notes"
+        [label]="'transfers.receiveForm.sender' | translate"
+        [hint]="'transfers.receiveForm.senderHint' | translate"
+        [required]="true"
+        [maxLength]="255"
+      />
+    </div>
+
+    @if (!headerConfirmed()) {
+      <button
+        type="button"
+        class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="continueDisabled()"
+        (click)="onContinue()"
+      >
+        {{ 'transfers.form.continue' | translate }}
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="self-end rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-background"
+        (click)="onEditHeader()"
+      >
+        {{ 'transfers.form.editHeader' | translate }}
+      </button>
+    }
+  </form>
+
+  @if (headerConfirmed()) {
+    <div class="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-foreground">{{ 'transfers.form.lines' | translate }}</h3>
+        <button
+          type="button"
+          class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-background"
+          (click)="addLine()"
+        >
+          {{ 'transfers.form.addLine' | translate }}
+        </button>
+      </div>
+
+      @if (detailsArray.length === 0) {
+        <p class="text-xs text-muted-foreground">{{ 'transfers.form.noLines' | translate }}</p>
+      } @else {
+        <div class="w-full overflow-x-auto rounded-md border border-border">
+          <table class="w-full min-w-full divide-y divide-border text-sm">
+            <thead class="bg-background">
+              <tr>
+                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'transfers.form.rowNumber' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'transfers.form.product' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'transfers.form.quantity' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'transfers.form.unitPrice' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'transfers.form.total' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-center font-semibold text-foreground">{{ 'table.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (line of detailsArray.controls; track line; let i = $index) {
+                <tr [formGroup]="line">
+                  <td class="px-3 py-2 align-top text-foreground">{{ i + 1 }}</td>
+                  <td class="px-3 py-2 align-top">
+                    <button
+                      type="button"
+                      class="w-full rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background"
+                      (click)="pickProduct(i)"
+                    >
+                      @if (lineProducts()[i]; as product) {
+                        <span class="font-medium">{{ product.code }}</span> — {{ product.name }}
+                      } @else {
+                        <span class="text-muted-foreground">{{ 'transfers.form.selectProduct' | translate }}</span>
+                      }
+                    </button>
+                  </td>
+                  <td class="w-32 px-3 py-2 align-top">
+                    <app-input formControlName="quantity" type="number" [required]="true" [min]="0.01" [decimals]="2" />
+                  </td>
+                  <td class="w-32 px-3 py-2 align-top">
+                    <app-input formControlName="unitPrice" type="number" [min]="0" [decimals]="2" />
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-top text-foreground">
+                    {{ lineTotal(i) | number: '1.2-2' }}
+                  </td>
+                  <td class="px-3 py-2 text-center align-top">
+                    <button
+                      type="button"
+                      class="rounded p-1.5 text-danger transition-colors hover:bg-danger/10"
+                      [attr.aria-label]="'transfers.form.removeLine' | translate"
+                      (click)="removeLine(i)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                        <path d="M20.5001 6H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path
+                          d="M18.8332 8.5L18.3732 15.3991C18.1962 18.054 18.1077 19.3815 17.2427 20.1907C16.3777 21 15.0473 21 12.3865 21H11.6132C8.95235 21 7.62195 21 6.75694 20.1907C5.89194 19.3815 5.80344 18.054 5.62644 15.3991L5.1665 8.5"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                        />
+                        <path d="M9.5 11L10 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path d="M14.5 11L14 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path
+                          d="M6.5 6C6.55588 6 6.58382 6 6.60915 5.99936C7.43259 5.97849 8.15902 5.45491 8.43922 4.68032C8.44784 4.65649 8.45667 4.62999 8.47434 4.57697L8.57143 4.28571C8.65431 4.03708 8.69575 3.91276 8.75071 3.8072C8.97001 3.38607 9.37574 3.09364 9.84461 3.01877C9.96213 3 10.0932 3 10.3553 3H13.6447C13.9068 3 14.0379 3 14.1554 3.01877C14.6243 3.09364 15.03 3.38607 15.2493 3.8072C15.3043 3.91276 15.3457 4.03708 15.4286 4.28571L15.5257 4.57697C15.5433 4.62992 15.5522 4.65651 15.5608 4.68032C15.841 5.45491 16.5674 5.97849 17.3909 5.99936C17.4162 6 17.4441 6 17.5 6"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="flex justify-end gap-2">
+    <button
+      type="button"
+      class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-brand-300/20"
+      (click)="onCancel()"
+    >
+      {{ 'dialog.cancel' | translate }}
+    </button>
+    <button
+      type="button"
+      class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+      [disabled]="saveDisabled()"
+      (click)="onSave()"
+    >
+      {{ 'dialog.save' | translate }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,1126 @@
+{
+  "language": {
+    "select": "Language",
+    "es": "Spanish",
+    "en": "English",
+    "pt": "Portuguese"
+  },
+  "nav": {
+    "home": "Home",
+    "receipts": "Receipts",
+    "issues": "Issues",
+    "issueVoidRequests": "Voids",
+    "receiptVoidRequests": "Receipt Voids",
+    "accountReceivables": "Accounts Receivable",
+    "reports": "Reports",
+    "reportsFinancial": "Financial Report",
+    "reportsStock": "Stock - Warehouse",
+    "reportsStockByDepartment": "Stock - Department",
+    "reportsKardex": "Valued Physical Kardex",
+    "reportsInventoryCount": "Inventory Count",
+    "reportsIssues": "Warehouse Issues",
+    "reportsReceipts": "Warehouse Receipts",
+    "reportsKardexByProduct": "Kardex by Item",
+    "reportsPastorField": "Pastor Field",
+    "reportsAccountReceivables": "Accounts Receivable Portfolio",
+    "myAccount": "My Account",
+    "transfers": "Transfers",
+    "transfersNew": "New Transfer",
+    "transfersSent": "Sent",
+    "transfersReceived": "Received",
+    "geography": "Geography",
+    "districts": "Districts",
+    "churches": "Churches",
+    "admin": "Administration",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "users": "Users",
+    "catalogs": "Catalogs",
+    "suppliers": "Suppliers",
+    "products": "Products",
+    "clients": "Clients",
+    "settings": "System Settings",
+    "settingsCountries": "Countries",
+    "settingsDocumentTypes": "Document Types",
+    "settingsChurchTypes": "Church Types",
+    "settingsPrintTypes": "Print Types",
+    "settingsIssueTypes": "Issue Types",
+    "settingsReceiptTypes": "Receipt Types",
+    "settingsMediaTypes": "Media Types",
+    "settingsDepartments": "Departments",
+    "settingsSubDepartments": "Sub-departments",
+    "settingsMissions": "Missions",
+    "settingsProvinces": "Provinces",
+    "settingsSpecialCases": "Special Cases",
+    "settingsVoidReasons": "Void Reasons",
+    "settingsWarehouses": "Warehouses"
+  },
+  "partySearch": {
+    "loading": "Searching...",
+    "taxId": "Tax ID",
+    "noResults": "No results.",
+    "minChars": "Type at least {{count}} characters to search."
+  },
+  "productPicker": {
+    "title": "Select product",
+    "filters": {
+      "name": "Name",
+      "code": "Code"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name"
+    },
+    "select": "Select"
+  },
+  "products": {
+    "title": "Products",
+    "new": "New product",
+    "filters": {
+      "search": "Search by name",
+      "department": "Department",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "department": "Department",
+      "price": "Price",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "newTitle": "New product",
+      "editTitle": "Edit product",
+      "code": "Code",
+      "name": "Name",
+      "department": "Department",
+      "subDepartment": "Sub-department",
+      "mediaType": "Unit of Measure",
+      "price": "Price",
+      "isActive": "Active",
+      "success": "Product saved successfully.",
+      "error": "The product could not be saved."
+    },
+    "delete": {
+      "title": "Delete product",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Product deleted successfully.",
+      "error": "The product could not be deleted."
+    }
+  },
+  "districts": {
+    "title": "Districts",
+    "new": "New district",
+    "filters": {
+      "search": "Search by name",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "newTitle": "New district",
+      "editTitle": "Edit district",
+      "code": "Code",
+      "name": "Name",
+      "mission": "Branch",
+      "province": "Province",
+      "isActive": "Active",
+      "success": "District saved successfully.",
+      "error": "The district could not be saved."
+    },
+    "delete": {
+      "title": "Delete district",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "District deleted successfully.",
+      "error": "The district could not be deleted."
+    }
+  },
+  "churches": {
+    "title": "Churches",
+    "new": "New church",
+    "filters": {
+      "search": "Search by name",
+      "district": "District",
+      "type": "Type",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "district": "District",
+      "type": "Type",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "newTitle": "New church",
+      "editTitle": "Edit church",
+      "code": "Code",
+      "name": "Name",
+      "district": "District",
+      "type": "Type",
+      "isActive": "Active",
+      "success": "Church saved successfully.",
+      "error": "The church could not be saved."
+    },
+    "delete": {
+      "title": "Delete church",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Church deleted successfully.",
+      "error": "The church could not be deleted."
+    }
+  },
+  "lookupCatalogs": {
+    "new": "New",
+    "active": "Active",
+    "inactive": "Inactive",
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "address": "Address",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "code": "Code",
+      "name": "Name",
+      "address": "Address",
+      "isActive": "Active",
+      "newTitle": "New: {{title}}",
+      "editTitle": "Edit: {{title}}",
+      "success": "Saved successfully.",
+      "error": "Could not save."
+    },
+    "delete": {
+      "title": "Delete record",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Deleted successfully.",
+      "error": "Could not delete. It may be in use elsewhere."
+    },
+    "countries": { "title": "Countries" },
+    "documentTypes": { "title": "Document Types" },
+    "churchTypes": { "title": "Church Types" },
+    "printTypes": { "title": "Print Types" },
+    "issueTypes": { "title": "Issue Types" },
+    "receiptTypes": { "title": "Receipt Types" },
+    "mediaTypes": { "title": "Media Types" },
+    "departments": { "title": "Departments" },
+    "subDepartments": { "title": "Sub-departments" },
+    "missions": { "title": "Missions" },
+    "provinces": { "title": "Provinces" },
+    "specialCases": { "title": "Special Cases" },
+    "voidReasons": { "title": "Void Reasons" },
+    "warehouses": { "title": "Warehouses" }
+  },
+  "roles": {
+    "title": "Roles",
+    "new": "New role",
+    "filters": {
+      "search": "Search by name",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "name": "Name",
+      "description": "Description",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "permissions": "Permissions",
+      "menus": "Menus"
+    },
+    "form": {
+      "newTitle": "New role",
+      "editTitle": "Edit role",
+      "name": "Name",
+      "description": "Description",
+      "isActive": "Active",
+      "success": "Role saved successfully.",
+      "error": "The role could not be saved."
+    },
+    "delete": {
+      "title": "Delete role",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Role deleted successfully.",
+      "error": "The role could not be deleted."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "loading": "Loading...",
+      "empty": "No permissions available.",
+      "error": "The permission could not be updated.",
+      "locked": "The M-BOS role always keeps full access; its permissions cannot be changed."
+    },
+    "menus": {
+      "title": "Visible menus",
+      "general": "General",
+      "loading": "Loading...",
+      "empty": "No menu items available.",
+      "error": "The menu could not be updated.",
+      "hint": "Check the modules this role can see. A module with no role checked is not visible to anyone."
+    }
+  },
+  "permissions": {
+    "title": "Permissions",
+    "new": "New permission",
+    "filters": {
+      "search": "Search by name",
+      "module": "Module",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "module": "Module",
+      "description": "Description",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "newTitle": "New permission",
+      "editTitle": "Edit permission",
+      "code": "Code",
+      "name": "Name",
+      "module": "Module",
+      "description": "Description",
+      "isActive": "Active",
+      "success": "Permission saved successfully.",
+      "error": "The permission could not be saved."
+    },
+    "delete": {
+      "title": "Delete permission",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Permission deleted successfully.",
+      "error": "The permission could not be deleted."
+    }
+  },
+  "users": {
+    "title": "Users",
+    "new": "New user",
+    "filters": {
+      "search": "Search by name, username, or email",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "name": "Name",
+      "username": "Username",
+      "email": "Email",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "roles": "Roles"
+    },
+    "form": {
+      "newTitle": "New user",
+      "editTitle": "Edit user",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "passwordHint": "Leave blank to keep the current password.",
+      "isActive": "Active",
+      "success": "User saved successfully.",
+      "error": "The user could not be saved."
+    },
+    "delete": {
+      "title": "Delete user",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "User deleted successfully.",
+      "error": "The user could not be deleted."
+    },
+    "roles": {
+      "title": "Roles",
+      "loading": "Loading...",
+      "empty": "No roles available.",
+      "error": "The role could not be updated."
+    }
+  },
+  "common": {
+    "logout": "Sign out",
+    "loading": "Loading..."
+  },
+  "home": {
+    "greeting": "Hi, {{username}}",
+    "placeholder": "This is the dashboard's starting point. Soon you'll be able to navigate to inventory, finances, and more.",
+    "dashboard": {
+      "issuesThisMonth": "Issues this month",
+      "receiptsThisMonth": "Receipts this month",
+      "pendingReceivable": "Pending receivable",
+      "paymentsThisMonth": "Payments this month",
+      "issuesChartTitle": "Issues by month (last 6 months)",
+      "receivableChartTitle": "Accounts Receivable: pending vs paid"
+    }
+  },
+  "dialog": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
+  "table": {
+    "empty": "No data to display.",
+    "previous": "Previous",
+    "next": "Next",
+    "pageInfo": "Page {{page}} of {{total}}",
+    "pageSize": "Per page:",
+    "actions": "Options"
+  },
+  "filters": {
+    "search": "Search",
+    "clear": "Clear"
+  },
+  "errorState": {
+    "400": {
+      "title": "Invalid request",
+      "description": "The request could not be processed. Check the data and try again."
+    },
+    "401": {
+      "title": "Unauthorized",
+      "description": "You need to sign in to access this content."
+    },
+    "403": {
+      "title": "Access denied",
+      "description": "You don't have permission to view this section."
+    },
+    "404": {
+      "title": "Page not found",
+      "description": "The content you're looking for doesn't exist or was moved."
+    },
+    "500": {
+      "title": "Server error",
+      "description": "Something unexpected happened. Please try again later."
+    },
+    "503": {
+      "title": "Service unavailable",
+      "description": "The service isn't available right now. Please try again later."
+    },
+    "default": {
+      "title": "An error occurred",
+      "description": "Something went wrong. Please try again."
+    }
+  },
+  "receipts": {
+    "title": "Receipts",
+    "new": "New receipt",
+    "supplierPicker": {
+      "title": "Select supplier",
+      "description": "Search for the supplier by name, legal name, or tax ID to continue registering the receipt.",
+      "search": "Name, legal name, or tax ID",
+      "taxId": "Tax ID",
+      "fullName": "Full name",
+      "select": "Select",
+      "createSupplier": "Create supplier"
+    },
+    "filters": {
+      "warehouse": "Warehouse",
+      "supplier": "Supplier",
+      "receiptType": "Receipt type",
+      "invoiceNumber": "Invoice #"
+    },
+    "columns": {
+      "rowNumber": "No.",
+      "voucherNumber": "Voucher Number",
+      "issueDate": "Issue Date",
+      "createdAt": "Registration Date",
+      "invoiceNumber": "Invoice #",
+      "warehouse": "Warehouse",
+      "supplier": "Supplier",
+      "invoiceTotal": "Total (Bs.)",
+      "createdBy": "User",
+      "status": "Status",
+      "statusPending": "Pending Approval",
+      "statusNormal": "Normal",
+      "statusVoided": "Voided",
+      "statusVoidPending": "Void pending",
+      "statusVoidedTooltip": "Reason for voiding: {{reason}}",
+      "statusVoidPendingTooltip": "Reason for the request: {{reason}}"
+    },
+    "actions": {
+      "viewDetails": "View details",
+      "print": "Print",
+      "requestVoid": "Request void",
+      "requestVoidDisabledVoided": "This receipt is already voided",
+      "requestVoidDisabledPending": "There is already a pending void request for this receipt"
+    },
+    "printError": "The printable voucher could not be generated.",
+    "form": {
+      "title": "New receipt",
+      "warehouse": "Warehouse",
+      "supplier": "Supplier",
+      "receiptType": "Receipt type",
+      "invoiceNumber": "Invoice #",
+      "taxId": "Tax ID",
+      "supplierLocked": "Supplier selected.",
+      "invoiceTotal": "Invoice total",
+      "issueDate": "Issue Date",
+      "description": "Description",
+      "continue": "Continue",
+      "lines": "Lines",
+      "addLine": "Add line",
+      "removeLine": "Remove",
+      "noLines": "Add at least one line.",
+      "selectProduct": "Select product",
+      "rowNumber": "No.",
+      "totalCost": "Total Cost (Bs.)",
+      "detail": "Detail",
+      "exceedsTotal": "The sum of the lines cannot exceed the Invoice total.",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitCost": "Unit Cost (Bs.)",
+      "workOrder": "Work order",
+      "success": "Receipt created successfully.",
+      "error": "The receipt could not be created."
+    },
+    "details": {
+      "title": "Receipt details",
+      "loading": "Loading...",
+      "empty": "This receipt has no lines.",
+      "total": "Total"
+    }
+  },
+  "issues": {
+    "title": "Issues",
+    "new": "New issue",
+    "clientPicker": {
+      "title": "Select client",
+      "description": "Search for the client by name to continue with the issue registration.",
+      "search": "Name",
+      "taxId": "Tax ID",
+      "fullName": "Full name",
+      "email": "Email",
+      "select": "Select",
+      "createClient": "Create client"
+    },
+    "filters": {
+      "warehouse": "Warehouse",
+      "client": "Client",
+      "issueType": "Issue type"
+    },
+    "columns": {
+      "rowNumber": "No.",
+      "voucherNumber": "Voucher Number",
+      "issueDate": "Issue Date",
+      "createdAt": "Registration Date",
+      "warehouse": "Warehouse",
+      "client": "Client",
+      "description": "Description",
+      "total": "Total (Bs.)",
+      "createdBy": "User",
+      "status": "Status",
+      "statusNormal": "Normal",
+      "statusVoided": "Voided",
+      "statusVoidPending": "Void pending",
+      "statusVoidedTooltip": "Reason for voiding: {{reason}}",
+      "statusVoidPendingTooltip": "Reason for the request: {{reason}}"
+    },
+    "actions": {
+      "viewDetails": "View details",
+      "print": "Print",
+      "requestVoid": "Request void",
+      "requestVoidDisabledVoided": "This issue is already voided",
+      "requestVoidDisabledPending": "There is already a pending void request for this issue"
+    },
+    "printError": "The printable voucher could not be generated.",
+    "printDialog": {
+      "title": "Print voucher",
+      "printType": "Print type",
+      "confirm": "Print"
+    },
+    "form": {
+      "title": "New issue",
+      "print": "Print",
+      "warehouse": "Warehouse",
+      "warehousePeriod": "Warehouse Period",
+      "client": "Client",
+      "clientLocked": "Client selected.",
+      "documentType": "Document Type",
+      "clientTaxId": "ID Number",
+      "email": "Email",
+      "issueType": "Issue type",
+      "printType": "Print type",
+      "complement": "Complement",
+      "issueDate": "Issue Date",
+      "description": "Description",
+      "sendToAccountsReceivable": "Send to accounts receivable",
+      "paymentType": "Payment type",
+      "paymentTypes": {
+        "cash": "Cash",
+        "credit": "Credit",
+        "installments": "Installments"
+      },
+      "paymentDetail": "Description (optional)",
+      "dueDate": "Due date",
+      "continue": "Continue",
+      "editHeader": "Edit",
+      "lines": "Lines",
+      "addLine": "Add line",
+      "removeLine": "Remove",
+      "noLines": "Add at least one line.",
+      "selectProduct": "Select product",
+      "rowNumber": "No.",
+      "available": "Available",
+      "exceedsStock": "The quantity exceeds the available stock.",
+      "type": "Unit of Measure",
+      "sector": "Sector",
+      "stock": "Stock",
+      "code": "Code",
+      "unitCost": "Unit Cost (Bs.)",
+      "totalCost": "Total (Bs.)",
+      "product": "Product",
+      "quantity": "Quantity",
+      "success": "Issue created successfully.",
+      "error": "The issue could not be created."
+    },
+    "details": {
+      "title": "Issue details",
+      "loading": "Loading...",
+      "empty": "This issue has no lines.",
+      "total": "Total"
+    }
+  },
+  "issueVoidRequests": {
+    "title": "Voids",
+    "filters": {
+      "status": "Status"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "columns": {
+      "issue": "Issue",
+      "issueDate": "Issue date",
+      "client": "Client",
+      "reason": "Reason",
+      "detail": "Detail",
+      "requestedBy": "Requested by",
+      "requestedAt": "Requested at",
+      "status": "Status"
+    },
+    "actions": {
+      "viewIssue": "View issue",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "dialog": {
+      "title": "Request void",
+      "reason": "Reason",
+      "detail": "Detail (optional)",
+      "reasonRequired": "Choose a reason to continue.",
+      "success": "Void request submitted.",
+      "error": "The request could not be submitted."
+    },
+    "review": {
+      "approveTitle": "Approve void",
+      "rejectTitle": "Reject void",
+      "approveHint": "Approving marks the issue as voided and restores the stock it had discounted.",
+      "rejectHint": "Rejecting leaves the issue as is. State the reason for rejecting.",
+      "notesRequired": "Rejection reason",
+      "notesOptional": "Notes (optional)",
+      "approveSuccess": "Void approved. Stock was restored.",
+      "rejectSuccess": "Request rejected.",
+      "error": "The review could not be processed."
+    }
+  },
+  "receiptVoidRequests": {
+    "title": "Receipt Voids",
+    "filters": {
+      "status": "Status"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "columns": {
+      "receipt": "Receipt",
+      "receiptDate": "Receipt date",
+      "supplier": "Supplier",
+      "reason": "Reason",
+      "detail": "Detail",
+      "requestedBy": "Requested by",
+      "requestedAt": "Requested at",
+      "status": "Status"
+    },
+    "actions": {
+      "viewReceipt": "View receipt",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "dialog": {
+      "title": "Request void",
+      "reason": "Reason",
+      "detail": "Detail (optional)",
+      "reasonRequired": "Choose a reason to continue.",
+      "success": "Void request submitted.",
+      "error": "The request could not be submitted."
+    },
+    "review": {
+      "approveTitle": "Approve void",
+      "rejectTitle": "Reject void",
+      "approveHint": "Approving marks the receipt as voided and reverses the stock it had added.",
+      "rejectHint": "Rejecting leaves the receipt as is. State the reason for rejecting.",
+      "notesRequired": "Rejection reason",
+      "notesOptional": "Notes (optional)",
+      "approveSuccess": "Void approved. Stock was reversed.",
+      "rejectSuccess": "Request rejected.",
+      "error": "The review could not be processed."
+    }
+  },
+  "accountReceivables": {
+    "title": "Accounts Receivable",
+    "filters": {
+      "client": "Client",
+      "status": "Status"
+    },
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid"
+    },
+    "paymentTypes": {
+      "cash": "Cash",
+      "credit": "Credit",
+      "installments": "Installments"
+    },
+    "columns": {
+      "issue": "Issue",
+      "issueDate": "Issue date",
+      "client": "Client",
+      "paymentType": "Payment type",
+      "paymentDetail": "Description",
+      "dueDate": "Due date",
+      "total": "Total",
+      "outstandingBalance": "Outstanding balance",
+      "status": "Status"
+    },
+    "actions": {
+      "viewDetails": "View details",
+      "registerPayment": "Register payment",
+      "alreadyPaid": "This account is already paid",
+      "readOnlyRole": "Your role is read-only, you cannot register payments"
+    },
+    "payment": {
+      "title": "Register payment",
+      "outstandingHint": "Outstanding balance: {{amount}}",
+      "amount": "Amount",
+      "amountRequired": "Enter a valid amount.",
+      "method": "Payment method",
+      "notes": "Notes",
+      "success": "Payment registered.",
+      "error": "The payment could not be registered."
+    },
+    "detail": {
+      "title": "Account receivable details",
+      "loading": "Loading...",
+      "payments": "Payments",
+      "noPayments": "This account has no payments yet.",
+      "paymentDate": "Payment date",
+      "paymentAmount": "Amount paid",
+      "paymentMethod": "Method",
+      "balanceAfter": "Outstanding balance"
+    }
+  },
+  "portal": {
+    "myAccount": {
+      "title": "My Account",
+      "section1": "Accounts Receivable",
+      "summary": {
+        "totalOutstanding": "Total outstanding",
+        "pendingCount": "Pending debts",
+        "deliveryCount": "Deliveries recorded"
+      },
+      "filters": {
+        "issue": "Issue no.",
+        "dateFrom": "From",
+        "dateTo": "To"
+      },
+      "deliveries": "Delivery history",
+      "payments": "Payment history",
+      "columns": {
+        "issue": "Issue",
+        "issueDate": "Date",
+        "dueDate": "Due date",
+        "outstandingBalance": "Outstanding balance",
+        "status": "Status",
+        "total": "Total",
+        "paymentDate": "Payment date",
+        "paymentAmount": "Amount paid",
+        "paymentMethod": "Payment method"
+      },
+      "actions": {
+        "viewProducts": "View products"
+      }
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "financialDashboard": {
+      "title": "Financial Report",
+      "description": "Monthly summary as PDF, with charts.",
+      "hint": "Issues, Receipts, pending receivable and payments for the month, plus charts for the last 6 months.",
+      "download": "Download PDF",
+      "downloading": "Generating...",
+      "error": "Could not generate the report. Please try again."
+    },
+    "stock": {
+      "title": "Stock - Warehouse",
+      "description": "Net movement per product in the period, valued at average cost.",
+      "hint": "Receipts minus Issues plus Transfers, grouped by Category and Sub-category.",
+      "warehouse": "Warehouse",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "selectPrompt": "Select a warehouse to generate the report.",
+      "error": "Could not generate the report. Please try again."
+    },
+    "stockByDepartment": {
+      "title": "Stock - Department",
+      "description": "Net movement per product in the period, valued at average cost.",
+      "hint": "Receipts minus Issues plus Transfers, grouped by Sub-category and filterable by Category.",
+      "warehouse": "Warehouse",
+      "department": "Category",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "selectPrompt": "Select a warehouse to generate the report.",
+      "error": "Could not generate the report. Please try again."
+    },
+    "kardex": {
+      "title": "Valued Physical Kardex",
+      "description": "Opening balance, Receipts, Issues and Closing balance per product in the period.",
+      "hint": "Valued at weighted average cost, grouped by Sub-category.",
+      "warehouse": "Warehouse",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "selectPrompt": "Select a warehouse to generate the report.",
+      "error": "Could not generate the report. Please try again."
+    },
+    "inventoryCount": {
+      "title": "Inventory Count",
+      "mode": "Report type",
+      "modeTemplate": "Blank template (for counting)",
+      "modeResult": "Count result",
+      "descriptionTemplate": "Blank template to count physically on paper.",
+      "hintTemplate": "Code, Description and system Quantity already filled in. Physical Quantity and Difference are filled by hand; it doesn't create a count yet.",
+      "descriptionResult": "System vs. physical quantity and difference for the current count.",
+      "hintResult": "Grouped by Category and Sub-category, for the filtered warehouse and period.",
+      "warehouse": "Warehouse",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "selectPrompt": "Select a warehouse to generate the report.",
+      "error": "Could not generate the report. Please try again."
+    },
+    "issues": {
+      "title": "Warehouse Issues",
+      "description": "Detail of every Issue line in the period.",
+      "hint": "Not grouped by product: each row is an individual movement, grouped by Category and Sub-category.",
+      "warehouse": "Warehouse",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "selectPrompt": "Select a warehouse to generate the report.",
+      "error": "Could not generate the report. Please try again."
+    },
+    "receipts": {
+      "title": "Warehouse Receipts",
+      "description": "Detail of every Receipt line in the period.",
+      "hint": "Not grouped by product: each row is an individual movement, grouped by Category and Sub-category.",
+      "warehouse": "Warehouse",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "selectPrompt": "Select a warehouse to generate the report.",
+      "error": "Could not generate the report. Please try again."
+    },
+    "kardexByProduct": {
+      "title": "Kardex by Item",
+      "description": "Kardex ledger for one product: every Receipt and Issue with its running balance.",
+      "hint": "Does not include Transfers. The opening balance and every row are explained only by Receipts and Issues of the product in the selected warehouse.",
+      "product": "Product",
+      "warehouse": "Warehouse",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "selectPrompt": "Select a product and a warehouse to generate the kardex.",
+      "error": "Could not generate the report. Please try again."
+    },
+    "pastorField": {
+      "title": "Pastor Field",
+      "description": "Printable record for one pastor/client: their accounts receivable and their history of deliveries and deposits.",
+      "hint": "\"Deposit\" here is a Payment against an Account Receivable, same as in the Pastor's self-service screen. The date filter only affects the Deliveries and Deposits tables; Accounts Receivable are always shown in full.",
+      "client": "Pastor / Client",
+      "dateFrom": "Start date",
+      "dateTo": "End date",
+      "selectPrompt": "Select a pastor or client to generate the report.",
+      "error": "Could not generate the report. Please try again."
+    },
+    "accountReceivables": {
+      "title": "Accounts Receivable Portfolio",
+      "description": "Full accounts receivable portfolio across all clients, with client, status, and due date filters.",
+      "client": "Client",
+      "allClients": "All clients",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "dateFrom": "Due date from",
+      "dateTo": "Due date to",
+      "error": "Could not generate the report. Please try again."
+    }
+  },
+  "transfers": {
+    "titleSent": "Transfers Sent",
+    "titleReceived": "Transfers Received",
+    "new": "New transfer",
+    "filters": {
+      "sourceWarehouse": "Source warehouse",
+      "destinationWarehouse": "Destination warehouse",
+      "status": "Status",
+      "dateFrom": "From",
+      "dateTo": "To"
+    },
+    "columns": {
+      "rowNumber": "No.",
+      "voucherNumber": "Transfer No.",
+      "sourceWarehouse": "Source warehouse",
+      "destinationWarehouse": "Destination warehouse",
+      "sender": "Sent by",
+      "receiver": "Received by",
+      "transferDate": "Date",
+      "notes": "Notes",
+      "status": "Status",
+      "statusApproved": "Approved",
+      "statusPending": "Pending approval"
+    },
+    "actions": {
+      "viewDetails": "View details",
+      "print": "Print",
+      "approve": "Approve",
+      "approveConfirmTitle": "Approve record",
+      "approveConfirmMessage": "By approving, you confirm you reviewed this record. This does not change stock or the product's cost in any way, it's only marked as reviewed.",
+      "approveSuccess": "Record approved.",
+      "approveError": "The transfer could not be approved."
+    },
+    "printError": "The printable voucher could not be generated.",
+    "form": {
+      "title": "New transfer",
+      "print": "Print",
+      "sourceWarehouse": "Source warehouse",
+      "destinationWarehouse": "Destination warehouse",
+      "receiver": "Receiver",
+      "sentBy": "Sent by",
+      "notes": "Notes",
+      "sameWarehouseError": "The destination warehouse must be different from the source.",
+      "continue": "Continue",
+      "editHeader": "Edit",
+      "lines": "Lines",
+      "addLine": "Add line",
+      "removeLine": "Remove",
+      "noLines": "Add at least one line.",
+      "selectProduct": "Select product",
+      "rowNumber": "No.",
+      "available": "Available",
+      "product": "Product",
+      "quantity": "Quantity",
+      "exceedsStock": "The quantity exceeds the available stock.",
+      "unitPrice": "Unit Price (Bs.)",
+      "total": "Total (Bs.)",
+      "success": "Transfer created successfully.",
+      "error": "The transfer could not be created."
+    },
+    "receiveForm": {
+      "new": "Register receipt",
+      "title": "Register received transfer",
+      "destinationWarehouse": "Destination warehouse",
+      "sender": "Sent by",
+      "senderHint": "Describe who sent this shipment (not part of this system).",
+      "success": "Receipt registered successfully.",
+      "error": "The receipt could not be registered."
+    },
+    "details": {
+      "title": "Transfer details",
+      "loading": "Loading...",
+      "empty": "This transfer has no lines.",
+      "total": "Total",
+      "pendingNotice": "This record hasn't been reviewed yet. A received transfer is only an informational record: it never changes stock or the product's cost."
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "new": "New client",
+    "portalAccess": {
+      "pendingLink": "Pastors without access",
+      "pendingTitle": "Pastors without portal access",
+      "pendingDescription": "Clients marked as Pastor who don't have a portal account yet.",
+      "pendingEmpty": "No pastors are pending access.",
+      "grant": "Grant portal access",
+      "error": "Could not grant access.",
+      "grantedTitle": "Access granted",
+      "grantedMessage": "Portal access was granted to \"{{name}}\".",
+      "username": "Username",
+      "temporaryPassword": "Temporary password",
+      "manualDeliveryNote": "We don't send this by email automatically yet. Copy it and hand it to the pastor manually.",
+      "reusedAccountNote": "An account with this email already existed, it was linked directly instead of creating a new one."
+    },
+    "filters": {
+      "search": "Search by name",
+      "district": "District",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "taxId": "ID Number",
+      "name": "Name",
+      "email": "Email",
+      "mobilePhone": "Mobile",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "newTitle": "New client",
+      "editTitle": "Edit client",
+      "name": "Full name",
+      "documentType": "Document Type",
+      "taxId": "ID Number",
+      "complement": "Complement",
+      "complementHint": "Only applies when the document type is NIT.",
+      "specialCase": "Special Cases",
+      "specialCaseNone": "None",
+      "email": "Email",
+      "mobilePhone": "Mobile",
+      "district": "District",
+      "church": "Church",
+      "isActive": "Active",
+      "isPastor": "Is Pastor",
+      "success": "Client saved successfully.",
+      "successWithSupplier": "Client saved successfully. Also registered as Supplier.",
+      "error": "The client could not be saved.",
+      "continue": "Continue",
+      "editDecisions": "Edit",
+      "choiceNew": "New client",
+      "choiceLink": "Already exists as a Supplier",
+      "choiceSpecial": "Special case",
+      "back": "Back",
+      "linkSectionTitle": "Is this also a Supplier?",
+      "linkSectionHint": "A Supplier and a Client can be the same person or company. If you link or register them here, they share the same Name, Tax ID, Email and Phone: editing one side updates the other too.",
+      "linkExistingSupplier": "Already exists as a Supplier? Select to link",
+      "linkedToSupplier": "This will link to Supplier \"{{name}}\": same Name, Tax ID, Email and Phone.",
+      "unlink": "Remove link",
+      "alsoSupplier": "Also registered as Supplier: \"{{name}}\"",
+      "alsoRegisterAsSupplier": "Also register as Supplier",
+      "supplierCountry": "Country (Supplier)",
+      "supplierLegalName": "Legal Name (Supplier)"
+    },
+    "delete": {
+      "title": "Delete client",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Client deleted successfully.",
+      "error": "The client could not be deleted."
+    }
+  },
+  "suppliers": {
+    "title": "Suppliers",
+    "new": "New supplier",
+    "filters": {
+      "search": "Search by name",
+      "country": "Country",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "code": "Code",
+      "legalName": "Legal Name",
+      "taxId": "Tax ID",
+      "country": "Country",
+      "phone": "Phone",
+      "email": "Email",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "newTitle": "New supplier",
+      "editTitle": "Edit supplier",
+      "name": "Name",
+      "code": "Code",
+      "legalName": "Legal name",
+      "taxId": "Tax ID",
+      "country": "Country",
+      "phone": "Phone",
+      "mobilePhone": "Mobile phone",
+      "email": "Email",
+      "address": "Address",
+      "notes": "Notes",
+      "isActive": "Active",
+      "success": "Supplier saved successfully.",
+      "successWithClient": "Supplier saved successfully. Also registered as Client.",
+      "error": "The supplier could not be saved.",
+      "continue": "Continue",
+      "editDecisions": "Edit",
+      "choiceNew": "New supplier",
+      "choiceLink": "Already exists as a Client",
+      "back": "Back",
+      "linkSectionTitle": "Is this also a Client?",
+      "linkSectionHint": "A Client and a Supplier can be the same person or company. If you link or register them here, they share the same Name, Tax ID, Email and Phone: editing one side updates the other too.",
+      "linkExistingClient": "Already exists as a Client? Select to link",
+      "linkedToClient": "This will link to Client \"{{name}}\": same Name, Tax ID, Email and Phone.",
+      "unlink": "Remove link",
+      "alsoClient": "Also registered as Client: \"{{name}}\"",
+      "alsoRegisterAsClient": "Also register as Client",
+      "clientDistrict": "District (Client)",
+      "clientChurch": "Church (Client)"
+    },
+    "delete": {
+      "title": "Delete supplier",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "success": "Supplier deleted successfully.",
+      "error": "The supplier could not be deleted."
+    }
+  },
+  "login": {
+    "title": "Sign in",
+    "welcomeTitle": "Welcome back",
+    "welcomeDescription": "Manage the mission's inventory and finances from one place, simply and securely.",
+    "usernameOrEmail": "Username or email",
+    "password": "Password",
+    "submit": "Sign in",
+    "error": "Sign-in failed."
+  }
+}

@@ -1,0 +1,19 @@
+<div
+  class="inline-flex items-center gap-1 rounded-full border border-border bg-surface p-1"
+  role="group"
+  [attr.aria-label]="'language.select' | translate"
+>
+  @for (lang of languages; track lang) {
+    <button
+      type="button"
+      class="rounded-full px-3 py-1 text-xs font-semibold uppercase transition-colors"
+      [class.bg-primary]="languageService.language() === lang"
+      [class.text-primary-foreground]="languageService.language() === lang"
+      [class.text-muted-foreground]="languageService.language() !== lang"
+      [attr.aria-pressed]="languageService.language() === lang"
+      (click)="languageService.setLanguage(lang)"
+    >
+      {{ lang }}
+    </button>
+  }
+</div>

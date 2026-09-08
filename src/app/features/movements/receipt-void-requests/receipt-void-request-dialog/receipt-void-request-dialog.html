@@ -1,0 +1,20 @@
+<app-dialog
+  [title]="'receiptVoidRequests.dialog.title' | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <app-select
+      formControlName="voidReasonId"
+      [label]="'receiptVoidRequests.dialog.reason' | translate"
+      [options]="voidReasonOptions()"
+      [required]="true"
+    />
+    <app-input
+      formControlName="detail"
+      [label]="'receiptVoidRequests.dialog.detail' | translate"
+      [maxLength]="255"
+    />
+  </form>
+</app-dialog>

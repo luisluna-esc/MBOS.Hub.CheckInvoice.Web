@@ -1,0 +1,269 @@
+import { DecimalPipe } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { map, startWith } from 'rxjs';
+import { CatalogItem } from '../../../../core/catalogs/catalog.models';
+import { CatalogService } from '../../../../core/catalogs/catalog.service';
+import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
+import { DialogService } from '../../../../core/dialog/dialog.service';
+import { LanguageService } from '../../../../core/i18n/language.service';
+import { ToastService } from '../../../../core/toast/toast.service';
+import { DatePicker } from '../../../../shared/components/date-picker/date-picker';
+import { Input as AppInput } from '../../../../shared/components/input/input';
+import { ProductPickerDialog, ProductPickerResult } from '../../../../shared/components/product-picker-dialog/product-picker-dialog';
+import { Select, SelectOption } from '../../../../shared/components/select/select';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { SupplierService } from '../../../catalogs/suppliers/supplier.service';
+import { ReceiptRequest } from '../receipt.models';
+import { ReceiptService } from '../receipt.service';
+
+type DetailLineGroup = FormGroup<{
+  productId: FormControl<string>;
+  quantity: FormControl<string>;
+  unitCost: FormControl<string>;
+  workOrder: FormControl<string>;
+  detail: FormControl<string>;
+}>;
+
+@Component({
+  selector: 'app-receipt-create',
+  imports: [ReactiveFormsModule, AppInput, Select, DatePicker, TranslatePipe, DecimalPipe],
+  templateUrl: './receipt-create.html',
+})
+export class ReceiptCreate {
+  private readonly router = inject(Router);
+  private readonly catalogService = inject(CatalogService);
+  private readonly receiptService = inject(ReceiptService);
+  private readonly supplierService = inject(SupplierService);
+  private readonly dialogService = inject(DialogService);
+  private readonly toastService = inject(ToastService);
+  private readonly languageService = inject(LanguageService);
+
+  protected readonly saving = signal(false);
+  protected readonly supplierLocked = signal(false);
+  protected readonly headerConfirmed = signal(false);
+  protected readonly lineProducts = signal<(ProductPickerResult | null)[]>([]);
+  protected readonly todayIso = new Date().toISOString().slice(0, 10);
+
+  protected readonly warehouses = signal<CatalogItem[]>([]);
+  protected readonly suppliers = signal<CatalogItem[]>([]);
+  protected readonly receiptTypes = signal<CatalogItem[]>([]);
+
+  protected readonly warehouseOptions = computed<SelectOption[]>(() =>
+    this.warehouses().map((item) => ({ value: String(item.id), label: item.name }))
+  );
+  protected readonly supplierOptions = computed<SelectOption[]>(() =>
+    this.suppliers().map((item) => ({ value: String(item.id), label: item.name }))
+  );
+  protected readonly receiptTypeOptions = computed<SelectOption[]>(() =>
+    this.receiptTypes().map((item) => ({ value: String(item.id), label: item.name }))
+  );
+
+  protected readonly headerForm = new FormGroup({
+    warehouseId: new FormControl('', { nonNullable: true }),
+    supplierId: new FormControl('', { nonNullable: true }),
+    receiptTypeId: new FormControl('', { nonNullable: true }),
+    invoiceNumber: new FormControl('', { nonNullable: true }),
+    taxId: new FormControl('', { nonNullable: true }),
+    invoiceTotal: new FormControl('', { nonNullable: true }),
+    issueDate: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    description: new FormControl('', { nonNullable: true }),
+  });
+
+  protected readonly detailsArray = new FormArray<DetailLineGroup>([]);
+
+  protected readonly headerInvalid = toSignal(
+    this.headerForm.statusChanges.pipe(
+      startWith(this.headerForm.status),
+      map((status) => status !== 'VALID'),
+      takeUntilDestroyed()
+    ),
+    { initialValue: true }
+  );
+
+  protected readonly detailsInvalid = toSignal(
+    this.detailsArray.statusChanges.pipe(
+      startWith(this.detailsArray.status),
+      map((status) => status !== 'VALID'),
+      takeUntilDestroyed()
+    ),
+    { initialValue: true }
+  );
+
+  protected readonly continueDisabled = computed(() => this.headerInvalid() || this.headerConfirmed());
+
+  protected readonly detailsValues = toSignal(
+    this.detailsArray.valueChanges.pipe(startWith(this.detailsArray.value), takeUntilDestroyed())
+  );
+
+  protected readonly invoiceTotalValue = toSignal(
+    this.headerForm.controls.invoiceTotal.valueChanges.pipe(
+      startWith(this.headerForm.controls.invoiceTotal.value),
+      takeUntilDestroyed()
+    ),
+    { initialValue: '' }
+  );
+
+  protected readonly linesTotalSum = computed(() =>
+    (this.detailsValues() ?? []).reduce(
+      (sum, line) => sum + (Number(line?.quantity) || 0) * (Number(line?.unitCost) || 0),
+      0
+    )
+  );
+
+  protected readonly exceedsInvoiceTotal = computed(() => {
+    const total = Number(this.invoiceTotalValue());
+    if (!total) {
+      return false;
+    }
+    return this.linesTotalSum() > total;
+  });
+
+  protected readonly saveDisabled = computed(
+    () =>
+      !this.headerConfirmed() ||
+      this.detailsInvalid() ||
+      this.detailsArray.length === 0 ||
+      this.exceedsInvoiceTotal() ||
+      this.saving()
+  );
+
+  constructor() {
+    void this.loadCatalogs();
+
+    const state = history.state as { supplierId?: number };
+    if (state.supplierId) {
+      void this.lockSupplier(state.supplierId);
+    }
+  }
+
+  private async lockSupplier(supplierId: number): Promise<void> {
+    const result = await this.supplierService.list(1, 1, { supplierId });
+    const supplier = result.items[0];
+    if (!supplier) {
+      return;
+    }
+
+    this.headerForm.controls.supplierId.setValue(String(supplierId));
+    this.headerForm.controls.supplierId.disable();
+    this.headerForm.controls.taxId.setValue(supplier.taxId ?? '');
+    this.headerForm.controls.taxId.disable();
+    this.supplierLocked.set(true);
+  }
+
+  private async loadCatalogs(): Promise<void> {
+    const [warehouses, suppliers, receiptTypes] = await settleCatalogs([
+      this.catalogService.getWarehouses(),
+      this.catalogService.getSuppliers(),
+      this.catalogService.getReceiptTypes(),
+    ]);
+    this.warehouses.set(warehouses);
+    this.suppliers.set(suppliers);
+    this.receiptTypes.set(receiptTypes);
+  }
+
+  protected onContinue(): void {
+    if (this.continueDisabled()) {
+      return;
+    }
+    this.headerForm.disable();
+    this.headerConfirmed.set(true);
+    if (this.detailsArray.length === 0) {
+      this.addLine();
+    }
+  }
+
+  protected addLine(): void {
+    this.detailsArray.push(
+      new FormGroup({
+        productId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+        quantity: new FormControl('', { nonNullable: true }),
+        unitCost: new FormControl('', { nonNullable: true }),
+        workOrder: new FormControl('', { nonNullable: true }),
+        detail: new FormControl('', { nonNullable: true }),
+      })
+    );
+    this.lineProducts.update((current) => [...current, null]);
+  }
+
+  protected removeLine(index: number): void {
+    this.detailsArray.removeAt(index);
+    this.lineProducts.update((current) => current.filter((_, i) => i !== index));
+  }
+
+  protected lineTotal(index: number): number {
+    const line = (this.detailsValues() ?? [])[index];
+    if (!line) {
+      return 0;
+    }
+    return (Number(line.quantity) || 0) * (Number(line.unitCost) || 0);
+  }
+
+  protected linePercentage(index: number): number | null {
+    const total = Number(this.invoiceTotalValue());
+    if (!total) {
+      return null;
+    }
+    return (this.lineTotal(index) / total) * 100;
+  }
+
+  protected async pickProduct(index: number): Promise<void> {
+    const ref = this.dialogService.open<ProductPickerResult | null, unknown, ProductPickerDialog>(ProductPickerDialog);
+    ref.closed.subscribe((result) => {
+      if (result) {
+        this.detailsArray.at(index).controls.productId.setValue(String(result.productId));
+        this.lineProducts.update((current) => {
+          const next = [...current];
+          next[index] = result;
+          return next;
+        });
+      }
+    });
+  }
+
+  protected async onSave(): Promise<void> {
+    if (this.saveDisabled()) {
+      return;
+    }
+
+    this.saving.set(true);
+    const raw = this.headerForm.getRawValue();
+    const details = this.detailsArray.getRawValue();
+
+    const request: ReceiptRequest = {
+      warehouseId: Number(raw.warehouseId),
+      supplierId: raw.supplierId ? Number(raw.supplierId) : null,
+      receiptTypeId: raw.receiptTypeId ? Number(raw.receiptTypeId) : null,
+      invoiceNumber: raw.invoiceNumber || null,
+      taxId: raw.taxId || null,
+      invoiceTotal: raw.invoiceTotal ? Number(raw.invoiceTotal) : null,
+      issueDate: raw.issueDate || null,
+      description: raw.description || null,
+      details: details.map((line) => ({
+        productId: Number(line.productId),
+        quantity: Number(line.quantity),
+        unitCost: Number(line.unitCost),
+        workOrder: line.workOrder || null,
+        detail: line.detail || null,
+      })),
+    };
+
+    try {
+      await this.receiptService.create(request);
+      this.toastService.show(this.languageService.t('receipts.form.success'));
+      void this.router.navigate(['/receipts']);
+    } catch (error) {
+      const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
+        ?.description;
+      this.toastService.show(this.languageService.t('receipts.form.error'), message);
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  protected onCancel(): void {
+    void this.router.navigate(['/receipts']);
+  }
+}

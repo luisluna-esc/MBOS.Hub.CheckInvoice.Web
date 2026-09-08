@@ -1,0 +1,845 @@
+<ng-template #sidebarContent let-forceExpanded="forceExpanded">
+  @let isCollapsed = !forceExpanded && collapsed();
+
+  <div class="flex items-center gap-2 px-4 py-5" [class.justify-center]="isCollapsed">
+    @if (isCollapsed) {
+      <span
+        class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground"
+      >
+        C
+      </span>
+    } @else {
+      <img [src]="logoSrc()" alt="InvenTrack" class="h-7 w-auto" />
+    }
+
+    @if (!forceExpanded && !isCollapsed) {
+      <button
+        type="button"
+        class="ml-auto flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+        aria-label="Contraer menú"
+        (click)="toggleCollapsed()"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4 rotate-90"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+    }
+  </div>
+
+  @if (isCollapsed) {
+    <div class="flex justify-center pb-3">
+      <button
+        type="button"
+        class="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+        aria-label="Expandir menú"
+        (click)="toggleCollapsed()"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4 -rotate-90"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+    </div>
+  }
+
+  <nav class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto" [class.px-2]="isCollapsed" [class.px-3]="!isCollapsed">
+    @for (item of visibleNavItems(); track item.menuId) {
+      @if (item.children.length) {
+        <app-tooltip [text]="isCollapsed ? displayName(item) : ''" position="right" class="w-full">
+        <button
+          type="button"
+          class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-background"
+          [class.justify-center]="isCollapsed"
+          (click)="isCollapsed ? toggleCollapsed() : toggleExpanded(item.menuId)"
+        >
+          @switch (item.icon) {
+            @case ('home') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M2 11L6.06296 7.74968M22 11L13.8741 4.49931C12.7784 3.62279 11.2216 3.62279 10.1259 4.49931L9.34398 5.12486"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M15.5 5.5V3.5C15.5 3.22386 15.7239 3 16 3H18.5C18.7761 3 19 3.22386 19 3.5V8.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path d="M4 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M20 9.5V13.5M20 22V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M15 22V17C15 15.5858 15 14.8787 14.5607 14.4393C14.1213 14 13.4142 14 12 14C10.5858 14 9.87868 14 9.43934 14.4393M9 22V17"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+            }
+            @case ('receipt') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M10.5 14L17 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M7 14H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M7 10.5H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M7 17.5H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10.5 10.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10.5 17.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M8 3.5C8 2.67157 8.67157 2 9.5 2H14.5C15.3284 2 16 2.67157 16 3.5V4.5C16 5.32843 15.3284 6 14.5 6H9.5C8.67157 6 8 5.32843 8 4.5V3.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M21 16.0002C21 18.8286 21 20.2429 20.1213 21.1215C19.2426 22.0002 17.8284 22.0002 15 22.0002H9C6.17157 22.0002 4.75736 22.0002 3.87868 21.1215C3 20.2429 3 18.8286 3 16.0002V13.0002M16 4.00195C18.175 4.01406 19.3529 4.11051 20.1213 4.87889C21 5.75757 21 7.17179 21 10.0002V12.0002M8 4.00195C5.82497 4.01406 4.64706 4.11051 3.87868 4.87889C3.11032 5.64725 3.01385 6.82511 3.00174 9"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('issue') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M7.50626 15.2647C7.61657 15.6639 8.02965 15.8982 8.4289 15.7879C8.82816 15.6776 9.06241 15.2645 8.9521 14.8652L7.50626 15.2647ZM6.07692 7.27442L6.79984 7.0747V7.0747L6.07692 7.27442ZM4.7037 5.91995L4.50319 6.64265L4.7037 5.91995ZM3.20051 4.72457C2.80138 4.61383 2.38804 4.84762 2.2773 5.24675C2.16656 5.64589 2.40035 6.05923 2.79949 6.16997L3.20051 4.72457ZM20.1886 15.7254C20.5895 15.6213 20.8301 15.2118 20.7259 14.8109C20.6217 14.41 20.2123 14.1695 19.8114 14.2737L20.1886 15.7254ZM10.1978 17.5588C10.5074 18.6795 9.82778 19.8618 8.62389 20.1747L9.00118 21.6265C10.9782 21.1127 12.1863 19.1239 11.6436 17.1594L10.1978 17.5588ZM8.62389 20.1747C7.41216 20.4896 6.19622 19.7863 5.88401 18.6562L4.43817 19.0556C4.97829 21.0107 7.03196 22.1383 9.00118 21.6265L8.62389 20.1747ZM5.88401 18.6562C5.57441 17.5355 6.254 16.3532 7.4579 16.0403L7.08061 14.5885C5.10356 15.1023 3.89544 17.0911 4.43817 19.0556L5.88401 18.6562ZM7.4579 16.0403C8.66962 15.7254 9.88556 16.4287 10.1978 17.5588L11.6436 17.1594C11.1035 15.2043 9.04982 14.0768 7.08061 14.5885L7.4579 16.0403ZM8.9521 14.8652L6.79984 7.0747L5.354 7.47414L7.50626 15.2647L8.9521 14.8652ZM4.90421 5.19725L3.20051 4.72457L2.79949 6.16997L4.50319 6.64265L4.90421 5.19725ZM6.79984 7.0747C6.54671 6.15847 5.8211 5.45164 4.90421 5.19725L4.50319 6.64265C4.92878 6.76073 5.24573 7.08223 5.354 7.47414L6.79984 7.0747ZM11.1093 18.085L20.1886 15.7254L19.8114 14.2737L10.732 16.6332L11.1093 18.085Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M19.1647 6.2358C18.6797 4.48023 18.4372 3.60244 17.7242 3.20319C17.0113 2.80394 16.1062 3.03915 14.2962 3.50955L12.3763 4.00849C10.5662 4.47889 9.66119 4.71409 9.24954 5.40562C8.8379 6.09714 9.0804 6.97492 9.56541 8.73049L10.0798 10.5926C10.5648 12.3481 10.8073 13.2259 11.5203 13.6252C12.2333 14.0244 13.1384 13.7892 14.9484 13.3188L16.8683 12.8199C18.6784 12.3495 19.5834 12.1143 19.995 11.4227C20.2212 11.0429 20.2499 10.6069 20.1495 10"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('void') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('receivable') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M12 21.25C11.5858 21.25 11.25 21.5858 11.25 22C11.25 22.4142 11.5858 22.75 12 22.75V21.25ZM4.31802 20.8284L4.81629 20.2679L4.31802 20.8284ZM19.682 20.8284L19.1837 20.2679L19.682 20.8284ZM7.95476 22.6837C8.36822 22.7087 8.72365 22.3938 8.74863 21.9804C8.77362 21.5669 8.4587 21.2115 8.04524 21.1865L7.95476 22.6837ZM2.25 12C2.25 13.8741 2.24918 15.8307 2.41875 17.4664C2.50368 18.2856 2.63401 19.0548 2.84074 19.7105C3.04411 20.3557 3.3444 20.9665 3.81975 21.389L4.81629 20.2679C4.63262 20.1046 4.43867 19.7904 4.27134 19.2596C4.10738 18.7394 3.99058 18.0818 3.91075 17.3118C3.75082 15.769 3.75 13.8971 3.75 12H2.25ZM12 22.75C14.1024 22.75 15.7464 22.7513 17.0267 22.5983C18.3204 22.4436 19.3568 22.1209 20.1803 21.389L19.1837 20.2679C18.6891 20.7075 18.0058 20.9706 16.8487 21.1089C15.6782 21.2487 14.1402 21.25 12 21.25V22.75ZM8.04524 21.1865C6.33099 21.0829 5.4315 20.8147 4.81629 20.2679L3.81975 21.389C4.83576 22.2921 6.18271 22.5767 7.95476 22.6837L8.04524 21.1865ZM20.2499 12.3873C20.2492 14.2185 20.2371 16.0032 20.0724 17.4673C19.9902 18.1982 19.8728 18.8201 19.7119 19.3117C19.548 19.8126 19.3605 20.1108 19.1837 20.2679L20.1803 21.389C20.6399 20.9804 20.9352 20.3963 21.1375 19.7783C21.3428 19.1509 21.4751 18.4171 21.563 17.635C21.7387 16.0731 21.7492 14.2032 21.7499 12.3879L20.2499 12.3873Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M14.6603 14.2019L17.664 13.3008M9.33968 14.2019L3.3324 12.3997C2.7369 12.2211 2.43915 12.1317 2.25021 11.9176C2.21341 11.8759 2.18015 11.8312 2.15078 11.784C2 11.5415 2 11.2307 2 10.6089C2 8.15877 2 6.9337 2.67298 6.10659C2.80233 5.94763 2.94763 5.80233 3.10659 5.67298C3.9337 5 5.15877 5 7.60893 5H16.3911C18.8412 5 20.0663 5 20.8934 5.67298C21.0524 5.80233 21.1977 5.94763 21.327 6.10659C22 6.9337 22 8.15877 22 10.6089C22 11.2307 22 11.5415 21.8492 11.784C21.8199 11.8312 21.7866 11.8759 21.7498 11.9176C21.5999 12.0875 21.3814 12.1789 21 12.2986"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M6.5 5C7.32344 4.97913 8.15925 4.45491 8.43944 3.68032C8.44806 3.65649 8.4569 3.62999 8.47457 3.57697L8.50023 3.5C8.54241 3.37344 8.56351 3.31014 8.58608 3.254C8.87427 2.53712 9.54961 2.05037 10.3208 2.00366C10.3812 2 10.4479 2 10.5814 2H13.4191C13.5525 2 13.6192 2 13.6796 2.00366C14.4508 2.05037 15.1262 2.53712 15.4144 3.254C15.4369 3.31014 15.458 3.37343 15.5002 3.5L15.5259 3.57697C15.5435 3.62968 15.5524 3.65656 15.561 3.68032C15.8412 4.45491 16.6766 4.97913 17.5 5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M14 12.5H10C9.72386 12.5 9.5 12.7239 9.5 13V15.1615C9.5 15.3659 9.62448 15.5498 9.8143 15.6257L10.5144 15.9058C11.4681 16.2872 12.5319 16.2872 13.4856 15.9058L14.1857 15.6257C14.3755 15.5498 14.5 15.3659 14.5 15.1615V13C14.5 12.7239 14.2761 12.5 14 12.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('report') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <rect x="4" y="12" width="3.5" height="8" rx="1" fill="currentColor" />
+                <rect x="10.25" y="7" width="3.5" height="13" rx="1" fill="currentColor" />
+                <rect x="16.5" y="3" width="3.5" height="17" rx="1" fill="currentColor" />
+              </svg>
+            }
+            @case ('portal') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M21 16C21 18.8284 21 20.2426 20.1213 21.1213C19.2426 22 17.8284 22 15 22H9C6.17157 22 4.75736 22 3.87868 21.1213C3 20.2426 3 18.8284 3 16V8C3 5.17157 3 3.75736 3.87868 2.87868C4.75736 2 6.17157 2 9 2H15C17.8284 2 19.2426 2 20.1213 2.87868C21 3.75736 21 5.17157 21 8V12"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path d="M8 2V6M8 22V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2 12H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2 16H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2 8H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M11.5 6.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M11.5 10H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            }
+            @case ('catalog') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M21.9844 10C21.9473 8.68893 21.8226 7.85305 21.4026 7.13974C20.8052 6.12523 19.7294 5.56066 17.5777 4.43152L15.5777 3.38197C13.8221 2.46066 12.9443 2 12 2C11.0557 2 10.1779 2.46066 8.42229 3.38197L6.42229 4.43152C4.27063 5.56066 3.19479 6.12523 2.5974 7.13974C2 8.15425 2 9.41667 2 11.9415V12.0585C2 14.5833 2 15.8458 2.5974 16.8603C3.19479 17.8748 4.27063 18.4393 6.42229 19.5685L8.42229 20.618C10.1779 21.5393 11.0557 22 12 22C12.9443 22 13.8221 21.5393 15.5777 20.618L17.5777 19.5685C19.7294 18.4393 20.8052 17.8748 21.4026 16.8603C21.8226 16.1469 21.9473 15.3111 21.9844 14"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M21 7.5L17 9.5M12 12L3 7.5M12 12V21.5M12 12C12 12 14.7426 10.6287 16.5 9.75C16.6953 9.65237 17 9.5 17 9.5M17 9.5V13M17 9.5L7.5 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('product') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M16.5 18.0001C17.3284 18.0001 18 18.6716 18 19.5001C18 20.3285 17.3284 21.0001 16.5 21.0001C15.6716 21.0001 15 20.3285 15 19.5001C15 18.6716 15.6716 18.0001 16.5 18.0001Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M2 3L2.26121 3.09184C3.5628 3.54945 4.2136 3.77826 4.58584 4.32298C4.95808 4.86771 4.95808 5.59126 4.95808 7.03836V9.76C4.95808 12.7016 5.02132 13.6723 5.88772 14.5862C6.75412 15.5 8.14857 15.5 10.9375 15.5H12M16.2404 15.5C17.8014 15.5 18.5819 15.5 19.1336 15.0504C19.6853 14.6008 19.8429 13.8364 20.158 12.3075L20.6578 9.88275C21.0049 8.14369 21.1784 7.27417 20.7345 6.69708C20.2906 6.12 18.7738 6.12 17.0888 6.12H11.0235M4.95808 6.12H7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('company') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M21 22V13M11.0044 5C11.0223 3.76022 11.1143 3.05733 11.5858 2.58579C12.1716 2 13.1144 2 15 2H17C18.8857 2 19.8285 2 20.4143 2.58579C21 3.17157 21 4.11438 21 6V9"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M15 22V16M3 22V13M3 9C3 7.11438 3 6.17157 3.58579 5.58579C4.17157 5 5.11438 5 7 5H11C12.8856 5 13.8284 5 14.4142 5.58579C15 6.17157 15 7.11438 15 9V12"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path d="M9 22V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M6 8H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M6 11H7M12 11H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M6 14H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            }
+            @case ('client') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M17 22V6C17 4.11438 17 3.17157 16.4142 2.58579C15.8284 2 14.8856 2 13 2H11C9.11438 2 8.17157 2 7.58579 2.58579C7 3.17157 7 4.11438 7 6V22"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M20.25 11.5C20.25 11.9142 20.5858 12.25 21 12.25C21.4142 12.25 21.75 11.9142 21.75 11.5H20.25ZM20.1111 8.33706L19.6945 8.96066L19.6945 8.96066L20.1111 8.33706ZM20.6629 8.88886L20.0393 9.30554L20.0393 9.30554L20.6629 8.88886ZM21.75 15.5C21.75 15.0858 21.4142 14.75 21 14.75C20.5858 14.75 20.25 15.0858 20.25 15.5H21.75ZM17.5 8.75C18.2178 8.75 18.6998 8.75091 19.0672 8.78828C19.422 8.82438 19.586 8.8882 19.6945 8.96066L20.5278 7.71346C20.1318 7.44886 19.6925 7.34415 19.219 7.29598C18.758 7.24909 18.1866 7.25 17.5 7.25V8.75ZM21.75 11.5C21.75 10.8134 21.7509 10.242 21.704 9.78102C21.6559 9.30755 21.5511 8.86818 21.2865 8.47218L20.0393 9.30554C20.1118 9.41399 20.1756 9.57796 20.2117 9.93283C20.2491 10.3002 20.25 10.7822 20.25 11.5H21.75ZM19.6945 8.96066C19.831 9.05186 19.9481 9.16905 20.0393 9.30554L21.2865 8.47218C21.0859 8.17191 20.8281 7.91409 20.5278 7.71346L19.6945 8.96066ZM20.25 15.5V22H21.75V15.5H20.25Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M3.88886 8.33706L4.30554 8.96066L4.30554 8.96066L3.88886 8.33706ZM3.33706 8.88886L3.96066 9.30554L3.96066 9.30554L3.33706 8.88886ZM3.75 20C3.75 19.5858 3.41421 19.25 3 19.25C2.58579 19.25 2.25 19.5858 2.25 20H3.75ZM2.25 16C2.25 16.4142 2.58579 16.75 3 16.75C3.41421 16.75 3.75 16.4142 3.75 16H2.25ZM6.5 7.25C5.81338 7.25 5.24196 7.24909 4.78102 7.29598C4.30755 7.34415 3.86818 7.44886 3.47218 7.71346L4.30554 8.96066C4.41399 8.8882 4.57796 8.82438 4.93283 8.78828C5.30023 8.75091 5.78216 8.75 6.5 8.75V7.25ZM3.75 11.5C3.75 10.7822 3.75091 10.3002 3.78828 9.93283C3.82438 9.57796 3.8882 9.41399 3.96066 9.30554L2.71346 8.47218C2.44886 8.86818 2.34415 9.30755 2.29598 9.78102C2.24909 10.242 2.25 10.8134 2.25 11.5H3.75ZM3.47218 7.71346C3.17191 7.91409 2.91409 8.17191 2.71346 8.47218L3.96066 9.30554C4.05186 9.16905 4.16905 9.05186 4.30554 8.96066L3.47218 7.71346ZM2.25 20V22H3.75V20H2.25ZM2.25 11.5V16H3.75V11.5H2.25Z"
+                  fill="currentColor"
+                />
+                <path d="M12 22V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 5H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 14H10.5M14 14H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M14 8H13.5M10 8H11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 11H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            }
+            @case ('transfer') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M20 19L20.5303 19.5303C20.8232 19.2374 20.8232 18.7626 20.5303 18.4697L20 19ZM8 4.25C7.58579 4.25 7.25 4.58579 7.25 5C7.25 5.41421 7.58579 5.75 8 5.75V4.25ZM18.5303 16.4697C18.2374 16.1768 17.7626 16.1768 17.4697 16.4697C17.1768 16.7626 17.1768 17.2374 17.4697 17.5303L18.5303 16.4697ZM17.4697 20.4697C17.1768 20.7626 17.1768 21.2374 17.4697 21.5303C17.7626 21.8232 18.2374 21.8232 18.5303 21.5303L17.4697 20.4697ZM13.75 18.25C13.3358 18.25 13 18.5858 13 19C13 19.4142 13.3358 19.75 13.75 19.75V18.25ZM10 19.75C10.4142 19.75 10.75 19.4142 10.75 19C10.75 18.5858 10.4142 18.25 10 18.25V19.75ZM11 5.75C11.4142 5.75 11.75 5.41421 11.75 5C11.75 4.58579 11.4142 4.25 11 4.25V5.75ZM15 4.25C14.5858 4.25 14.25 4.58579 14.25 5C14.25 5.41421 14.5858 5.75 15 5.75V4.25ZM7.5 12.75H16.5V11.25H7.5V12.75ZM20.5303 18.4697L18.5303 16.4697L17.4697 17.5303L19.4697 19.5303L20.5303 18.4697ZM19.4697 18.4697L17.4697 20.4697L18.5303 21.5303L20.5303 19.5303L19.4697 18.4697ZM20.75 8.5C20.75 6.15279 18.8472 4.25 16.5 4.25V5.75C18.0188 5.75 19.25 6.98122 19.25 8.5H20.75ZM16.5 12.75C18.8472 12.75 20.75 10.8472 20.75 8.5H19.25C19.25 10.0188 18.0188 11.25 16.5 11.25V12.75ZM4.75 15.5C4.75 13.9812 5.98122 12.75 7.5 12.75V11.25C5.15279 11.25 3.25 13.1528 3.25 15.5H4.75ZM7.5 18.25C5.98122 18.25 4.75 17.0188 4.75 15.5H3.25C3.25 17.8472 5.15279 19.75 7.5 19.75V18.25ZM20 18.25H13.75V19.75H20V18.25ZM10 18.25H7.5V19.75H10V18.25ZM11 4.25H8V5.75H11V4.25ZM16.5 4.25H15V5.75H16.5V4.25Z"
+                  fill="currentColor"
+                />
+                <circle cx="6" cy="5" r="2" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            }
+            @case ('district') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M12.5 7.04148C12.3374 7.0142 12.1704 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13C13.6569 13 15 11.6569 15 10C15 9.82964 14.9858 9.6626 14.9585 9.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M5 15.2161C4.35254 13.5622 4 11.8013 4 10.1433C4 5.64588 7.58172 2 12 2C16.4183 2 20 5.64588 20 10.1433C20 14.6055 17.4467 19.8124 13.4629 21.6744C12.5343 22.1085 11.4657 22.1085 10.5371 21.6744C9.26474 21.0797 8.13831 20.1439 7.19438 19"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('church') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M4.97883 6.31492C2.99294 7.10927 2 7.50645 2 8C2 8.49355 2.99294 8.89073 4.97883 9.68508L7.7873 10.8085C9.77318 11.6028 10.7661 12 12 12C13.2339 12 14.2268 11.6028 16.2127 10.8085L19.0212 9.68508C21.0071 8.89073 22 8.49355 22 8C22 7.50645 21.0071 7.10927 19.0212 6.31492L16.2127 5.19153C14.2268 4.39718 13.2339 4 12 4C11.0461 4 10.2361 4.2374 9 4.71221"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M5.76613 10L4.97883 10.3149C2.99294 11.1093 2 11.5065 2 12C2 12.4935 2.99294 12.8907 4.97883 13.6851L7.7873 14.8085C9.77318 15.6028 10.7661 16 12 16C13.2339 16 14.2268 15.6028 16.2127 14.8085L19.0212 13.6851C21.0071 12.8907 22 12.4935 22 12C22 11.5065 21.0071 11.1093 19.0212 10.3149L18.2339 10"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M19.0212 17.6851C21.0071 16.8907 22 16.4935 22 16C22 15.5065 21.0071 15.1093 19.0212 14.3149L18.2339 14M5.76613 14L4.97883 14.3149C2.99294 15.1093 2 15.5065 2 16C2 16.4935 2.99294 16.8907 4.97883 17.6851L7.7873 18.8085C9.77318 19.6028 10.7661 20 12 20C12.9539 20 13.7639 19.7626 15 19.2878"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('admin') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M18.9771 5.02291L19.5074 4.49258V4.49258L18.9771 5.02291ZM18.9771 14.7904L19.5074 15.3207L18.9771 14.7904ZM7.14558 12.6684L6.61525 12.138L6.61525 12.138L7.14558 12.6684ZM3.43349 16.3804L3.96382 16.9108L3.96382 16.9108L3.43349 16.3804ZM7.61956 20.5665L7.08923 20.0362L7.08923 20.0362L7.61956 20.5665ZM11.3319 16.8541L10.8016 16.3238L11.3319 16.8541ZM3.00906 17.5904L2.26365 17.6732L3.00906 17.5904ZM3.24113 19.679L2.49572 19.7618L2.49572 19.7618L3.24113 19.679ZM4.32101 20.7589L4.23819 21.5043H4.23819L4.32101 20.7589ZM6.4096 20.9909L6.49242 20.2455H6.49242L6.4096 20.9909ZM3.52408 20.2677L4.05441 19.7374L4.05441 19.7374L3.52408 20.2677ZM3.73229 20.4759L3.20196 21.0062L3.20196 21.0063L3.73229 20.4759ZM7.40432 11.6311L6.67789 11.8177H6.67789L7.40432 11.6311ZM12.3689 16.5957L12.1823 17.3221L12.3689 16.5957ZM7.63832 17.063C7.34382 16.7717 6.86895 16.7743 6.57767 17.0688C6.2864 17.3633 6.28901 17.8382 6.58351 18.1294L7.63832 17.063ZM20.0119 8.20635C20.1258 8.60458 20.5411 8.83502 20.9393 8.72105C21.3375 8.60709 21.5679 8.19187 21.454 7.79365L20.0119 8.20635ZM21.3916 12.2267C21.5167 11.8318 21.2981 11.4103 20.9033 11.2851C20.5085 11.1599 20.0869 11.3785 19.9617 11.7733L21.3916 12.2267ZM13.1161 10.8839C12.628 10.3957 12.628 9.60427 13.1161 9.11612L12.0555 8.05546C10.9815 9.1294 10.9815 10.8706 12.0555 11.9445L13.1161 10.8839ZM14.8839 10.8839C14.3957 11.372 13.6043 11.372 13.1161 10.8839L12.0555 11.9445C13.1294 13.0185 14.8706 13.0185 15.9445 11.9445L14.8839 10.8839ZM14.8839 9.11612C15.372 9.60427 15.372 10.3957 14.8839 10.8839L15.9445 11.9445C17.0185 10.8706 17.0185 9.1294 15.9445 8.05546L14.8839 9.11612ZM15.9445 8.05546C14.8706 6.98151 13.1294 6.98151 12.0555 8.05546L13.1161 9.11612C13.6043 8.62796 14.3957 8.62796 14.8839 9.11612L15.9445 8.05546ZM19.5074 4.49258C16.5173 1.50247 11.6694 1.50247 8.67928 4.49258L9.73994 5.55324C12.1443 3.14892 16.0424 3.14892 18.4468 5.55324L19.5074 4.49258ZM6.61525 12.138L2.90316 15.8501L3.96382 16.9108L7.67591 13.1987L6.61525 12.138ZM8.14989 21.0968L9.39029 19.8564L8.32963 18.7958L7.08923 20.0362L8.14989 21.0968ZM9.39029 19.8564L11.8623 17.3845L10.8016 16.3238L8.32963 18.7958L9.39029 19.8564ZM2.26365 17.6732L2.49572 19.7618L3.98654 19.5962L3.75447 17.5076L2.26365 17.6732ZM4.23819 21.5043L6.32678 21.7364L6.49242 20.2455L4.40384 20.0135L4.23819 21.5043ZM2.99375 20.798L3.20196 21.0062L4.26263 19.9456L4.05441 19.7374L2.99375 20.798ZM4.40384 20.0135C4.35042 20.0075 4.30062 19.9836 4.26262 19.9456L3.20196 21.0063C3.48081 21.2851 3.84626 21.4607 4.23819 21.5043L4.40384 20.0135ZM2.49572 19.7618C2.53926 20.1537 2.7149 20.5192 2.99375 20.798L4.05441 19.7374C4.01641 19.6994 3.99248 19.6496 3.98654 19.5962L2.49572 19.7618ZM7.08923 20.0362C6.93242 20.193 6.71283 20.27 6.49242 20.2455L6.32678 21.7364C7.00007 21.8112 7.67087 21.5759 8.14989 21.0968L7.08923 20.0362ZM2.90316 15.8501C2.42414 16.3291 2.18884 16.9999 2.26365 17.6732L3.75447 17.5076C3.72999 17.2872 3.80701 17.0676 3.96382 16.9108L2.90316 15.8501ZM8.13075 11.4446C7.60655 9.4033 8.14412 7.14906 9.73994 5.55324L8.67928 4.49258C6.69321 6.47865 6.02725 9.28401 6.67789 11.8177L8.13075 11.4446ZM18.4468 14.2601C16.8509 15.8559 14.5967 16.3934 12.5554 15.8693L12.1823 17.3221C14.716 17.9728 17.5214 17.3068 19.5074 15.3207L18.4468 14.2601ZM11.8623 17.3845C11.9181 17.3287 12.0324 17.2836 12.1823 17.3221L12.5554 15.8693C11.9675 15.7183 11.2845 15.8409 10.8016 16.3238L11.8623 17.3845ZM7.67591 13.1987C8.15857 12.716 8.28182 12.0329 8.13075 11.4446L6.67789 11.8177C6.7163 11.9672 6.67127 12.082 6.61525 12.138L7.67591 13.1987ZM9.38736 18.7929L7.63832 17.063L6.58351 18.1294L8.33255 19.8593L9.38736 18.7929ZM18.4468 5.55324C19.213 6.3195 19.734 7.23555 20.0119 8.20635L21.454 7.79365C21.1079 6.58425 20.4583 5.4435 19.5074 4.49258L18.4468 5.55324ZM19.9617 11.7733C19.6735 12.6821 19.1692 13.5376 18.4468 14.2601L19.5074 15.3207C20.4038 14.4244 21.0325 13.3592 21.3916 12.2267L19.9617 11.7733Z"
+                  fill="currentColor"
+                />
+              </svg>
+            }
+            @case ('settings') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M4 7H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M17 7H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="15.5" cy="7" r="1.5" stroke="currentColor" stroke-width="1.5" />
+                <path d="M4 12H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M13 12H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="11.5" cy="12" r="1.5" stroke="currentColor" stroke-width="1.5" />
+                <path d="M4 17H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 17H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="8.5" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            }
+            @default {
+              <span class="block size-2 shrink-0 rounded-full bg-current"></span>
+            }
+          }
+
+          @if (!isCollapsed) {
+            <span class="flex-1 text-left">{{ displayName(item) }}</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="size-4 shrink-0 text-muted-foreground transition-transform"
+              [class.rotate-180]="isExpanded(item.menuId)"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          }
+
+        </button>
+        </app-tooltip>
+
+        @if (!isCollapsed && isExpanded(item.menuId)) {
+          <div class="ml-4 flex flex-col gap-1 border-l border-border pl-4">
+            @for (child of item.children; track child.menuId) {
+              <a
+                [routerLink]="child.route"
+                routerLinkActive
+                #childLink="routerLinkActive"
+                [routerLinkActiveOptions]="{ exact: isExactMatch(child.route) }"
+                (click)="mobileNavOpen.set(false)"
+                class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                [class.text-foreground]="childLink.isActive"
+                [class.font-medium]="childLink.isActive"
+              >
+                <span
+                  class="size-1.5 shrink-0 rounded-full bg-primary"
+                  [class.opacity-0]="!childLink.isActive"
+                ></span>
+                {{ displayName(child) }}
+              </a>
+            }
+          </div>
+        }
+      } @else {
+        <app-tooltip [text]="isCollapsed ? displayName(item) : ''" position="right" class="w-full">
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="bg-primary text-primary-foreground"
+          #topLink="routerLinkActive"
+          [routerLinkActiveOptions]="{ exact: isExactMatch(item.route) }"
+          (click)="mobileNavOpen.set(false)"
+          class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors"
+          [class.hover:bg-background]="!topLink.isActive"
+          [class.justify-center]="isCollapsed"
+        >
+          @switch (item.icon) {
+            @case ('home') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M2 11L6.06296 7.74968M22 11L13.8741 4.49931C12.7784 3.62279 11.2216 3.62279 10.1259 4.49931L9.34398 5.12486"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M15.5 5.5V3.5C15.5 3.22386 15.7239 3 16 3H18.5C18.7761 3 19 3.22386 19 3.5V8.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path d="M4 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M20 9.5V13.5M20 22V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M15 22V17C15 15.5858 15 14.8787 14.5607 14.4393C14.1213 14 13.4142 14 12 14C10.5858 14 9.87868 14 9.43934 14.4393M9 22V17"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
+            }
+            @case ('receipt') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M10.5 14L17 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M7 14H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M7 10.5H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M7 17.5H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10.5 10.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10.5 17.5H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M8 3.5C8 2.67157 8.67157 2 9.5 2H14.5C15.3284 2 16 2.67157 16 3.5V4.5C16 5.32843 15.3284 6 14.5 6H9.5C8.67157 6 8 5.32843 8 4.5V3.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M21 16.0002C21 18.8286 21 20.2429 20.1213 21.1215C19.2426 22.0002 17.8284 22.0002 15 22.0002H9C6.17157 22.0002 4.75736 22.0002 3.87868 21.1215C3 20.2429 3 18.8286 3 16.0002V13.0002M16 4.00195C18.175 4.01406 19.3529 4.11051 20.1213 4.87889C21 5.75757 21 7.17179 21 10.0002V12.0002M8 4.00195C5.82497 4.01406 4.64706 4.11051 3.87868 4.87889C3.11032 5.64725 3.01385 6.82511 3.00174 9"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('issue') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M7.50626 15.2647C7.61657 15.6639 8.02965 15.8982 8.4289 15.7879C8.82816 15.6776 9.06241 15.2645 8.9521 14.8652L7.50626 15.2647ZM6.07692 7.27442L6.79984 7.0747V7.0747L6.07692 7.27442ZM4.7037 5.91995L4.50319 6.64265L4.7037 5.91995ZM3.20051 4.72457C2.80138 4.61383 2.38804 4.84762 2.2773 5.24675C2.16656 5.64589 2.40035 6.05923 2.79949 6.16997L3.20051 4.72457ZM20.1886 15.7254C20.5895 15.6213 20.8301 15.2118 20.7259 14.8109C20.6217 14.41 20.2123 14.1695 19.8114 14.2737L20.1886 15.7254ZM10.1978 17.5588C10.5074 18.6795 9.82778 19.8618 8.62389 20.1747L9.00118 21.6265C10.9782 21.1127 12.1863 19.1239 11.6436 17.1594L10.1978 17.5588ZM8.62389 20.1747C7.41216 20.4896 6.19622 19.7863 5.88401 18.6562L4.43817 19.0556C4.97829 21.0107 7.03196 22.1383 9.00118 21.6265L8.62389 20.1747ZM5.88401 18.6562C5.57441 17.5355 6.254 16.3532 7.4579 16.0403L7.08061 14.5885C5.10356 15.1023 3.89544 17.0911 4.43817 19.0556L5.88401 18.6562ZM7.4579 16.0403C8.66962 15.7254 9.88556 16.4287 10.1978 17.5588L11.6436 17.1594C11.1035 15.2043 9.04982 14.0768 7.08061 14.5885L7.4579 16.0403ZM8.9521 14.8652L6.79984 7.0747L5.354 7.47414L7.50626 15.2647L8.9521 14.8652ZM4.90421 5.19725L3.20051 4.72457L2.79949 6.16997L4.50319 6.64265L4.90421 5.19725ZM6.79984 7.0747C6.54671 6.15847 5.8211 5.45164 4.90421 5.19725L4.50319 6.64265C4.92878 6.76073 5.24573 7.08223 5.354 7.47414L6.79984 7.0747ZM11.1093 18.085L20.1886 15.7254L19.8114 14.2737L10.732 16.6332L11.1093 18.085Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M19.1647 6.2358C18.6797 4.48023 18.4372 3.60244 17.7242 3.20319C17.0113 2.80394 16.1062 3.03915 14.2962 3.50955L12.3763 4.00849C10.5662 4.47889 9.66119 4.71409 9.24954 5.40562C8.8379 6.09714 9.0804 6.97492 9.56541 8.73049L10.0798 10.5926C10.5648 12.3481 10.8073 13.2259 11.5203 13.6252C12.2333 14.0244 13.1384 13.7892 14.9484 13.3188L16.8683 12.8199C18.6784 12.3495 19.5834 12.1143 19.995 11.4227C20.2212 11.0429 20.2499 10.6069 20.1495 10"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('void') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('receivable') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M12 21.25C11.5858 21.25 11.25 21.5858 11.25 22C11.25 22.4142 11.5858 22.75 12 22.75V21.25ZM4.31802 20.8284L4.81629 20.2679L4.31802 20.8284ZM19.682 20.8284L19.1837 20.2679L19.682 20.8284ZM7.95476 22.6837C8.36822 22.7087 8.72365 22.3938 8.74863 21.9804C8.77362 21.5669 8.4587 21.2115 8.04524 21.1865L7.95476 22.6837ZM2.25 12C2.25 13.8741 2.24918 15.8307 2.41875 17.4664C2.50368 18.2856 2.63401 19.0548 2.84074 19.7105C3.04411 20.3557 3.3444 20.9665 3.81975 21.389L4.81629 20.2679C4.63262 20.1046 4.43867 19.7904 4.27134 19.2596C4.10738 18.7394 3.99058 18.0818 3.91075 17.3118C3.75082 15.769 3.75 13.8971 3.75 12H2.25ZM12 22.75C14.1024 22.75 15.7464 22.7513 17.0267 22.5983C18.3204 22.4436 19.3568 22.1209 20.1803 21.389L19.1837 20.2679C18.6891 20.7075 18.0058 20.9706 16.8487 21.1089C15.6782 21.2487 14.1402 21.25 12 21.25V22.75ZM8.04524 21.1865C6.33099 21.0829 5.4315 20.8147 4.81629 20.2679L3.81975 21.389C4.83576 22.2921 6.18271 22.5767 7.95476 22.6837L8.04524 21.1865ZM20.2499 12.3873C20.2492 14.2185 20.2371 16.0032 20.0724 17.4673C19.9902 18.1982 19.8728 18.8201 19.7119 19.3117C19.548 19.8126 19.3605 20.1108 19.1837 20.2679L20.1803 21.389C20.6399 20.9804 20.9352 20.3963 21.1375 19.7783C21.3428 19.1509 21.4751 18.4171 21.563 17.635C21.7387 16.0731 21.7492 14.2032 21.7499 12.3879L20.2499 12.3873Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M14.6603 14.2019L17.664 13.3008M9.33968 14.2019L3.3324 12.3997C2.7369 12.2211 2.43915 12.1317 2.25021 11.9176C2.21341 11.8759 2.18015 11.8312 2.15078 11.784C2 11.5415 2 11.2307 2 10.6089C2 8.15877 2 6.9337 2.67298 6.10659C2.80233 5.94763 2.94763 5.80233 3.10659 5.67298C3.9337 5 5.15877 5 7.60893 5H16.3911C18.8412 5 20.0663 5 20.8934 5.67298C21.0524 5.80233 21.1977 5.94763 21.327 6.10659C22 6.9337 22 8.15877 22 10.6089C22 11.2307 22 11.5415 21.8492 11.784C21.8199 11.8312 21.7866 11.8759 21.7498 11.9176C21.5999 12.0875 21.3814 12.1789 21 12.2986"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M6.5 5C7.32344 4.97913 8.15925 4.45491 8.43944 3.68032C8.44806 3.65649 8.4569 3.62999 8.47457 3.57697L8.50023 3.5C8.54241 3.37344 8.56351 3.31014 8.58608 3.254C8.87427 2.53712 9.54961 2.05037 10.3208 2.00366C10.3812 2 10.4479 2 10.5814 2H13.4191C13.5525 2 13.6192 2 13.6796 2.00366C14.4508 2.05037 15.1262 2.53712 15.4144 3.254C15.4369 3.31014 15.458 3.37343 15.5002 3.5L15.5259 3.57697C15.5435 3.62968 15.5524 3.65656 15.561 3.68032C15.8412 4.45491 16.6766 4.97913 17.5 5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M14 12.5H10C9.72386 12.5 9.5 12.7239 9.5 13V15.1615C9.5 15.3659 9.62448 15.5498 9.8143 15.6257L10.5144 15.9058C11.4681 16.2872 12.5319 16.2872 13.4856 15.9058L14.1857 15.6257C14.3755 15.5498 14.5 15.3659 14.5 15.1615V13C14.5 12.7239 14.2761 12.5 14 12.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('report') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <rect x="4" y="12" width="3.5" height="8" rx="1" fill="currentColor" />
+                <rect x="10.25" y="7" width="3.5" height="13" rx="1" fill="currentColor" />
+                <rect x="16.5" y="3" width="3.5" height="17" rx="1" fill="currentColor" />
+              </svg>
+            }
+            @case ('portal') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M21 16C21 18.8284 21 20.2426 20.1213 21.1213C19.2426 22 17.8284 22 15 22H9C6.17157 22 4.75736 22 3.87868 21.1213C3 20.2426 3 18.8284 3 16V8C3 5.17157 3 3.75736 3.87868 2.87868C4.75736 2 6.17157 2 9 2H15C17.8284 2 19.2426 2 20.1213 2.87868C21 3.75736 21 5.17157 21 8V12"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path d="M8 2V6M8 22V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2 12H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2 16H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2 8H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M11.5 6.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M11.5 10H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            }
+            @case ('catalog') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M21.9844 10C21.9473 8.68893 21.8226 7.85305 21.4026 7.13974C20.8052 6.12523 19.7294 5.56066 17.5777 4.43152L15.5777 3.38197C13.8221 2.46066 12.9443 2 12 2C11.0557 2 10.1779 2.46066 8.42229 3.38197L6.42229 4.43152C4.27063 5.56066 3.19479 6.12523 2.5974 7.13974C2 8.15425 2 9.41667 2 11.9415V12.0585C2 14.5833 2 15.8458 2.5974 16.8603C3.19479 17.8748 4.27063 18.4393 6.42229 19.5685L8.42229 20.618C10.1779 21.5393 11.0557 22 12 22C12.9443 22 13.8221 21.5393 15.5777 20.618L17.5777 19.5685C19.7294 18.4393 20.8052 17.8748 21.4026 16.8603C21.8226 16.1469 21.9473 15.3111 21.9844 14"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M21 7.5L17 9.5M12 12L3 7.5M12 12V21.5M12 12C12 12 14.7426 10.6287 16.5 9.75C16.6953 9.65237 17 9.5 17 9.5M17 9.5V13M17 9.5L7.5 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('product') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M16.5 18.0001C17.3284 18.0001 18 18.6716 18 19.5001C18 20.3285 17.3284 21.0001 16.5 21.0001C15.6716 21.0001 15 20.3285 15 19.5001C15 18.6716 15.6716 18.0001 16.5 18.0001Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M2 3L2.26121 3.09184C3.5628 3.54945 4.2136 3.77826 4.58584 4.32298C4.95808 4.86771 4.95808 5.59126 4.95808 7.03836V9.76C4.95808 12.7016 5.02132 13.6723 5.88772 14.5862C6.75412 15.5 8.14857 15.5 10.9375 15.5H12M16.2404 15.5C17.8014 15.5 18.5819 15.5 19.1336 15.0504C19.6853 14.6008 19.8429 13.8364 20.158 12.3075L20.6578 9.88275C21.0049 8.14369 21.1784 7.27417 20.7345 6.69708C20.2906 6.12 18.7738 6.12 17.0888 6.12H11.0235M4.95808 6.12H7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('company') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M21 22V13M11.0044 5C11.0223 3.76022 11.1143 3.05733 11.5858 2.58579C12.1716 2 13.1144 2 15 2H17C18.8857 2 19.8285 2 20.4143 2.58579C21 3.17157 21 4.11438 21 6V9"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M15 22V16M3 22V13M3 9C3 7.11438 3 6.17157 3.58579 5.58579C4.17157 5 5.11438 5 7 5H11C12.8856 5 13.8284 5 14.4142 5.58579C15 6.17157 15 7.11438 15 9V12"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path d="M9 22V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M6 8H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M6 11H7M12 11H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M6 14H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            }
+            @case ('client') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path
+                  d="M17 22V6C17 4.11438 17 3.17157 16.4142 2.58579C15.8284 2 14.8856 2 13 2H11C9.11438 2 8.17157 2 7.58579 2.58579C7 3.17157 7 4.11438 7 6V22"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M20.25 11.5C20.25 11.9142 20.5858 12.25 21 12.25C21.4142 12.25 21.75 11.9142 21.75 11.5H20.25ZM20.1111 8.33706L19.6945 8.96066L19.6945 8.96066L20.1111 8.33706ZM20.6629 8.88886L20.0393 9.30554L20.0393 9.30554L20.6629 8.88886ZM21.75 15.5C21.75 15.0858 21.4142 14.75 21 14.75C20.5858 14.75 20.25 15.0858 20.25 15.5H21.75ZM17.5 8.75C18.2178 8.75 18.6998 8.75091 19.0672 8.78828C19.422 8.82438 19.586 8.8882 19.6945 8.96066L20.5278 7.71346C20.1318 7.44886 19.6925 7.34415 19.219 7.29598C18.758 7.24909 18.1866 7.25 17.5 7.25V8.75ZM21.75 11.5C21.75 10.8134 21.7509 10.242 21.704 9.78102C21.6559 9.30755 21.5511 8.86818 21.2865 8.47218L20.0393 9.30554C20.1118 9.41399 20.1756 9.57796 20.2117 9.93283C20.2491 10.3002 20.25 10.7822 20.25 11.5H21.75ZM19.6945 8.96066C19.831 9.05186 19.9481 9.16905 20.0393 9.30554L21.2865 8.47218C21.0859 8.17191 20.8281 7.91409 20.5278 7.71346L19.6945 8.96066ZM20.25 15.5V22H21.75V15.5H20.25Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M3.88886 8.33706L4.30554 8.96066L4.30554 8.96066L3.88886 8.33706ZM3.33706 8.88886L3.96066 9.30554L3.96066 9.30554L3.33706 8.88886ZM3.75 20C3.75 19.5858 3.41421 19.25 3 19.25C2.58579 19.25 2.25 19.5858 2.25 20H3.75ZM2.25 16C2.25 16.4142 2.58579 16.75 3 16.75C3.41421 16.75 3.75 16.4142 3.75 16H2.25ZM6.5 7.25C5.81338 7.25 5.24196 7.24909 4.78102 7.29598C4.30755 7.34415 3.86818 7.44886 3.47218 7.71346L4.30554 8.96066C4.41399 8.8882 4.57796 8.82438 4.93283 8.78828C5.30023 8.75091 5.78216 8.75 6.5 8.75V7.25ZM3.75 11.5C3.75 10.7822 3.75091 10.3002 3.78828 9.93283C3.82438 9.57796 3.8882 9.41399 3.96066 9.30554L2.71346 8.47218C2.44886 8.86818 2.34415 9.30755 2.29598 9.78102C2.24909 10.242 2.25 10.8134 2.25 11.5H3.75ZM3.47218 7.71346C3.17191 7.91409 2.91409 8.17191 2.71346 8.47218L3.96066 9.30554C4.05186 9.16905 4.16905 9.05186 4.30554 8.96066L3.47218 7.71346ZM2.25 20V22H3.75V20H2.25ZM2.25 11.5V16H3.75V11.5H2.25Z"
+                  fill="currentColor"
+                />
+                <path d="M12 22V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 5H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 14H10.5M14 14H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M14 8H13.5M10 8H11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 11H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            }
+            @case ('transfer') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M20 19L20.5303 19.5303C20.8232 19.2374 20.8232 18.7626 20.5303 18.4697L20 19ZM8 4.25C7.58579 4.25 7.25 4.58579 7.25 5C7.25 5.41421 7.58579 5.75 8 5.75V4.25ZM18.5303 16.4697C18.2374 16.1768 17.7626 16.1768 17.4697 16.4697C17.1768 16.7626 17.1768 17.2374 17.4697 17.5303L18.5303 16.4697ZM17.4697 20.4697C17.1768 20.7626 17.1768 21.2374 17.4697 21.5303C17.7626 21.8232 18.2374 21.8232 18.5303 21.5303L17.4697 20.4697ZM13.75 18.25C13.3358 18.25 13 18.5858 13 19C13 19.4142 13.3358 19.75 13.75 19.75V18.25ZM10 19.75C10.4142 19.75 10.75 19.4142 10.75 19C10.75 18.5858 10.4142 18.25 10 18.25V19.75ZM11 5.75C11.4142 5.75 11.75 5.41421 11.75 5C11.75 4.58579 11.4142 4.25 11 4.25V5.75ZM15 4.25C14.5858 4.25 14.25 4.58579 14.25 5C14.25 5.41421 14.5858 5.75 15 5.75V4.25ZM7.5 12.75H16.5V11.25H7.5V12.75ZM20.5303 18.4697L18.5303 16.4697L17.4697 17.5303L19.4697 19.5303L20.5303 18.4697ZM19.4697 18.4697L17.4697 20.4697L18.5303 21.5303L20.5303 19.5303L19.4697 18.4697ZM20.75 8.5C20.75 6.15279 18.8472 4.25 16.5 4.25V5.75C18.0188 5.75 19.25 6.98122 19.25 8.5H20.75ZM16.5 12.75C18.8472 12.75 20.75 10.8472 20.75 8.5H19.25C19.25 10.0188 18.0188 11.25 16.5 11.25V12.75ZM4.75 15.5C4.75 13.9812 5.98122 12.75 7.5 12.75V11.25C5.15279 11.25 3.25 13.1528 3.25 15.5H4.75ZM7.5 18.25C5.98122 18.25 4.75 17.0188 4.75 15.5H3.25C3.25 17.8472 5.15279 19.75 7.5 19.75V18.25ZM20 18.25H13.75V19.75H20V18.25ZM10 18.25H7.5V19.75H10V18.25ZM11 4.25H8V5.75H11V4.25ZM16.5 4.25H15V5.75H16.5V4.25Z"
+                  fill="currentColor"
+                />
+                <circle cx="6" cy="5" r="2" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            }
+            @case ('district') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M12.5 7.04148C12.3374 7.0142 12.1704 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13C13.6569 13 15 11.6569 15 10C15 9.82964 14.9858 9.6626 14.9585 9.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M5 15.2161C4.35254 13.5622 4 11.8013 4 10.1433C4 5.64588 7.58172 2 12 2C16.4183 2 20 5.64588 20 10.1433C20 14.6055 17.4467 19.8124 13.4629 21.6744C12.5343 22.1085 11.4657 22.1085 10.5371 21.6744C9.26474 21.0797 8.13831 20.1439 7.19438 19"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('church') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M4.97883 6.31492C2.99294 7.10927 2 7.50645 2 8C2 8.49355 2.99294 8.89073 4.97883 9.68508L7.7873 10.8085C9.77318 11.6028 10.7661 12 12 12C13.2339 12 14.2268 11.6028 16.2127 10.8085L19.0212 9.68508C21.0071 8.89073 22 8.49355 22 8C22 7.50645 21.0071 7.10927 19.0212 6.31492L16.2127 5.19153C14.2268 4.39718 13.2339 4 12 4C11.0461 4 10.2361 4.2374 9 4.71221"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M5.76613 10L4.97883 10.3149C2.99294 11.1093 2 11.5065 2 12C2 12.4935 2.99294 12.8907 4.97883 13.6851L7.7873 14.8085C9.77318 15.6028 10.7661 16 12 16C13.2339 16 14.2268 15.6028 16.2127 14.8085L19.0212 13.6851C21.0071 12.8907 22 12.4935 22 12C22 11.5065 21.0071 11.1093 19.0212 10.3149L18.2339 10"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M19.0212 17.6851C21.0071 16.8907 22 16.4935 22 16C22 15.5065 21.0071 15.1093 19.0212 14.3149L18.2339 14M5.76613 14L4.97883 14.3149C2.99294 15.1093 2 15.5065 2 16C2 16.4935 2.99294 16.8907 4.97883 17.6851L7.7873 18.8085C9.77318 19.6028 10.7661 20 12 20C12.9539 20 13.7639 19.7626 15 19.2878"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            }
+            @case ('admin') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path
+                  d="M18.9771 5.02291L19.5074 4.49258V4.49258L18.9771 5.02291ZM18.9771 14.7904L19.5074 15.3207L18.9771 14.7904ZM7.14558 12.6684L6.61525 12.138L6.61525 12.138L7.14558 12.6684ZM3.43349 16.3804L3.96382 16.9108L3.96382 16.9108L3.43349 16.3804ZM7.61956 20.5665L7.08923 20.0362L7.08923 20.0362L7.61956 20.5665ZM11.3319 16.8541L10.8016 16.3238L11.3319 16.8541ZM3.00906 17.5904L2.26365 17.6732L3.00906 17.5904ZM3.24113 19.679L2.49572 19.7618L2.49572 19.7618L3.24113 19.679ZM4.32101 20.7589L4.23819 21.5043H4.23819L4.32101 20.7589ZM6.4096 20.9909L6.49242 20.2455H6.49242L6.4096 20.9909ZM3.52408 20.2677L4.05441 19.7374L4.05441 19.7374L3.52408 20.2677ZM3.73229 20.4759L3.20196 21.0062L3.20196 21.0063L3.73229 20.4759ZM7.40432 11.6311L6.67789 11.8177H6.67789L7.40432 11.6311ZM12.3689 16.5957L12.1823 17.3221L12.3689 16.5957ZM7.63832 17.063C7.34382 16.7717 6.86895 16.7743 6.57767 17.0688C6.2864 17.3633 6.28901 17.8382 6.58351 18.1294L7.63832 17.063ZM20.0119 8.20635C20.1258 8.60458 20.5411 8.83502 20.9393 8.72105C21.3375 8.60709 21.5679 8.19187 21.454 7.79365L20.0119 8.20635ZM21.3916 12.2267C21.5167 11.8318 21.2981 11.4103 20.9033 11.2851C20.5085 11.1599 20.0869 11.3785 19.9617 11.7733L21.3916 12.2267ZM13.1161 10.8839C12.628 10.3957 12.628 9.60427 13.1161 9.11612L12.0555 8.05546C10.9815 9.1294 10.9815 10.8706 12.0555 11.9445L13.1161 10.8839ZM14.8839 10.8839C14.3957 11.372 13.6043 11.372 13.1161 10.8839L12.0555 11.9445C13.1294 13.0185 14.8706 13.0185 15.9445 11.9445L14.8839 10.8839ZM14.8839 9.11612C15.372 9.60427 15.372 10.3957 14.8839 10.8839L15.9445 11.9445C17.0185 10.8706 17.0185 9.1294 15.9445 8.05546L14.8839 9.11612ZM15.9445 8.05546C14.8706 6.98151 13.1294 6.98151 12.0555 8.05546L13.1161 9.11612C13.6043 8.62796 14.3957 8.62796 14.8839 9.11612L15.9445 8.05546ZM19.5074 4.49258C16.5173 1.50247 11.6694 1.50247 8.67928 4.49258L9.73994 5.55324C12.1443 3.14892 16.0424 3.14892 18.4468 5.55324L19.5074 4.49258ZM6.61525 12.138L2.90316 15.8501L3.96382 16.9108L7.67591 13.1987L6.61525 12.138ZM8.14989 21.0968L9.39029 19.8564L8.32963 18.7958L7.08923 20.0362L8.14989 21.0968ZM9.39029 19.8564L11.8623 17.3845L10.8016 16.3238L8.32963 18.7958L9.39029 19.8564ZM2.26365 17.6732L2.49572 19.7618L3.98654 19.5962L3.75447 17.5076L2.26365 17.6732ZM4.23819 21.5043L6.32678 21.7364L6.49242 20.2455L4.40384 20.0135L4.23819 21.5043ZM2.99375 20.798L3.20196 21.0062L4.26263 19.9456L4.05441 19.7374L2.99375 20.798ZM4.40384 20.0135C4.35042 20.0075 4.30062 19.9836 4.26262 19.9456L3.20196 21.0063C3.48081 21.2851 3.84626 21.4607 4.23819 21.5043L4.40384 20.0135ZM2.49572 19.7618C2.53926 20.1537 2.7149 20.5192 2.99375 20.798L4.05441 19.7374C4.01641 19.6994 3.99248 19.6496 3.98654 19.5962L2.49572 19.7618ZM7.08923 20.0362C6.93242 20.193 6.71283 20.27 6.49242 20.2455L6.32678 21.7364C7.00007 21.8112 7.67087 21.5759 8.14989 21.0968L7.08923 20.0362ZM2.90316 15.8501C2.42414 16.3291 2.18884 16.9999 2.26365 17.6732L3.75447 17.5076C3.72999 17.2872 3.80701 17.0676 3.96382 16.9108L2.90316 15.8501ZM8.13075 11.4446C7.60655 9.4033 8.14412 7.14906 9.73994 5.55324L8.67928 4.49258C6.69321 6.47865 6.02725 9.28401 6.67789 11.8177L8.13075 11.4446ZM18.4468 14.2601C16.8509 15.8559 14.5967 16.3934 12.5554 15.8693L12.1823 17.3221C14.716 17.9728 17.5214 17.3068 19.5074 15.3207L18.4468 14.2601ZM11.8623 17.3845C11.9181 17.3287 12.0324 17.2836 12.1823 17.3221L12.5554 15.8693C11.9675 15.7183 11.2845 15.8409 10.8016 16.3238L11.8623 17.3845ZM7.67591 13.1987C8.15857 12.716 8.28182 12.0329 8.13075 11.4446L6.67789 11.8177C6.7163 11.9672 6.67127 12.082 6.61525 12.138L7.67591 13.1987ZM9.38736 18.7929L7.63832 17.063L6.58351 18.1294L8.33255 19.8593L9.38736 18.7929ZM18.4468 5.55324C19.213 6.3195 19.734 7.23555 20.0119 8.20635L21.454 7.79365C21.1079 6.58425 20.4583 5.4435 19.5074 4.49258L18.4468 5.55324ZM19.9617 11.7733C19.6735 12.6821 19.1692 13.5376 18.4468 14.2601L19.5074 15.3207C20.4038 14.4244 21.0325 13.3592 21.3916 12.2267L19.9617 11.7733Z"
+                  fill="currentColor"
+                />
+              </svg>
+            }
+            @case ('settings') {
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0">
+                <path d="M4 7H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M17 7H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="15.5" cy="7" r="1.5" stroke="currentColor" stroke-width="1.5" />
+                <path d="M4 12H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M13 12H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="11.5" cy="12" r="1.5" stroke="currentColor" stroke-width="1.5" />
+                <path d="M4 17H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 17H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="8.5" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            }
+            @default {
+              <span class="block size-2 shrink-0 rounded-full bg-current"></span>
+            }
+          }
+
+          @if (!isCollapsed) {
+            <span class="flex-1">{{ displayName(item) }}</span>
+          }
+
+        </a>
+        </app-tooltip>
+      }
+    }
+  </nav>
+
+  <div class="shrink-0 border-t border-border p-2">
+    <button
+      type="button"
+      class="flex w-full items-center gap-2 rounded-md p-2 text-left transition-colors hover:bg-background"
+      [class.justify-center]="isCollapsed"
+      (click)="toggleAccountMenu()"
+    >
+      <span
+        class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground"
+      >
+        {{ initials() }}
+      </span>
+
+      @if (!isCollapsed) {
+        <span class="flex min-w-0 flex-1 flex-col">
+          <span class="truncate text-sm font-medium text-foreground">{{ username() }}</span>
+          <span class="truncate text-xs text-muted-foreground">{{ email() }}</span>
+        </span>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4 shrink-0 text-muted-foreground transition-transform"
+          [class.rotate-180]="accountMenuOpen()"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      }
+    </button>
+
+    @if (accountMenuOpen() && !isCollapsed) {
+      <div class="mt-2 flex flex-col gap-2 rounded-md border border-border bg-background p-2">
+        @if (roleOptions().length > 1) {
+          <app-select
+            [options]="roleOptions()"
+            [ngModel]="authService.activeRole()"
+            [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="onRoleChange($event)"
+          />
+        }
+
+        <div class="flex items-center justify-between gap-2 px-1">
+          <app-language-switcher />
+          <app-theme-toggle />
+        </div>
+
+        <button
+          type="button"
+          class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-danger transition-colors hover:bg-surface"
+          (click)="onLogout()"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-4 shrink-0 -scale-x-100"
+          >
+            <path
+              d="M2.00098 11.999L16.001 11.999M16.001 11.999L12.501 8.99902M16.001 11.999L12.501 14.999"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M9.00195 7C9.01406 4.82497 9.11051 3.64706 9.87889 2.87868C10.7576 2 12.1718 2 15.0002 2L16.0002 2C18.8286 2 20.2429 2 21.1215 2.87868C22.0002 3.75736 22.0002 5.17157 22.0002 8L22.0002 16C22.0002 18.8284 22.0002 20.2426 21.1215 21.1213C20.3531 21.8897 19.1752 21.9862 17 21.9983M9.00195 17C9.01406 19.175 9.11051 20.3529 9.87889 21.1213C10.5202 21.7626 11.4467 21.9359 13 21.9827"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+          {{ 'common.logout' | translate }}
+        </button>
+      </div>
+    }
+  </div>
+</ng-template>
+
+<div class="flex h-screen w-full overflow-hidden bg-background">
+  <aside
+    class="hidden shrink-0 flex-col overflow-hidden border-r border-border bg-surface transition-[width] duration-200 md:flex"
+    [class.w-64]="!collapsed()"
+    [class.w-20]="collapsed()"
+  >
+    <ng-container [ngTemplateOutlet]="sidebarContent" [ngTemplateOutletContext]="{ forceExpanded: false }" />
+  </aside>
+
+  <div class="flex min-h-0 min-w-0 flex-1 flex-col">
+    <header
+      class="flex shrink-0 items-center justify-between border-b border-border bg-surface px-4 py-3 md:hidden"
+    >
+      <button
+        type="button"
+        class="flex size-8 flex-col items-center justify-center gap-1"
+        aria-label="Abrir menú"
+        (click)="mobileNavOpen.set(true)"
+      >
+        <span class="h-0.5 w-5 rounded-full bg-foreground"></span>
+        <span class="h-0.5 w-5 rounded-full bg-foreground"></span>
+        <span class="h-0.5 w-5 rounded-full bg-foreground"></span>
+      </button>
+
+      <img [src]="logoSrc()" alt="InvenTrack" class="h-6 w-auto" />
+
+      <span class="size-8"></span>
+    </header>
+
+    @if (mobileNavOpen()) {
+      <div class="fixed inset-0 z-40 flex md:hidden">
+        <div class="absolute inset-0 bg-brand-900/60" (click)="mobileNavOpen.set(false)"></div>
+
+        <aside class="relative z-10 flex w-64 flex-col overflow-hidden bg-surface pt-4 shadow-2xl">
+          <button
+            type="button"
+            class="absolute top-4 right-4 text-foreground"
+            aria-label="Cerrar menú"
+            (click)="mobileNavOpen.set(false)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-6">
+              <path
+                d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+
+          <ng-container [ngTemplateOutlet]="sidebarContent" [ngTemplateOutletContext]="{ forceExpanded: true }" />
+        </aside>
+      </div>
+    }
+
+    <main class="min-h-0 flex-1 overflow-y-auto p-6">
+      <router-outlet />
+    </main>
+  </div>
+</div>
