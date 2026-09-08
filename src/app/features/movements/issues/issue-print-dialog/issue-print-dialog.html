@@ -1,0 +1,16 @@
+<app-dialog
+  [title]="'issues.printDialog.title' | translate"
+  [saveLabel]="'issues.printDialog.confirm' | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <app-select
+      formControlName="printTypeId"
+      [label]="'issues.printDialog.printType' | translate"
+      [options]="printTypeOptions()"
+      [required]="true"
+    />
+  </form>
+</app-dialog>

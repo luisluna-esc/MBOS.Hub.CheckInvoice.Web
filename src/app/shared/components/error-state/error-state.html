@@ -1,0 +1,17 @@
+<div class="flex h-full w-full flex-col items-center justify-center gap-3 p-8 text-center">
+  <p class="text-6xl font-bold text-primary">{{ code() }}</p>
+  <h2 class="text-xl font-semibold text-foreground">{{ title() ?? (defaultTitleKey() | translate) }}</h2>
+  <p class="max-w-sm text-sm text-muted-foreground">
+    {{ description() ?? (defaultDescriptionKey() | translate) }}
+  </p>
+
+  @if (actionLabel()) {
+    <button
+      type="button"
+      class="mt-2 rounded-full bg-primary px-8 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+      (click)="action.emit()"
+    >
+      {{ actionLabel() }}
+    </button>
+  }
+</div>

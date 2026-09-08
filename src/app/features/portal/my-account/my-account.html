@@ -1,0 +1,129 @@
+<div class="flex flex-col gap-6">
+  <h1 class="text-xl font-semibold text-foreground">{{ 'portal.myAccount.title' | translate }}</h1>
+
+  @if (errorCode()) {
+    <div class="rounded-lg border border-border">
+      <app-error-state [code]="errorCode()!" />
+    </div>
+  } @else {
+    <div class="flex gap-1 border-b border-border" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="border-b-2 px-3 py-2 text-sm font-medium transition-colors"
+        [class.border-primary]="activeTab() === 'receivables'"
+        [class.text-primary]="activeTab() === 'receivables'"
+        [class.border-transparent]="activeTab() !== 'receivables'"
+        [class.text-muted-foreground]="activeTab() !== 'receivables'"
+        (click)="setActiveTab('receivables')"
+      >
+        {{ 'portal.myAccount.section1' | translate }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="border-b-2 px-3 py-2 text-sm font-medium transition-colors"
+        [class.border-primary]="activeTab() === 'payments'"
+        [class.text-primary]="activeTab() === 'payments'"
+        [class.border-transparent]="activeTab() !== 'payments'"
+        [class.text-muted-foreground]="activeTab() !== 'payments'"
+        (click)="setActiveTab('payments')"
+      >
+        {{ 'portal.myAccount.payments' | translate }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="border-b-2 px-3 py-2 text-sm font-medium transition-colors"
+        [class.border-primary]="activeTab() === 'issues'"
+        [class.text-primary]="activeTab() === 'issues'"
+        [class.border-transparent]="activeTab() !== 'issues'"
+        [class.text-muted-foreground]="activeTab() !== 'issues'"
+        (click)="setActiveTab('issues')"
+      >
+        {{ 'portal.myAccount.deliveries' | translate }}
+      </button>
+    </div>
+
+    @switch (activeTab()) {
+      @case ('receivables') {
+        <section class="flex flex-col gap-3">
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="rounded-md border border-border p-4">
+              <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.totalOutstanding' | translate }}</span>
+              <p class="text-2xl font-semibold text-foreground">{{ totalOutstanding().toFixed(2) }}</p>
+            </div>
+            <div class="rounded-md border border-border p-4">
+              <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.pendingCount' | translate }}</span>
+              <p class="text-2xl font-semibold text-foreground">{{ pendingCount() }}</p>
+            </div>
+          </div>
+
+          <app-filters
+            [fields]="receivablesFilterFields()"
+            (search)="onReceivablesFilterSearch($event)"
+            (clear)="onReceivablesFilterClear()"
+          />
+
+          <app-table
+            [columns]="receivableColumns()"
+            [rows]="pagedReceivables()"
+            [actions]="receivableActions()"
+            [emptyMessage]="'table.empty' | translate"
+            [loading]="loading()"
+            [totalRecords]="filteredReceivables().length"
+            [pageNumber]="receivablesPageNumber()"
+            [pageSize]="receivablesPageSize()"
+            (pageChange)="onReceivablesPageChange($event)"
+            (pageSizeChange)="onReceivablesPageSizeChange($event)"
+          />
+        </section>
+      }
+      @case ('payments') {
+        <section class="flex flex-col gap-3">
+          <app-filters
+            [fields]="paymentsFilterFields()"
+            (search)="onPaymentsFilterSearch($event)"
+            (clear)="onPaymentsFilterClear()"
+          />
+
+          <app-table
+            [columns]="paymentColumns()"
+            [rows]="pagedPayments()"
+            [actions]="paymentActions()"
+            [emptyMessage]="'table.empty' | translate"
+            [loading]="loading()"
+            [totalRecords]="filteredPayments().length"
+            [pageNumber]="paymentsPageNumber()"
+            [pageSize]="paymentsPageSize()"
+            (pageChange)="onPaymentsPageChange($event)"
+            (pageSizeChange)="onPaymentsPageSizeChange($event)"
+          />
+        </section>
+      }
+      @case ('issues') {
+        <section class="flex flex-col gap-3">
+          <div class="rounded-md border border-border p-4 sm:w-fit">
+            <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.deliveryCount' | translate }}</span>
+            <p class="text-2xl font-semibold text-foreground">{{ deliveryCount() }}</p>
+          </div>
+
+          <app-filters [fields]="dateRangeFields()" (search)="onDateRangeSearch($event)" (clear)="onDateRangeClear()" />
+
+          <app-table
+            [columns]="issueColumns()"
+            [rows]="pagedIssues()"
+            [actions]="issueActions()"
+            [emptyMessage]="'table.empty' | translate"
+            [loading]="loading()"
+            [totalRecords]="issues().length"
+            [pageNumber]="issuesPageNumber()"
+            [pageSize]="issuesPageSize()"
+            (pageChange)="onIssuesPageChange($event)"
+            (pageSizeChange)="onIssuesPageSizeChange($event)"
+          />
+        </section>
+      }
+    }
+  }
+</div>

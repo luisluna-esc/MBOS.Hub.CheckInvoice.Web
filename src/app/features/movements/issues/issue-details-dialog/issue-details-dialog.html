@@ -1,0 +1,28 @@
+<app-dialog
+  [title]="'issues.details.title' | translate"
+  [saveLabel]="'dialog.close' | translate"
+  [saveDisabled]="false"
+  [showCancel]="false"
+  (save)="close()"
+  (cancel)="close()"
+>
+  @if (loading()) {
+    <p class="text-sm text-muted-foreground">{{ 'issues.details.loading' | translate }}</p>
+  } @else if (lines().length === 0) {
+    <p class="text-sm text-muted-foreground">{{ 'issues.details.empty' | translate }}</p>
+  } @else {
+    <div class="flex flex-col gap-2">
+      @for (line of lines(); track line.issueDetailId) {
+        <div class="flex flex-col gap-1 rounded-md border border-border p-3 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-foreground">{{ productName(line.productId) }}</span>
+            <span class="text-muted-foreground">{{ line.quantity }} × {{ line.unitCost }}</span>
+          </div>
+          <div class="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{{ 'issues.details.total' | translate }}: {{ line.totalCost }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</app-dialog>

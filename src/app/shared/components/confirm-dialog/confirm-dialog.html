@@ -1,0 +1,9 @@
+<app-dialog
+  [title]="data.title"
+  [saveLabel]="data.confirmLabel ?? ('dialog.confirm' | translate)"
+  [saveDisabled]="false"
+  (save)="confirm()"
+  (cancel)="cancel()"
+>
+  <p class="text-sm text-foreground">{{ data.message }}</p>
+</app-dialog>

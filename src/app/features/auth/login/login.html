@@ -1,0 +1,69 @@
+<!-- Clase "dark" fija a propósito: el login ya no cambia de claro a oscuro, siempre es
+     este mismo panel de vidrio oscuro — y como los tokens de color (--color-foreground,
+     --color-surface, etc.) son variables CSS que .dark redefine en cualquier ancestro (no
+     solo en <html>), esto fuerza que app-input/el botón usen sus tonos oscuros aquí sin
+     tocar el tema del resto de la app ni el componente compartido. Encima, --color-surface
+     y --color-border se sobreescriben a un azul de marca translúcido (en vez del gris casi
+     negro que trae .dark) para que los inputs se vean del mismo vidrio azul que el resto del
+     login, no en negro. -->
+<div
+  class="dark relative isolate flex min-h-screen w-full items-center justify-center overflow-hidden p-4 md:p-10"
+  style="
+    background: linear-gradient(135deg, var(--color-brand-900) 0%, var(--color-brand-700) 45%, var(--color-brand-500) 75%, var(--color-brand-400) 100%);
+    --color-surface: color-mix(in srgb, var(--color-brand-400) 35%, transparent);
+    --color-border: color-mix(in srgb, var(--color-brand-300) 45%, transparent);
+  "
+>
+  <!-- Manchas borrosas de color, en nuestra propia paleta de marca, para simular el fondo
+       "foto desenfocada" del ejemplo — el panel de abajo usa backdrop-blur, así que necesita
+       algo con variación de color detrás para que el efecto de vidrio esmerilado se note. -->
+  <div class="pointer-events-none absolute -top-32 -left-24 size-96 rounded-full bg-brand-300/40 blur-3xl"></div>
+  <div class="pointer-events-none absolute top-1/3 -right-20 size-[26rem] rounded-full bg-brand-400/30 blur-3xl"></div>
+  <div class="pointer-events-none absolute -bottom-40 left-1/4 size-[30rem] rounded-full bg-brand-600/40 blur-3xl"></div>
+
+  <div class="relative z-10 grid w-full max-w-5xl grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
+    <div class="hidden flex-col gap-6 text-center md:flex md:text-left">
+      <img src="img/MBOS-BLANCO.png" alt="MBOS" class="h-16 w-auto self-center md:self-start" />
+      <div class="flex flex-col gap-4">
+        <h1 class="text-4xl leading-tight font-bold text-white md:text-5xl">
+          {{ 'login.welcomeTitle' | translate }}
+        </h1>
+        <p class="max-w-sm text-base text-white/70 md:mx-0">
+          {{ 'login.welcomeDescription' | translate }}
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="mx-auto flex w-full max-w-md flex-col gap-3 rounded-3xl border border-white/15 bg-brand-900/40 p-6 shadow-2xl backdrop-blur-2xl md:p-10"
+    >
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex w-full flex-col gap-3">
+        <img src="img/inven-track-blanco.png" alt="InvenTrack" class="h-12 w-auto self-center md:h-16" />
+
+        <h2 class="mb-1 w-full text-center text-xl font-semibold text-white md:text-left">
+          {{ 'login.title' | translate }}
+        </h2>
+
+        <app-input
+          formControlName="usernameOrEmail"
+          [label]="'login.usernameOrEmail' | translate"
+          [required]="true"
+        />
+        <app-input
+          formControlName="password"
+          type="password"
+          [label]="'login.password' | translate"
+          [required]="true"
+        />
+
+        <button
+          type="submit"
+          class="mt-2 self-center rounded-full bg-primary px-10 py-2.5 text-sm font-medium text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="formInvalid() || loading()"
+        >
+          {{ 'login.submit' | translate }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

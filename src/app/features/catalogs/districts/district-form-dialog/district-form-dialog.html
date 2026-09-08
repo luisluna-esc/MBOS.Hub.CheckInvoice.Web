@@ -1,0 +1,31 @@
+<app-dialog
+  [title]="(isEdit ? 'districts.form.editTitle' : 'districts.form.newTitle') | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    @if (isEdit) {
+      <div class="flex flex-col gap-1">
+        <span class="text-sm font-medium text-foreground">{{ 'districts.form.code' | translate }}</span>
+        <span class="text-sm text-muted-foreground">{{ districtCode }}</span>
+      </div>
+    }
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <app-input formControlName="districtName" [label]="'districts.form.name' | translate" [required]="true" [maxLength]="150" />
+      <app-select
+        formControlName="missionId"
+        [label]="'districts.form.mission' | translate"
+        [options]="missionOptions()"
+      />
+      <app-select
+        formControlName="provinceId"
+        [label]="'districts.form.province' | translate"
+        [options]="provinceOptions()"
+      />
+    </div>
+
+    <app-checkbox formControlName="isActive">{{ 'districts.form.isActive' | translate }}</app-checkbox>
+  </form>
+</app-dialog>

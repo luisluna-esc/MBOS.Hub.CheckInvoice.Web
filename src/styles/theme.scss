@@ -1,0 +1,50 @@
+@theme {
+  /* Tipografía del sistema — se controla solo desde aquí, no hay toggle de UI */
+  --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+
+  /* Escala de marca, de más claro (100) a más oscuro (900) */
+  --color-brand-100: #dedee6;
+  --color-brand-200: #cecece;
+  --color-brand-300: #7c8594;
+  --color-brand-400: #2e4566;
+  --color-brand-500: #1d3456;
+  --color-brand-600: #152c4c;
+  --color-brand-700: #12253f;
+  --color-brand-800: #091c38;
+  --color-brand-900: #061930;
+
+  /* Tokens semánticos — valores por defecto (modo claro). Antes usaban una escala "slate"
+     aparte, sin relación con la marca; ahora salen de la misma escala brand-* que usa el
+     login, para que el modo claro se vea de la misma familia de color en vez de gris
+     genérico — background/surface son tintes muy claros de brand-100, primary es el mismo
+     azul intermedio del degradado del login (brand-500). */
+  --color-background: color-mix(in srgb, var(--color-brand-100) 35%, white);
+  --color-surface: var(--color-brand-100);
+  --color-foreground: var(--color-brand-900);
+  --color-muted-foreground: var(--color-brand-400);
+  --color-border: var(--color-brand-300);
+  --color-primary: var(--color-brand-500);
+  --color-primary-foreground: #ffffff;
+
+  /* Excepción: color fuera de la paleta, solo para errores de validación de formularios */
+  --color-danger: #b91c1c;
+
+  /* Escala exclusiva para modo oscuro, de más claro (100) a más oscuro (500) */
+  --color-dark-100: #e0e0e0;
+  --color-dark-200: #bfbfbf;
+  --color-dark-300: #353a3e;
+  --color-dark-400: #222526;
+  --color-dark-500: #1a1a1a;
+}
+
+/* Modo oscuro: se activa con la clase .dark en <html> (controlada por ThemeService) */
+.dark {
+  --color-background: var(--color-dark-500);
+  --color-surface: var(--color-dark-400);
+  --color-foreground: var(--color-dark-100);
+  --color-muted-foreground: var(--color-dark-200);
+  --color-border: var(--color-dark-300);
+  --color-primary: var(--color-dark-300);
+  --color-primary-foreground: var(--color-dark-100);
+  --color-danger: #f87171;
+}

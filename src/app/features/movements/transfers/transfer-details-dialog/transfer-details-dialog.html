@@ -1,0 +1,35 @@
+<app-dialog
+  [title]="'transfers.details.title' | translate"
+  [saveLabel]="'dialog.close' | translate"
+  [saveDisabled]="false"
+  [showCancel]="false"
+  (save)="close()"
+  (cancel)="close()"
+>
+  @if (showPendingNotice) {
+    <div class="mb-3 rounded-md border border-border bg-background p-3 text-xs text-muted-foreground">
+      {{ 'transfers.details.pendingNotice' | translate }}
+    </div>
+  }
+  @if (loading()) {
+    <p class="text-sm text-muted-foreground">{{ 'transfers.details.loading' | translate }}</p>
+  } @else if (lines().length === 0) {
+    <p class="text-sm text-muted-foreground">{{ 'transfers.details.empty' | translate }}</p>
+  } @else {
+    <div class="flex flex-col gap-2">
+      @for (line of lines(); track line.transferDetailId) {
+        <div class="flex flex-col gap-1 rounded-md border border-border p-3 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-foreground">{{ productName(line.productId) }}</span>
+            <span class="text-muted-foreground">{{ line.quantity }}{{ line.unitPrice != null ? ' × ' + line.unitPrice : '' }}</span>
+          </div>
+          @if (line.totalSalePrice != null) {
+            <div class="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{{ 'transfers.details.total' | translate }}: {{ line.totalSalePrice }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</app-dialog>

@@ -1,0 +1,18 @@
+<app-dialog
+  [title]="(isReject ? 'receiptVoidRequests.review.rejectTitle' : 'receiptVoidRequests.review.approveTitle') | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <p class="text-sm text-foreground">
+      {{ (isReject ? 'receiptVoidRequests.review.rejectHint' : 'receiptVoidRequests.review.approveHint') | translate }}
+    </p>
+    <app-input
+      formControlName="reviewNotes"
+      [label]="(isReject ? 'receiptVoidRequests.review.notesRequired' : 'receiptVoidRequests.review.notesOptional') | translate"
+      [required]="isReject"
+      [maxLength]="255"
+    />
+  </form>
+</app-dialog>

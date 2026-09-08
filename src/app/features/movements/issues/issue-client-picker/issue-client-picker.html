@@ -1,0 +1,47 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+        [attr.aria-label]="'dialog.cancel' | translate"
+        (click)="onCancel()"
+      >
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+          <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+      <h1 class="text-xl font-semibold text-foreground">{{ 'issues.clientPicker.title' | translate }}</h1>
+    </div>
+    <button
+      type="button"
+      class="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+      (click)="createClient()"
+    >
+      {{ 'issues.clientPicker.createClient' | translate }}
+    </button>
+  </div>
+
+  <p class="text-sm text-muted-foreground">{{ 'issues.clientPicker.description' | translate }}</p>
+
+  <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
+
+  @if (errorCode()) {
+    <div class="rounded-lg border border-border">
+      <app-error-state [code]="errorCode()!" />
+    </div>
+  } @else {
+    <app-table
+      [columns]="columns()"
+      [rows]="rows()"
+      [actions]="actions()"
+      [totalRecords]="totalRecords()"
+      [pageNumber]="pageNumber()"
+      [pageSize]="pageSize()"
+      [emptyMessage]="'table.empty' | translate"
+      [loading]="loading()"
+      (pageChange)="onPageChange($event)"
+      (pageSizeChange)="onPageSizeChange($event)"
+    />
+  }
+</div>

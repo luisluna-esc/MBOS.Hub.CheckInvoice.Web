@@ -1,0 +1,30 @@
+<app-dialog
+  [title]="'accountReceivables.payment.title' | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <p class="text-sm text-muted-foreground">
+      {{ 'accountReceivables.payment.outstandingHint' | translate: { amount: data.outstandingBalance.toFixed(2) } }}
+    </p>
+    <app-input
+      formControlName="amount"
+      type="number"
+      [decimals]="2"
+      [min]="0.01"
+      [label]="'accountReceivables.payment.amount' | translate"
+      [required]="true"
+    />
+    <app-input
+      formControlName="paymentMethod"
+      [label]="'accountReceivables.payment.method' | translate"
+      [maxLength]="30"
+    />
+    <app-input
+      formControlName="notes"
+      [label]="'accountReceivables.payment.notes' | translate"
+      [maxLength]="255"
+    />
+  </form>
+</app-dialog>

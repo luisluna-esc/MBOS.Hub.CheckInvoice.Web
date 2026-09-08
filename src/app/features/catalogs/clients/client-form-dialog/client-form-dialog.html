@@ -1,0 +1,205 @@
+<app-dialog
+  [title]="(isEdit ? 'clients.form.editTitle' : 'clients.form.newTitle') | translate"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    @if (linkedSupplier(); as linked) {
+      <div class="rounded-md border border-border bg-background p-3 text-sm text-foreground">
+        {{ 'clients.form.alsoSupplier' | translate: { name: linked.name } }}
+      </div>
+    }
+
+    @if (!isEdit && !decisionsConfirmed()) {
+      @if (preStage() === 'choose') {
+        <div class="grid w-full grid-cols-1 gap-3 py-2 sm:grid-cols-3">
+          <button
+            type="button"
+            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+            (click)="chooseNew()"
+          >
+            {{ 'clients.form.choiceNew' | translate }}
+          </button>
+          <button
+            type="button"
+            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+            (click)="chooseSpecial()"
+          >
+            {{ 'clients.form.choiceSpecial' | translate }}
+          </button>
+          <button
+            type="button"
+            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+            (click)="chooseLink()"
+          >
+            {{ 'clients.form.choiceLink' | translate }}
+          </button>
+        </div>
+      }
+
+      @if (preStage() === 'link') {
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
+          <app-tooltip class="self-start" [text]="'clients.form.back' | translate" position="right">
+            <button
+              type="button"
+              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-primary hover:bg-brand-300"
+              [attr.aria-label]="'clients.form.back' | translate"
+              (click)="backToChoose()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+                <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </app-tooltip>
+
+          @if (linkedParty(); as linked) {
+            <div class="flex items-center justify-between gap-2 text-sm">
+              <span class="text-foreground">{{ 'clients.form.linkedToSupplier' | translate: { name: linked.name } }}</span>
+              <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearLinkedParty()">
+                {{ 'clients.form.unlink' | translate }}
+              </button>
+            </div>
+          } @else {
+            <app-party-search-input
+              mode="supplier"
+              [label]="'clients.form.linkExistingSupplier' | translate"
+              (picked)="onSupplierPicked($event)"
+            />
+          }
+        </div>
+      }
+
+      @if (preStage() === 'special') {
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
+          <app-tooltip class="self-start" [text]="'clients.form.back' | translate" position="right">
+            <button
+              type="button"
+              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-primary hover:bg-brand-300"
+              [attr.aria-label]="'clients.form.back' | translate"
+              (click)="backToChoose()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+                <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </app-tooltip>
+
+          <app-select
+            formControlName="specialCaseId"
+            [label]="'clients.form.specialCase' | translate"
+            [options]="specialCaseOptions()"
+          />
+
+          <button
+            type="button"
+            class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors hover:opacity-90"
+            (click)="onContinue()"
+          >
+            {{ 'clients.form.continue' | translate }}
+          </button>
+        </div>
+      }
+    }
+
+    @if (!isEdit && decisionsConfirmed() && (hasSpecialCase() || linkedParty())) {
+      <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-background p-3 text-sm">
+        <div class="flex flex-col gap-0.5 text-foreground">
+          @if (hasSpecialCase()) {
+            <span>{{ 'clients.form.specialCase' | translate }}: {{ specialCaseSummary() }}</span>
+          }
+          @if (linkedParty(); as linked) {
+            <span>{{ 'clients.form.linkedToSupplier' | translate: { name: linked.name } }}</span>
+          }
+        </div>
+        <button type="button" class="text-xs font-medium text-primary hover:underline" (click)="onEditDecisions()">
+          {{ 'clients.form.editDecisions' | translate }}
+        </button>
+      </div>
+    }
+
+    @if (decisionsConfirmed()) {
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <app-input formControlName="name" [label]="'clients.form.name' | translate" [required]="true" [maxLength]="150" />
+        <app-select
+          formControlName="documentTypeId"
+          [label]="'clients.form.documentType' | translate"
+          [options]="documentTypeOptions()"
+        />
+        <div class="flex min-w-0 items-start gap-2 sm:col-span-2 sm:max-w-xs">
+          <div class="min-w-0 flex-1">
+            <app-input formControlName="taxId" [label]="'clients.form.taxId' | translate" [maxLength]="20" />
+          </div>
+          @if (isNitDocumentType()) {
+            <div class="flex w-20 shrink-0 flex-col gap-1">
+              <label [for]="complementId" class="text-sm font-medium text-foreground">
+                {{ 'clients.form.complement' | translate }}
+              </label>
+              <input
+                [id]="complementId"
+                formControlName="complement"
+                type="text"
+                maxlength="5"
+                autocomplete="off"
+                class="w-full rounded-md border border-border bg-surface px-2 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
+            </div>
+          }
+        </div>
+        <app-input formControlName="email" type="email" [label]="'clients.form.email' | translate" [maxLength]="150" />
+        <app-input formControlName="mobilePhone" [label]="'clients.form.mobilePhone' | translate" [maxLength]="20" />
+        <app-select
+          formControlName="districtId"
+          [label]="'clients.form.district' | translate"
+          [options]="districtOptions()"
+        />
+        <app-select
+          formControlName="churchId"
+          [label]="'clients.form.church' | translate"
+          [options]="churchOptions()"
+        />
+      </div>
+
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+        <app-checkbox formControlName="isActive">{{ 'clients.form.isActive' | translate }}</app-checkbox>
+        <app-checkbox formControlName="isPastor">{{ 'clients.form.isPastor' | translate }}</app-checkbox>
+      </div>
+
+      @if (!linkedParty() && !linkedSupplier()) {
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
+          <div class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <span>{{ 'clients.form.linkSectionTitle' | translate }}</span>
+            <app-tooltip [text]="'clients.form.linkSectionHint' | translate" position="bottom">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                <path d="M12 17V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="currentColor" />
+                <path
+                  d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </app-tooltip>
+          </div>
+          <app-checkbox [formControl]="alsoRegisterAsSupplier">{{ 'clients.form.alsoRegisterAsSupplier' | translate }}</app-checkbox>
+          @if (alsoRegisterAsSupplierValue()) {
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <app-select
+                [formControl]="supplierCountryId"
+                [label]="'clients.form.supplierCountry' | translate"
+                [options]="countryOptions()"
+              />
+              <app-input
+                [formControl]="supplierLegalName"
+                [label]="'clients.form.supplierLegalName' | translate"
+                [maxLength]="150"
+              />
+            </div>
+          }
+        </div>
+      }
+    }
+  </form>
+</app-dialog>

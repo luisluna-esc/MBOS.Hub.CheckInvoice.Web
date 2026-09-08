@@ -1,0 +1,15 @@
+<div class="flex items-end gap-3">
+  @for (item of items(); track item.label) {
+    <div class="flex flex-1 flex-col items-center gap-1" [style.height.px]="height()">
+      <span class="text-xs font-medium text-foreground">{{ valueFormatter()(item.value) }}</span>
+      <div class="flex w-full flex-1 items-end">
+        <div
+          class="w-full rounded-t-sm transition-[height]"
+          [class]="item.colorClass ?? 'bg-primary'"
+          [style.height.%]="barHeightPercent(item.value)"
+        ></div>
+      </div>
+      <span class="text-xs text-muted-foreground">{{ item.label }}</span>
+    </div>
+  }
+</div>

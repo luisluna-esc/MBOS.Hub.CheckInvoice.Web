@@ -1,0 +1,29 @@
+<label
+  [for]="checkboxId"
+  class="inline-flex items-center gap-2 text-sm text-foreground"
+  [class.opacity-60]="disabled()"
+  [class.cursor-not-allowed]="disabled()"
+>
+  <span
+    class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background"
+    [class.bg-primary]="checked()"
+    [class.border-primary]="checked()"
+    [class.bg-surface]="!checked()"
+    [class.border-border]="!checked()"
+  >
+    <input
+      [id]="checkboxId"
+      type="checkbox"
+      [checked]="checked()"
+      [disabled]="disabled()"
+      class="sr-only"
+      (change)="onToggle($event)"
+    />
+    <span
+      class="pointer-events-none inline-block size-4 rounded-full bg-primary-foreground shadow-sm transition-transform"
+      [class.translate-x-6]="checked()"
+      [class.translate-x-1]="!checked()"
+    ></span>
+  </span>
+  <ng-content />
+</label>
