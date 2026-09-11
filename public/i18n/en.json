@@ -11,6 +11,8 @@
     "issues": "Issues",
     "issueVoidRequests": "Voids",
     "receiptVoidRequests": "Receipt Voids",
+    "stockAdjustment": "Stock Adjustment",
+    "issueReturns": "Returns",
     "accountReceivables": "Accounts Receivable",
     "reports": "Reports",
     "reportsFinancial": "Financial Report",
@@ -87,7 +89,6 @@
       "code": "Code",
       "name": "Name",
       "department": "Department",
-      "price": "Price",
       "status": "Status"
     },
     "actions": {
@@ -102,7 +103,6 @@
       "department": "Department",
       "subDepartment": "Sub-department",
       "mediaType": "Unit of Measure",
-      "price": "Price",
       "isActive": "Active",
       "success": "Product saved successfully.",
       "error": "The product could not be saved."
@@ -476,12 +476,16 @@
       "print": "Print",
       "requestVoid": "Request void",
       "requestVoidDisabledVoided": "This receipt is already voided",
-      "requestVoidDisabledPending": "There is already a pending void request for this receipt"
+      "requestVoidDisabledPending": "There is already a pending void request for this receipt",
+      "viewOriginIssue": "View originating issue",
+      "viewOriginIssueDisabled": "This receipt is not a return"
     },
     "printError": "The printable voucher could not be generated.",
     "form": {
       "title": "New receipt",
+      "print": "Print",
       "warehouse": "Warehouse",
+      "warehousePeriod": "Warehouse Period",
       "supplier": "Supplier",
       "receiptType": "Receipt type",
       "invoiceNumber": "Invoice #",
@@ -499,7 +503,7 @@
       "rowNumber": "No.",
       "totalCost": "Total Cost (Bs.)",
       "detail": "Detail",
-      "exceedsTotal": "The sum of the lines cannot exceed the Invoice total.",
+      "totalMismatch": "The sum of the lines must equal the Invoice total.",
       "product": "Product",
       "quantity": "Quantity",
       "unitCost": "Unit Cost (Bs.)",
@@ -659,6 +663,42 @@
       "error": "The review could not be processed."
     }
   },
+  "stockAdjustment": {
+    "title": "Stock Adjustment",
+    "warehouse": "Warehouse",
+    "reason": "Reason",
+    "lines": "Lines",
+    "addLine": "Add line",
+    "removeLine": "Remove",
+    "noLines": "Add at least one line.",
+    "selectProduct": "Select product",
+    "product": "Product",
+    "currentQuantity": "Current quantity",
+    "countedQuantity": "Counted quantity",
+    "difference": "Difference",
+    "save": "Save adjustment",
+    "success": "Adjustment registered successfully.",
+    "error": "The adjustment could not be registered."
+  },
+  "issueReturns": {
+    "title": "Returns",
+    "select": "Select",
+    "selectDisabledVoided": "This issue is already voided",
+    "selectedIssue": "Issue No.",
+    "changeIssue": "Change issue",
+    "loading": "Loading...",
+    "empty": "This issue has no lines.",
+    "product": "Product",
+    "quantityToReturn": "Quantity to return",
+    "issuedContext": "{{quantity}} units went out on this issue.",
+    "max": "Maximum to return: {{max}}.",
+    "maxWithHistory": "Maximum to return: {{max}} (you already returned {{returned}}).",
+    "exceedsReturnable": "You cannot return more than what is returnable for {{product}}.",
+    "noLines": "Enter at least one quantity to return.",
+    "save": "Register return",
+    "success": "Return registered successfully.",
+    "error": "The return could not be registered."
+  },
   "receiptVoidRequests": {
     "title": "Receipt Voids",
     "filters": {
@@ -791,6 +831,9 @@
   },
   "reports": {
     "title": "Reports",
+    "filters": {
+      "allWarehouses": "General (all warehouses)"
+    },
     "financialDashboard": {
       "title": "Financial Report",
       "description": "Monthly summary as PDF, with charts.",

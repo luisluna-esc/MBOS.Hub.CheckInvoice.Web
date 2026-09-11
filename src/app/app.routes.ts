@@ -65,6 +65,20 @@ export const routes: Routes = [
           ).then((m) => m.ReceiptVoidRequestsList),
       },
       {
+        path: 'issue-returns',
+        loadComponent: () =>
+          import('./features/movements/issue-returns/issue-return-create/issue-return-create').then(
+            (m) => m.IssueReturnCreate
+          ),
+      },
+      {
+        path: 'stock-adjustments',
+        loadComponent: () =>
+          import('./features/movements/stock-adjustment/stock-adjustment-create/stock-adjustment-create').then(
+            (m) => m.StockAdjustmentCreate
+          ),
+      },
+      {
         path: 'account-receivables',
         loadComponent: () =>
           import('./features/movements/account-receivables/account-receivables-list/account-receivables-list').then(

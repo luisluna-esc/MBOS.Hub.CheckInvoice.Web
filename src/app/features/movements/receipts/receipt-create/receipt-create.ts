@@ -6,6 +6,12 @@ import { Router } from '@angular/router';
 import { map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
+import {
+  currentAndPreviousWarehousePeriods,
+  currentMonthKey,
+  issueDateRangeForPeriod,
+} from '../../../../core/catalogs/current-warehouse-periods';
+import { operationalWarehouseOnly } from '../../../../core/catalogs/operational-warehouse';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
@@ -15,6 +21,7 @@ import { Input as AppInput } from '../../../../shared/components/input/input';
 import { ProductPickerDialog, ProductPickerResult } from '../../../../shared/components/product-picker-dialog/product-picker-dialog';
 import { Select, SelectOption } from '../../../../shared/components/select/select';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { ReportService } from '../../../reports/report.service';
 import { SupplierService } from '../../../catalogs/suppliers/supplier.service';
 import { ReceiptRequest } from '../receipt.models';
 import { ReceiptService } from '../receipt.service';
@@ -27,6 +34,11 @@ type DetailLineGroup = FormGroup<{
   detail: FormControl<string>;
 }>;
 
+// 'Devolucion' y 'Ajuste' no se eligen a mano aquí: los crea automáticamente el apartado
+// de Devoluciones (referenciando la Salida original) y el de Ajuste de Inventario — permitir
+// elegirlos en este formulario genérico rompería esa referencia.
+const HIDDEN_RECEIPT_TYPE_NAMES = ['Devolucion', 'Ajuste'];
+
 @Component({
   selector: 'app-receipt-create',
   imports: [ReactiveFormsModule, AppInput, Select, DatePicker, TranslatePipe, DecimalPipe],
@@ -36,6 +48,7 @@ export class ReceiptCreate {
   private readonly router = inject(Router);
   private readonly catalogService = inject(CatalogService);
   private readonly receiptService = inject(ReceiptService);
+  private readonly reportService = inject(ReportService);
   private readonly supplierService = inject(SupplierService);
   private readonly dialogService = inject(DialogService);
   private readonly toastService = inject(ToastService);
@@ -50,29 +63,52 @@ export class ReceiptCreate {
   protected readonly warehouses = signal<CatalogItem[]>([]);
   protected readonly suppliers = signal<CatalogItem[]>([]);
   protected readonly receiptTypes = signal<CatalogItem[]>([]);
+  protected readonly warehousePeriods = signal<CatalogItem[]>([]);
 
   protected readonly warehouseOptions = computed<SelectOption[]>(() =>
-    this.warehouses().map((item) => ({ value: String(item.id), label: item.name }))
+    operationalWarehouseOnly(this.warehouses()).map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly supplierOptions = computed<SelectOption[]>(() =>
     this.suppliers().map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly receiptTypeOptions = computed<SelectOption[]>(() =>
-    this.receiptTypes().map((item) => ({ value: String(item.id), label: item.name }))
+    this.receiptTypes()
+      .filter((item) => !HIDDEN_RECEIPT_TYPE_NAMES.includes(item.name))
+      .map((item) => ({ value: String(item.id), label: item.name }))
+  );
+  protected readonly warehousePeriodOptions = computed<SelectOption[]>(() =>
+    currentAndPreviousWarehousePeriods(this.warehousePeriods()).map((item) => ({ value: String(item.id), label: item.name }))
   );
 
   protected readonly headerForm = new FormGroup({
     warehouseId: new FormControl('', { nonNullable: true }),
+    warehousePeriodId: new FormControl('', { nonNullable: true }),
     supplierId: new FormControl('', { nonNullable: true }),
     receiptTypeId: new FormControl('', { nonNullable: true }),
     invoiceNumber: new FormControl('', { nonNullable: true }),
     taxId: new FormControl('', { nonNullable: true }),
     invoiceTotal: new FormControl('', { nonNullable: true }),
-    issueDate: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    issueDate: new FormControl(this.todayIso, { nonNullable: true, validators: [Validators.required] }),
     description: new FormControl('', { nonNullable: true }),
   });
 
   protected readonly detailsArray = new FormArray<DetailLineGroup>([]);
+
+  private readonly warehousePeriodIdValue = toSignal(
+    this.headerForm.controls.warehousePeriodId.valueChanges.pipe(
+      startWith(this.headerForm.controls.warehousePeriodId.value),
+      takeUntilDestroyed()
+    ),
+    { initialValue: '' }
+  );
+
+  // La Fecha de Emisión debe caer dentro del mes del Periodo de Almacén elegido (ej. si eliges
+  // 2026-09, no puedes poner una fecha de agosto) — se recalcula cada vez que cambia el período.
+  protected readonly issueDateRange = computed(() => {
+    const periodId = Number(this.warehousePeriodIdValue());
+    const periodName = this.warehousePeriods().find((period) => period.id === periodId)?.name ?? null;
+    return issueDateRangeForPeriod(periodName);
+  });
 
   protected readonly headerInvalid = toSignal(
     this.headerForm.statusChanges.pipe(
@@ -113,12 +149,14 @@ export class ReceiptCreate {
     )
   );
 
-  protected readonly exceedsInvoiceTotal = computed(() => {
+  // La suma de las líneas debe coincidir exactamente con el Total de factura (ni más ni
+  // menos) — 0.01 de tolerancia por redondeo de centavos, no por permitir diferencias reales.
+  protected readonly totalMismatch = computed(() => {
     const total = Number(this.invoiceTotalValue());
     if (!total) {
       return false;
     }
-    return this.linesTotalSum() > total;
+    return Math.abs(this.linesTotalSum() - total) > 0.01;
   });
 
   protected readonly saveDisabled = computed(
@@ -126,7 +164,7 @@ export class ReceiptCreate {
       !this.headerConfirmed() ||
       this.detailsInvalid() ||
       this.detailsArray.length === 0 ||
-      this.exceedsInvoiceTotal() ||
+      this.totalMismatch() ||
       this.saving()
   );
 
@@ -154,14 +192,29 @@ export class ReceiptCreate {
   }
 
   private async loadCatalogs(): Promise<void> {
-    const [warehouses, suppliers, receiptTypes] = await settleCatalogs([
+    const [warehouses, suppliers, receiptTypes, warehousePeriods] = await settleCatalogs([
       this.catalogService.getWarehouses(),
       this.catalogService.getSuppliers(),
       this.catalogService.getReceiptTypes(),
+      this.catalogService.getWarehousePeriods(),
     ]);
     this.warehouses.set(warehouses);
     this.suppliers.set(suppliers);
     this.receiptTypes.set(receiptTypes);
+    this.warehousePeriods.set(warehousePeriods);
+
+    // Solo hay un almacén operativo: se marca solo, no hay nada que elegir.
+    const [operationalWarehouse] = operationalWarehouseOnly(warehouses);
+    if (operationalWarehouse) {
+      this.headerForm.controls.warehouseId.setValue(String(operationalWarehouse.id));
+      this.headerForm.controls.warehouseId.disable();
+    }
+
+    // Si no elige un período explícitamente, se asume el del mes actual.
+    const currentPeriod = warehousePeriods.find((period) => period.name === currentMonthKey());
+    if (currentPeriod) {
+      this.headerForm.controls.warehousePeriodId.setValue(String(currentPeriod.id));
+    }
   }
 
   protected onContinue(): void {
@@ -224,6 +277,14 @@ export class ReceiptCreate {
   }
 
   protected async onSave(): Promise<void> {
+    await this.save(false);
+  }
+
+  protected async onSaveAndPrint(): Promise<void> {
+    await this.save(true);
+  }
+
+  private async save(print: boolean): Promise<void> {
     if (this.saveDisabled()) {
       return;
     }
@@ -234,6 +295,7 @@ export class ReceiptCreate {
 
     const request: ReceiptRequest = {
       warehouseId: Number(raw.warehouseId),
+      warehousePeriodId: raw.warehousePeriodId ? Number(raw.warehousePeriodId) : null,
       supplierId: raw.supplierId ? Number(raw.supplierId) : null,
       receiptTypeId: raw.receiptTypeId ? Number(raw.receiptTypeId) : null,
       invoiceNumber: raw.invoiceNumber || null,
@@ -250,11 +312,30 @@ export class ReceiptCreate {
       })),
     };
 
+    // Se abre la pestaña en blanco de forma síncrona, antes de cualquier await, para que el
+    // navegador no la trate como un popup no solicitado y la bloquee — el comprobante se
+    // genera con datos ya guardados en el servidor, así que solo se completa si corresponde.
+    const newTab = print ? window.open('', '_blank') : null;
+
     try {
-      await this.receiptService.create(request);
+      const response = await this.receiptService.create(request);
       this.toastService.show(this.languageService.t('receipts.form.success'));
+      if (print) {
+        try {
+          const blob = await this.reportService.getReceiptVoucherPdfBlob(response.id);
+          const url = URL.createObjectURL(blob);
+          if (newTab) {
+            newTab.location.href = url;
+          } else {
+            window.open(url, '_blank');
+          }
+        } catch {
+          newTab?.close();
+        }
+      }
       void this.router.navigate(['/receipts']);
     } catch (error) {
+      newTab?.close();
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
       this.toastService.show(this.languageService.t('receipts.form.error'), message);

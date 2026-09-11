@@ -10,6 +10,7 @@ import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
+import { ALL_WAREHOUSES_VALUE, warehouseIdFilter, warehouseOptionsWithGeneral } from '../report-warehouse.util';
 import { ReportService } from '../report.service';
 
 @Component({
@@ -27,7 +28,7 @@ export class StockByDepartmentReport {
 
   protected readonly warehouses = signal<SelectOption[]>([]);
   protected readonly departments = signal<SelectOption[]>([]);
-  protected readonly warehouseId = signal<string | null>(null);
+  protected readonly warehouseId = signal<string | null>(ALL_WAREHOUSES_VALUE);
   protected readonly departmentId = signal<string | null>(null);
   protected readonly dateFrom = signal<string | null>(firstDayOfCurrentMonthIso());
   protected readonly dateTo = signal<string | null>(null);
@@ -59,7 +60,7 @@ export class StockByDepartmentReport {
 
   private async loadWarehouses(): Promise<void> {
     const items = await this.catalogService.getWarehouses();
-    this.warehouses.set(items.map((item) => ({ value: String(item.id), label: item.name })));
+    this.warehouses.set(warehouseOptionsWithGeneral(items, this.languageService.t('reports.filters.allWarehouses')));
   }
 
   private async loadDepartments(): Promise<void> {
@@ -83,7 +84,7 @@ export class StockByDepartmentReport {
     this.loading.set(true);
     try {
       const blob = await this.reportService.getStockByDepartmentReportPdfBlob({
-        warehouseId: this.warehouseId() ? Number(this.warehouseId()) : undefined,
+        warehouseId: warehouseIdFilter(this.warehouseId()),
         departmentId: this.departmentId() ? Number(this.departmentId()) : undefined,
         dateFrom: this.dateFrom() ?? undefined,
         dateTo: this.dateTo() ?? undefined

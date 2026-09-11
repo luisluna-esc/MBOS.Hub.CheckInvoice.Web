@@ -19,6 +19,10 @@ import {
 import { ReceiptDetailsDialog, ReceiptDetailsDialogData } from '../receipt-details-dialog/receipt-details-dialog';
 import { Receipt, ReceiptFilters } from '../receipt.models';
 import { ReceiptService } from '../receipt.service';
+import {
+  IssueDetailsDialog,
+  IssueDetailsDialogData,
+} from '../../issues/issue-details-dialog/issue-details-dialog';
 
 @Component({
   selector: 'app-receipts-list',
@@ -157,6 +161,13 @@ export class ReceiptsList {
       onClick: (row) => void this.printVoucher(row),
     },
     {
+      label: this.languageService.t('receipts.actions.viewOriginIssue'),
+      icon: 'return',
+      disabled: (row) => row.relatedIssueId == null,
+      disabledReason: (row) => (row.relatedIssueId == null ? this.languageService.t('receipts.actions.viewOriginIssueDisabled') : null),
+      onClick: (row) => this.openOriginIssue(row),
+    },
+    {
       label: this.languageService.t('receipts.actions.requestVoid'),
       icon: 'void',
       variant: 'danger',
@@ -262,6 +273,15 @@ export class ReceiptsList {
       newTab?.close();
       this.toastService.show(this.languageService.t('receipts.printError'));
     }
+  }
+
+  protected openOriginIssue(row: Receipt): void {
+    if (row.relatedIssueId == null) {
+      return;
+    }
+    this.dialogService.open<void, IssueDetailsDialogData, IssueDetailsDialog>(IssueDetailsDialog, {
+      data: { issueId: row.relatedIssueId },
+    });
   }
 
   protected openVoidRequest(row: Receipt): void {

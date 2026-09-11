@@ -6,6 +6,12 @@ import { Router } from '@angular/router';
 import { map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
+import {
+  currentAndPreviousWarehousePeriods,
+  currentMonthKey,
+  issueDateRangeForPeriod,
+} from '../../../../core/catalogs/current-warehouse-periods';
+import { operationalWarehouseOnly } from '../../../../core/catalogs/operational-warehouse';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
@@ -79,7 +85,7 @@ export class IssueCreate {
   );
 
   protected readonly warehouseOptions = computed<SelectOption[]>(() =>
-    this.warehouses().map((item) => ({ value: String(item.id), label: item.name }))
+    operationalWarehouseOnly(this.warehouses()).map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly clientOptions = computed<SelectOption[]>(() =>
     this.clients().map((item) => ({ value: String(item.id), label: item.name }))
@@ -91,7 +97,7 @@ export class IssueCreate {
     this.printTypes().map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly warehousePeriodOptions = computed<SelectOption[]>(() =>
-    this.warehousePeriods().map((item) => ({ value: String(item.id), label: item.name }))
+    currentAndPreviousWarehousePeriods(this.warehousePeriods()).map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly paymentTypeOptions = computed<SelectOption[]>(() =>
     PAYMENT_TYPE_CODES.map((code) => ({ value: code, label: this.languageService.t(`issues.form.paymentTypes.${code}`) }))
@@ -103,12 +109,28 @@ export class IssueCreate {
     clientId: new FormControl('', { nonNullable: true }),
     issueTypeId: new FormControl('', { nonNullable: true }),
     printTypeId: new FormControl('', { nonNullable: true }),
-    issueDate: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    issueDate: new FormControl(this.todayIso, { nonNullable: true, validators: [Validators.required] }),
     description: new FormControl('', { nonNullable: true }),
     sendToAccountsReceivable: new FormControl(false, { nonNullable: true }),
     paymentType: new FormControl('', { nonNullable: true }),
     paymentDetail: new FormControl('', { nonNullable: true }),
     dueDate: new FormControl('', { nonNullable: true }),
+  });
+
+  private readonly warehousePeriodIdValue = toSignal(
+    this.headerForm.controls.warehousePeriodId.valueChanges.pipe(
+      startWith(this.headerForm.controls.warehousePeriodId.value),
+      takeUntilDestroyed()
+    ),
+    { initialValue: '' }
+  );
+
+  // La Fecha de Emisión debe caer dentro del mes del Periodo de Almacén elegido (ej. si eliges
+  // 2026-09, no puedes poner una fecha de agosto) — se recalcula cada vez que cambia el período.
+  protected readonly issueDateRange = computed(() => {
+    const periodId = Number(this.warehousePeriodIdValue());
+    const periodName = this.warehousePeriods().find((period) => period.id === periodId)?.name ?? null;
+    return issueDateRangeForPeriod(periodName);
   });
 
   protected readonly detailsArray = new FormArray<DetailLineGroup>([]);
@@ -242,6 +264,19 @@ export class IssueCreate {
     this.mediaTypes.set(mediaTypes);
     this.documentTypes.set(documentTypes);
     this.warehousePeriods.set(warehousePeriods);
+
+    // Solo hay un almacén operativo: se marca solo, no hay nada que elegir.
+    const [operationalWarehouse] = operationalWarehouseOnly(warehouses);
+    if (operationalWarehouse) {
+      this.headerForm.controls.warehouseId.setValue(String(operationalWarehouse.id));
+      this.headerForm.controls.warehouseId.disable();
+    }
+
+    // Si no elige un período explícitamente, se asume el del mes actual.
+    const currentPeriod = warehousePeriods.find((period) => period.name === currentMonthKey());
+    if (currentPeriod) {
+      this.headerForm.controls.warehousePeriodId.setValue(String(currentPeriod.id));
+    }
   }
 
   protected onContinue(): void {

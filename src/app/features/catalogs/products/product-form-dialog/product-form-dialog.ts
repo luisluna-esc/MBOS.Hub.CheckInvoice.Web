@@ -65,9 +65,6 @@ export class ProductFormDialog {
       this.data.product?.mediaTypeId ? String(this.data.product.mediaTypeId) : '',
       { nonNullable: true }
     ),
-    price: new FormControl(this.data.product?.price != null ? String(this.data.product.price) : '', {
-      nonNullable: true,
-    }),
     isActive: new FormControl(this.data.product?.isActive ?? true, { nonNullable: true }),
   });
 
@@ -127,7 +124,6 @@ export class ProductFormDialog {
       departmentId: raw.departmentId ? Number(raw.departmentId) : null,
       subDepartmentId: raw.subDepartmentId ? Number(raw.subDepartmentId) : null,
       mediaTypeId: raw.mediaTypeId ? Number(raw.mediaTypeId) : null,
-      price: raw.price ? Number(raw.price) : null,
       isActive: raw.isActive,
     };
 

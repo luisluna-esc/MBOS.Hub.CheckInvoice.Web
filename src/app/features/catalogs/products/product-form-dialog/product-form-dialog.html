@@ -29,15 +29,6 @@
         [label]="'products.form.mediaType' | translate"
         [options]="mediaTypeOptions()"
       />
-      <app-input
-        formControlName="price"
-        type="number"
-        [label]="'products.form.price' | translate"
-        placeholder="0.00"
-        [required]="true"
-        [min]="0"
-        [decimals]="2"
-      />
     </div>
 
     <app-checkbox formControlName="isActive">{{ 'products.form.isActive' | translate }}</app-checkbox>

@@ -11,6 +11,8 @@
     "issues": "Salidas",
     "issueVoidRequests": "Anulaciones",
     "receiptVoidRequests": "Anulaciones de Entradas",
+    "stockAdjustment": "Ajuste de Inventario",
+    "issueReturns": "Devoluciones",
     "accountReceivables": "Cuentas por Cobrar",
     "reports": "Reportes",
     "reportsFinancial": "Reporte Financiero",
@@ -87,7 +89,6 @@
       "code": "Código",
       "name": "Nombre",
       "department": "Departamento",
-      "price": "Precio",
       "status": "Estado"
     },
     "actions": {
@@ -102,7 +103,6 @@
       "department": "Departamento",
       "subDepartment": "Subdepartamento",
       "mediaType": "Unidad de Medida",
-      "price": "Precio",
       "isActive": "Activo",
       "success": "Producto guardado correctamente.",
       "error": "No se pudo guardar el producto."
@@ -476,12 +476,16 @@
       "print": "Imprimir",
       "requestVoid": "Solicitar anulación",
       "requestVoidDisabledVoided": "Esta entrada ya está anulada",
-      "requestVoidDisabledPending": "Ya hay una solicitud de anulación pendiente para esta entrada"
+      "requestVoidDisabledPending": "Ya hay una solicitud de anulación pendiente para esta entrada",
+      "viewOriginIssue": "Ver salida de origen",
+      "viewOriginIssueDisabled": "Esta entrada no es una devolución"
     },
     "printError": "No se pudo generar el comprobante de impresión.",
     "form": {
       "title": "Nueva entrada",
+      "print": "Imprimir",
       "warehouse": "Almacén",
+      "warehousePeriod": "Periodo de Almacén",
       "supplier": "Proveedor",
       "receiptType": "Tipo de entrada",
       "invoiceNumber": "N° de factura",
@@ -499,7 +503,7 @@
       "rowNumber": "Nro.",
       "totalCost": "Costo Total (Bs.)",
       "detail": "Detalle",
-      "exceedsTotal": "La suma de las líneas no puede superar el Total de factura.",
+      "totalMismatch": "La suma de las líneas debe ser igual al Total de factura.",
       "product": "Producto",
       "quantity": "Cantidad",
       "unitCost": "Costo Unitario (Bs.)",
@@ -659,6 +663,42 @@
       "error": "No se pudo procesar la revisión."
     }
   },
+  "stockAdjustment": {
+    "title": "Ajuste de Inventario",
+    "warehouse": "Almacén",
+    "reason": "Motivo",
+    "lines": "Líneas",
+    "addLine": "Agregar línea",
+    "removeLine": "Quitar",
+    "noLines": "Agrega al menos una línea.",
+    "selectProduct": "Seleccionar producto",
+    "product": "Producto",
+    "currentQuantity": "Cantidad actual",
+    "countedQuantity": "Cantidad contada",
+    "difference": "Diferencia",
+    "save": "Guardar ajuste",
+    "success": "Ajuste registrado correctamente.",
+    "error": "No se pudo registrar el ajuste."
+  },
+  "issueReturns": {
+    "title": "Devoluciones",
+    "select": "Seleccionar",
+    "selectDisabledVoided": "Esta salida ya está anulada",
+    "selectedIssue": "Salida N°",
+    "changeIssue": "Cambiar salida",
+    "loading": "Cargando...",
+    "empty": "Esta salida no tiene líneas.",
+    "product": "Producto",
+    "quantityToReturn": "Cantidad a devolver",
+    "issuedContext": "Salieron {{quantity}} unidades en esta salida.",
+    "max": "Máximo a devolver: {{max}}.",
+    "maxWithHistory": "Máximo a devolver: {{max}} (ya devolviste {{returned}} antes).",
+    "exceedsReturnable": "No puedes devolver más de lo devolvible para {{product}}.",
+    "noLines": "Indica al menos una cantidad a devolver.",
+    "save": "Registrar devolución",
+    "success": "Devolución registrada correctamente.",
+    "error": "No se pudo registrar la devolución."
+  },
   "receiptVoidRequests": {
     "title": "Anulaciones de Entradas",
     "filters": {
@@ -791,6 +831,9 @@
   },
   "reports": {
     "title": "Reportes",
+    "filters": {
+      "allWarehouses": "General (todos los almacenes)"
+    },
     "financialDashboard": {
       "title": "Reporte Financiero",
       "description": "Resumen mensual en PDF, con gráficos.",
