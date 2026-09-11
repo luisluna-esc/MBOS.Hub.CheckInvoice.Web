@@ -72,12 +72,6 @@ export class ProductsList {
         format: (value) => (value ? (departmentNames[value as number] ?? String(value)) : '—'),
       },
       {
-        key: 'price',
-        header: this.languageService.t('products.columns.price'),
-        align: 'right',
-        format: (value) => (value != null ? Number(value).toFixed(2) : '—'),
-      },
-      {
         key: 'isActive',
         header: this.languageService.t('products.columns.status'),
         align: 'center',

@@ -1,0 +1,89 @@
+<div class="flex flex-col gap-4">
+  <h1 class="text-xl font-semibold text-foreground">{{ 'issueReturns.title' | translate }}</h1>
+
+  @if (!selectedIssue()) {
+    <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
+
+    @if (errorCode()) {
+      <div class="rounded-lg border border-border">
+        <app-error-state [code]="errorCode()!" />
+      </div>
+    } @else {
+      <app-table
+        [columns]="columns()"
+        [rows]="rows()"
+        [actions]="actions()"
+        [totalRecords]="totalRecords()"
+        [pageNumber]="pageNumber()"
+        [pageSize]="pageSize()"
+        [emptyMessage]="'table.empty' | translate"
+        [loading]="loading()"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      />
+    }
+  } @else {
+    <div class="flex flex-col gap-3 rounded-lg border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-col gap-0.5">
+        <span class="text-base font-semibold text-foreground">
+          {{ 'issueReturns.selectedIssue' | translate }} {{ selectedIssueVoucher() }}
+        </span>
+        @if (selectedIssueDetail()) {
+          <span class="text-xs text-muted-foreground">{{ selectedIssueDetail() }}</span>
+        }
+      </div>
+      <button
+        type="button"
+        class="rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+        (click)="changeIssue()"
+      >
+        {{ 'issueReturns.changeIssue' | translate }}
+      </button>
+    </div>
+
+    @if (formLoading()) {
+      <p class="text-sm text-muted-foreground">{{ 'issueReturns.loading' | translate }}</p>
+    } @else if (lineRows().length === 0) {
+      <p class="text-sm text-muted-foreground">{{ 'issueReturns.empty' | translate }}</p>
+    } @else {
+      <div class="flex flex-col gap-3">
+        @for (row of lineRows(); track row.productId) {
+          <div class="flex flex-col gap-3 rounded-md border border-border p-3">
+            <div class="flex flex-col gap-0.5">
+              <span class="text-sm font-medium text-foreground">{{ row.productName }}</span>
+              <span class="text-xs text-muted-foreground">
+                {{ 'issueReturns.issuedContext' | translate: { quantity: row.quantityIssued } }}
+              </span>
+            </div>
+
+            <div class="w-full sm:w-56">
+              <app-input
+                [formControl]="row.quantityControl"
+                type="number"
+                [min]="0"
+                [decimals]="2"
+                [label]="'issueReturns.quantityToReturn' | translate"
+                [hint]="
+                  row.quantityAlreadyReturned > 0
+                    ? ('issueReturns.maxWithHistory' | translate: { max: row.quantityReturnable, returned: row.quantityAlreadyReturned })
+                    : ('issueReturns.max' | translate: { max: row.quantityReturnable })
+                "
+              />
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="flex justify-end">
+        <button
+          type="button"
+          class="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="saveDisabled()"
+          (click)="onSave()"
+        >
+          {{ 'issueReturns.save' | translate }}
+        </button>
+      </div>
+    }
+  }
+</div>

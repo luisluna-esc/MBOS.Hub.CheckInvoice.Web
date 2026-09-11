@@ -17,7 +17,7 @@ import {
   IssueVoidRequestDialogData,
 } from '../../issue-void-requests/issue-void-request-dialog/issue-void-request-dialog';
 import { IssueDetailsDialog, IssueDetailsDialogData } from '../issue-details-dialog/issue-details-dialog';
-import { IssuePrintDialog } from '../issue-print-dialog/issue-print-dialog';
+import { IssuePrintDialog, IssuePrintDialogResult } from '../issue-print-dialog/issue-print-dialog';
 import { Issue, IssueFilters } from '../issue.models';
 import { IssueService } from '../issue.service';
 
@@ -240,20 +240,17 @@ export class IssuesList {
   // Al reimprimir desde la lista (a diferencia del formulario de creación, que ya tiene su
   // propio selector de Tipo de Impresión) no hay un formulario visible donde elegir el
   // formato, así que se pregunta con un diálogo — permite reimprimir una Salida guardada
-  // como "Nota de Entrega" en formato "Factura" o "Recibo" si el cliente lo pide después.
+  // en "Impresion Hoja" con el formato "Impresion Rollo" si el cliente lo pide después.
   protected printVoucher(row: Issue): void {
-    const ref = this.dialogService.open<number | null, undefined, IssuePrintDialog>(IssuePrintDialog);
-    ref.closed.subscribe((printTypeId) => {
-      if (printTypeId) {
-        void this.generateVoucher(row, printTypeId);
+    const ref = this.dialogService.open<IssuePrintDialogResult | null, undefined, IssuePrintDialog>(IssuePrintDialog);
+    ref.closed.subscribe((result) => {
+      if (result) {
+        void this.generateVoucher(row, result.printTypeId, result.newTab);
       }
     });
   }
 
-  // Se abre la pestaña en blanco de forma síncrona al elegir el tipo, antes del fetch async
-  // del PDF — así el navegador no la trata como un popup no solicitado y la bloquea.
-  private async generateVoucher(row: Issue, printTypeId: number): Promise<void> {
-    const newTab = window.open('', '_blank');
+  private async generateVoucher(row: Issue, printTypeId: number, newTab: Window | null): Promise<void> {
     try {
       const blob = await this.reportService.getIssueVoucherPdfBlob(row.issueId, printTypeId);
       const url = URL.createObjectURL(blob);

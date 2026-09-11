@@ -17,6 +17,7 @@ export interface Receipt extends Record<string, unknown> {
   hasPendingVoidRequest: boolean;
   voidReasonName: string | null;
   voidDetail: string | null;
+  relatedIssueId: number | null;
 }
 
 export interface ReceiptDetail {
@@ -57,4 +58,24 @@ export interface ReceiptFilters {
   warehouseId?: number;
   receiptTypeId?: number;
   invoiceNumber?: string;
+}
+
+export interface ReturnableIssueLine {
+  productId: number;
+  quantityIssued: number;
+  quantityAlreadyReturned: number;
+  quantityReturnable: number;
+  unitCost: number;
+}
+
+export interface ReceiptReturnLineRequest {
+  productId: number;
+  quantity: number;
+}
+
+export interface ReceiptReturnRequest {
+  issueId: number;
+  receiptTypeId: number;
+  description?: string | null;
+  lines: ReceiptReturnLineRequest[];
 }

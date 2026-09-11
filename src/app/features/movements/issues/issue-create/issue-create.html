@@ -47,7 +47,8 @@
         formControlName="issueDate"
         [label]="'issues.form.issueDate' | translate"
         [required]="true"
-        [max]="todayIso"
+        [min]="issueDateRange().min"
+        [max]="issueDateRange().max"
       />
     </div>
 

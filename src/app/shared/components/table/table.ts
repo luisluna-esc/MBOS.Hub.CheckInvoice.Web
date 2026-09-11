@@ -7,7 +7,7 @@ import { Skeleton } from '../skeleton/skeleton';
 import { Tooltip } from '../tooltip/tooltip';
 
 export type TableColumnType = 'text' | 'number' | 'select';
-export type TableActionIcon = 'view' | 'edit' | 'delete' | 'create' | 'verified' | 'menu' | 'print' | 'void';
+export type TableActionIcon = 'view' | 'edit' | 'delete' | 'create' | 'verified' | 'menu' | 'print' | 'void' | 'return';
 
 export interface TableColumn<T> {
   key: keyof T & string;

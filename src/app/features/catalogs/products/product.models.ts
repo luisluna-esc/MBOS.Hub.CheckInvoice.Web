@@ -5,7 +5,6 @@ export interface Product extends Record<string, unknown> {
   departmentId: number | null;
   subDepartmentId: number | null;
   mediaTypeId: number | null;
-  price: number | null;
   isActive: boolean;
 }
 
@@ -15,7 +14,6 @@ export interface ProductRequest {
   departmentId?: number | null;
   subDepartmentId?: number | null;
   mediaTypeId?: number | null;
-  price?: number | null;
   isActive: boolean;
 }
 

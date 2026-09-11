@@ -10,6 +10,7 @@ import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
+import { ALL_WAREHOUSES_VALUE, warehouseIdFilter, warehouseOptionsWithGeneral } from '../report-warehouse.util';
 import { ReportService } from '../report.service';
 
 @Component({
@@ -37,7 +38,7 @@ export class InventoryCountReport {
   );
 
   protected readonly warehouses = signal<SelectOption[]>([]);
-  protected readonly warehouseId = signal<string | null>(null);
+  protected readonly warehouseId = signal<string | null>(ALL_WAREHOUSES_VALUE);
   protected readonly dateFrom = signal<string | null>(firstDayOfCurrentMonthIso());
   protected readonly dateTo = signal<string | null>(null);
 
@@ -67,7 +68,7 @@ export class InventoryCountReport {
 
   private async loadWarehouses(): Promise<void> {
     const items = await this.catalogService.getWarehouses();
-    this.warehouses.set(items.map((item) => ({ value: String(item.id), label: item.name })));
+    this.warehouses.set(warehouseOptionsWithGeneral(items, this.languageService.t('reports.filters.allWarehouses')));
   }
 
   private scheduleGenerate(): void {
@@ -86,7 +87,7 @@ export class InventoryCountReport {
     this.loading.set(true);
     try {
       const filters = {
-        warehouseId: this.warehouseId() ? Number(this.warehouseId()) : undefined,
+        warehouseId: warehouseIdFilter(this.warehouseId()),
         dateFrom: this.dateFrom() ?? undefined,
         dateTo: this.dateTo() ?? undefined
       };

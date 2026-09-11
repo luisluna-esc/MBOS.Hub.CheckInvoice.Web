@@ -1,0 +1,103 @@
+<div class="flex flex-col gap-4">
+  <h1 class="text-xl font-semibold text-foreground">{{ 'stockAdjustment.title' | translate }}</h1>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <app-select
+      [formControl]="warehouseControl"
+      [label]="'stockAdjustment.warehouse' | translate"
+      [options]="warehouseOptions()"
+      [required]="true"
+    />
+    <app-input [formControl]="descriptionControl" [label]="'stockAdjustment.reason' | translate" [maxLength]="255" />
+  </div>
+
+  @if (hasWarehouse()) {
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-medium text-foreground">{{ 'stockAdjustment.lines' | translate }}</h2>
+        <button
+          type="button"
+          class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-background"
+          (click)="addLine()"
+        >
+          {{ 'stockAdjustment.addLine' | translate }}
+        </button>
+      </div>
+
+      @if (linesArray.length === 0) {
+        <p class="text-xs text-muted-foreground">{{ 'stockAdjustment.noLines' | translate }}</p>
+      } @else {
+        <div class="w-full overflow-x-auto rounded-md border border-border">
+          <table class="w-full min-w-full divide-y divide-border text-sm">
+            <thead class="bg-background">
+              <tr>
+                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'stockAdjustment.product' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'stockAdjustment.currentQuantity' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'stockAdjustment.countedQuantity' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'stockAdjustment.difference' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-center font-semibold text-foreground">{{ 'table.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (line of linesArray.controls; track line; let i = $index) {
+                <tr [formGroup]="line">
+                  <td class="px-3 py-2 align-top">
+                    <button
+                      type="button"
+                      class="w-full rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background"
+                      (click)="pickProduct(i)"
+                    >
+                      @if (lineInfos()[i]?.product; as product) {
+                        <span class="font-medium">{{ product.code }}</span> — {{ product.name }}
+                      } @else {
+                        <span class="text-muted-foreground">{{ 'stockAdjustment.selectProduct' | translate }}</span>
+                      }
+                    </button>
+                  </td>
+                  <td class="px-3 py-2 text-right align-top text-muted-foreground">{{ lineInfos()[i]?.currentQuantity ?? 0 }}</td>
+                  <td class="w-32 px-3 py-2 align-top">
+                    <app-input formControlName="countedQuantity" type="number" [min]="0" [decimals]="2" />
+                  </td>
+                  <td class="px-3 py-2 text-right align-top" [class.text-danger]="difference(i) < 0" [class.text-primary]="difference(i) > 0">
+                    {{ difference(i) > 0 ? '+' : '' }}{{ difference(i) }}
+                  </td>
+                  <td class="px-3 py-2 text-center align-top">
+                    <button
+                      type="button"
+                      class="rounded p-1.5 text-danger transition-colors hover:bg-danger/10"
+                      [attr.aria-label]="'stockAdjustment.removeLine' | translate"
+                      (click)="removeLine(i)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
+                        <path d="M20.5001 6H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path
+                          d="M18.8332 8.5L18.3732 15.3991C18.1962 18.054 18.1077 19.3815 17.2427 20.1907C16.3777 21 15.0473 21 12.3865 21H11.6132C8.95235 21 7.62195 21 6.75694 20.1907C5.89194 19.3815 5.80344 18.054 5.62644 15.3991L5.1665 8.5"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                        />
+                        <path d="M9.5 11L10 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path d="M14.5 11L14 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <div class="flex justify-end">
+      <button
+        type="button"
+        class="rounded-full bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:opacity-50"
+        [disabled]="saveDisabled()"
+        (click)="onSave()"
+      >
+        {{ 'stockAdjustment.save' | translate }}
+      </button>
+    </div>
+  }
+</div>

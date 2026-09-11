@@ -4,7 +4,14 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiMessage } from '../../../core/auth/auth.models';
 import { PagedResult } from '../../../core/http/paged-result';
-import { Receipt, ReceiptDetail, ReceiptFilters, ReceiptRequest } from './receipt.models';
+import {
+  Receipt,
+  ReceiptDetail,
+  ReceiptFilters,
+  ReceiptRequest,
+  ReceiptReturnRequest,
+  ReturnableIssueLine,
+} from './receipt.models';
 
 interface CreateResponse {
   id: number;
@@ -33,6 +40,17 @@ export class ReceiptService {
 
   create(request: ReceiptRequest): Promise<CreateResponse> {
     return firstValueFrom(this.http.post<CreateResponse>(`${environment.apiUrl}/Receipts`, request));
+  }
+
+  async getReturnableLines(issueId: number): Promise<ReturnableIssueLine[]> {
+    const response = await firstValueFrom(
+      this.http.get<{ data: ReturnableIssueLine[] }>(`${environment.apiUrl}/Receipts/returnable-lines/${issueId}`)
+    );
+    return response.data;
+  }
+
+  createReturn(request: ReceiptReturnRequest): Promise<CreateResponse> {
+    return firstValueFrom(this.http.post<CreateResponse>(`${environment.apiUrl}/Receipts/returns`, request));
   }
 
   private cleanFilters(filters: ReceiptFilters): Record<string, string | number> {

@@ -22,28 +22,45 @@
         [required]="true"
       />
       <app-select
+        formControlName="warehousePeriodId"
+        [label]="'receipts.form.warehousePeriod' | translate"
+        [options]="warehousePeriodOptions()"
+        [required]="true"
+      />
+      <app-select
         formControlName="supplierId"
         [label]="'receipts.form.supplier' | translate"
         [options]="supplierOptions()"
+        [required]="true"
         [hint]="supplierLocked() ? ('receipts.form.supplierLocked' | translate) : null"
       />
       <app-select
         formControlName="receiptTypeId"
         [label]="'receipts.form.receiptType' | translate"
         [options]="receiptTypeOptions()"
+        [required]="true"
       />
-      <app-input formControlName="invoiceNumber" [label]="'receipts.form.invoiceNumber' | translate" />
+      <app-input formControlName="invoiceNumber" [label]="'receipts.form.invoiceNumber' | translate" [required]="true" />
       <app-input
         formControlName="taxId"
         [label]="'receipts.form.taxId' | translate"
+        [required]="true"
         [hint]="supplierLocked() ? ('receipts.form.supplierLocked' | translate) : null"
       />
-      <app-input formControlName="invoiceTotal" type="number" [label]="'receipts.form.invoiceTotal' | translate" [min]="0" [decimals]="2" />
+      <app-input
+        formControlName="invoiceTotal"
+        type="number"
+        [label]="'receipts.form.invoiceTotal' | translate"
+        [required]="true"
+        [min]="0"
+        [decimals]="2"
+      />
       <app-date-picker
         formControlName="issueDate"
         [label]="'receipts.form.issueDate' | translate"
         [required]="true"
-        [max]="todayIso"
+        [min]="issueDateRange().min"
+        [max]="issueDateRange().max"
       />
     </div>
 
@@ -156,8 +173,8 @@
           </table>
         </div>
 
-        @if (exceedsInvoiceTotal()) {
-          <p class="text-xs text-danger">{{ 'receipts.form.exceedsTotal' | translate }}</p>
+        @if (totalMismatch()) {
+          <p class="text-xs text-danger">{{ 'receipts.form.totalMismatch' | translate }}</p>
         }
       }
     </div>
@@ -173,11 +190,19 @@
     </button>
     <button
       type="button"
-      class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+      class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:bg-brand-300/20"
       [disabled]="saveDisabled()"
       (click)="onSave()"
     >
       {{ 'dialog.save' | translate }}
+    </button>
+    <button
+      type="button"
+      class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+      [disabled]="saveDisabled()"
+      (click)="onSaveAndPrint()"
+    >
+      {{ 'receipts.form.print' | translate }}
     </button>
   </div>
 </div>
