@@ -15,7 +15,6 @@
     "issueReturns": "Devoluções",
     "accountReceivables": "Contas a Receber",
     "reports": "Relatórios",
-    "reportsFinancial": "Relatório Financeiro",
     "reportsStock": "Estoque - Armazém",
     "reportsStockByDepartment": "Estoque - Departamento",
     "reportsKardex": "Kardex Físico Valorizado",
@@ -833,14 +832,6 @@
     "title": "Relatórios",
     "filters": {
       "allWarehouses": "Geral (todos os armazéns)"
-    },
-    "financialDashboard": {
-      "title": "Relatório Financeiro",
-      "description": "Resumo mensal em PDF, com gráficos.",
-      "hint": "Saídas, Entradas, pendente a receber e pagamentos do mês, mais gráficos dos últimos 6 meses.",
-      "download": "Baixar PDF",
-      "downloading": "Gerando...",
-      "error": "Não foi possível gerar o relatório. Tente novamente."
     },
     "stock": {
       "title": "Estoque - Armazém",

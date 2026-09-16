@@ -15,7 +15,6 @@
     "issueReturns": "Devoluciones",
     "accountReceivables": "Cuentas por Cobrar",
     "reports": "Reportes",
-    "reportsFinancial": "Reporte Financiero",
     "reportsStock": "Stock - Almacén",
     "reportsStockByDepartment": "Stock - Departamento",
     "reportsKardex": "Kardex Físico Valorado",
@@ -833,14 +832,6 @@
     "title": "Reportes",
     "filters": {
       "allWarehouses": "General (todos los almacenes)"
-    },
-    "financialDashboard": {
-      "title": "Reporte Financiero",
-      "description": "Resumen mensual en PDF, con gráficos.",
-      "hint": "Salidas, Entradas, pendiente por cobrar y pagos del mes, más gráficos de los últimos 6 meses.",
-      "download": "Descargar PDF",
-      "downloading": "Generando...",
-      "error": "No se pudo generar el reporte. Intenta de nuevo."
     },
     "stock": {
       "title": "Stock - Almacén",
