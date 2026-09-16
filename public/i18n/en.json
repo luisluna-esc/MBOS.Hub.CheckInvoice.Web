@@ -15,7 +15,6 @@
     "issueReturns": "Returns",
     "accountReceivables": "Accounts Receivable",
     "reports": "Reports",
-    "reportsFinancial": "Financial Report",
     "reportsStock": "Stock - Warehouse",
     "reportsStockByDepartment": "Stock - Department",
     "reportsKardex": "Valued Physical Kardex",
@@ -833,14 +832,6 @@
     "title": "Reports",
     "filters": {
       "allWarehouses": "General (all warehouses)"
-    },
-    "financialDashboard": {
-      "title": "Financial Report",
-      "description": "Monthly summary as PDF, with charts.",
-      "hint": "Issues, Receipts, pending receivable and payments for the month, plus charts for the last 6 months.",
-      "download": "Download PDF",
-      "downloading": "Generating...",
-      "error": "Could not generate the report. Please try again."
     },
     "stock": {
       "title": "Stock - Warehouse",

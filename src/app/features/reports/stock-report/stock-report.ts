@@ -46,10 +46,18 @@ export class StockReport {
       }
     });
 
+    // No genera nada al entrar a la pantalla, solo cuando el usuario cambia un filtro.
+    // El efecto igual debe leer las señales en esta primera ejecución para registrar las
+    // dependencias, si no nunca reaccionaría a cambios posteriores.
+    let isFirstRun = true;
     effect(() => {
       this.warehouseId();
       this.dateFrom();
       this.dateTo();
+      if (isFirstRun) {
+        isFirstRun = false;
+        return;
+      }
       this.scheduleGenerate();
     });
   }

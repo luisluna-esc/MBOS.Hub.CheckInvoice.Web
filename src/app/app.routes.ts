@@ -86,10 +86,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'reports/financial-dashboard',
-        loadComponent: () => import('./features/reports/reports-home/reports-home').then((m) => m.ReportsHome),
-      },
-      {
         path: 'reports/stock',
         loadComponent: () => import('./features/reports/stock-report/stock-report').then((m) => m.StockReport),
       },

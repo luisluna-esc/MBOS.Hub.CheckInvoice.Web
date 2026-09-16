@@ -25,13 +25,6 @@ export class ReportService {
     );
   }
 
-  async downloadFinancialDashboard(): Promise<void> {
-    const blob = await firstValueFrom(
-      this.http.get(`${environment.apiUrl}/Reports/financial-dashboard`, { responseType: 'blob' })
-    );
-    this.triggerDownload(blob, 'reporte-financiero.pdf');
-  }
-
   async getStockReportPdfBlob(filters: StockReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/stock/pdf`, {
@@ -178,14 +171,5 @@ export class ReportService {
       clean['DateTo'] = filters.dateTo;
     }
     return clean;
-  }
-
-  private triggerDownload(blob: Blob, fileName: string): void {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.click();
-    URL.revokeObjectURL(url);
   }
 }
