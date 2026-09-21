@@ -8,12 +8,14 @@ export interface Toast {
 
 const DEFAULT_DURATION_MS = 5000;
 
+let nextToastId = 0;
+
 @Injectable({ providedIn: 'root' })
 export class ToastService {
   readonly toasts = signal<Toast[]>([]);
 
   show(message: string, description?: string, durationMs = DEFAULT_DURATION_MS): string {
-    const id = crypto.randomUUID();
+    const id = `toast-${Date.now()}-${++nextToastId}`;
     this.toasts.update((current) => [...current, { id, message, description }]);
 
     if (durationMs > 0) {
