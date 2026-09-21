@@ -1,6 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
@@ -27,7 +26,6 @@ export class ClientsList {
   private readonly dialogService = inject(DialogService);
   private readonly languageService = inject(LanguageService);
   private readonly toastService = inject(ToastService);
-  private readonly router = inject(Router);
 
   protected readonly rows = signal<Client[]>([]);
   protected readonly totalRecords = signal(0);
@@ -143,10 +141,6 @@ export class ClientsList {
 
   protected openCreate(): void {
     this.openForm(null);
-  }
-
-  protected openPastorsPending(): void {
-    void this.router.navigate(['/catalogs/clients/pastors-pending']);
   }
 
   protected openEdit(row: Client): void {

@@ -59,6 +59,7 @@ export class IssuePrintDialog {
 
   protected onSave(): void {
     if (this.saveDisabled()) {
+      this.form.markAllAsTouched();
       return;
     }
     // La pestaña se abre aquí, de forma síncrona dentro del clic real en "Confirmar" — si se

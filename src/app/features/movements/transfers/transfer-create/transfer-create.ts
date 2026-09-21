@@ -14,6 +14,10 @@ import { ToastService } from '../../../../core/toast/toast.service';
 import { StockInfo, StockService } from '../../../../core/warehouses/stock.service';
 import { Input as AppInput } from '../../../../shared/components/input/input';
 import {
+  PartySearchInput,
+  PartySearchResult,
+} from '../../../../shared/components/party-search-input/party-search-input';
+import {
   ProductPickerData,
   ProductPickerDialog,
   ProductPickerResult,
@@ -32,7 +36,7 @@ type DetailLineGroup = FormGroup<{
 
 @Component({
   selector: 'app-transfer-create',
-  imports: [ReactiveFormsModule, AppInput, Select, TranslatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, TranslatePipe, DecimalPipe],
   templateUrl: './transfer-create.html',
 })
 export class TransferCreate {
@@ -53,7 +57,7 @@ export class TransferCreate {
 
   protected readonly warehouses = signal<CatalogItem[]>([]);
   protected readonly users = signal<CatalogItem[]>([]);
-  protected readonly clients = signal<CatalogItem[]>([]);
+  protected readonly receiverParty = signal<PartySearchResult | null>(null);
 
   protected readonly senderName = computed(() => {
     const appUserId = this.authService.session()?.appUserId;
@@ -62,9 +66,6 @@ export class TransferCreate {
 
   protected readonly warehouseOptions = computed<SelectOption[]>(() =>
     this.warehouses().map((item) => ({ value: String(item.id), label: item.name }))
-  );
-  protected readonly receiverOptions = computed<SelectOption[]>(() =>
-    this.clients().map((item) => ({ value: String(item.id), label: item.name }))
   );
 
   protected readonly headerForm = new FormGroup({
@@ -131,14 +132,22 @@ export class TransferCreate {
   }
 
   private async loadCatalogs(): Promise<void> {
-    const [warehouses, users, clients] = await settleCatalogs([
+    const [warehouses, users] = await settleCatalogs([
       this.catalogService.getWarehouses(),
       this.catalogService.getUsers(),
-      this.catalogService.getClients(),
     ]);
     this.warehouses.set(warehouses);
     this.users.set(users);
-    this.clients.set(clients);
+  }
+
+  protected onReceiverPicked(result: PartySearchResult): void {
+    this.receiverParty.set(result);
+    this.headerForm.controls.receiverClientId.setValue(String(result.id));
+  }
+
+  protected clearReceiver(): void {
+    this.receiverParty.set(null);
+    this.headerForm.controls.receiverClientId.setValue('');
   }
 
   protected onContinue(): void {

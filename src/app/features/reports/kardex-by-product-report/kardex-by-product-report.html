@@ -19,12 +19,25 @@
     <p class="text-xs text-muted-foreground">{{ 'reports.kardexByProduct.description' | translate }}</p>
 
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-4">
-      <app-select
-        [label]="'reports.kardexByProduct.product' | translate"
-        [options]="products()"
-        [ngModel]="productId()"
-        (ngModelChange)="productId.set($event)"
-      />
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-foreground">{{ 'reports.kardexByProduct.product' | translate }}</label>
+        @if (selectedProduct(); as product) {
+          <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
+            <span class="text-foreground">{{ product.name }}</span>
+            <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearProduct()">
+              {{ 'reports.kardexByProduct.changeProduct' | translate }}
+            </button>
+          </div>
+        } @else {
+          <button
+            type="button"
+            class="w-full rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-background"
+            (click)="pickProduct()"
+          >
+            {{ 'reports.kardexByProduct.selectProduct' | translate }}
+          </button>
+        }
+      </div>
       <app-select
         [label]="'reports.kardexByProduct.warehouse' | translate"
         [options]="warehouses()"

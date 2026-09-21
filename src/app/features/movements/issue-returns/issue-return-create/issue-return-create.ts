@@ -88,8 +88,8 @@ export class IssueReturnCreate {
     {
       key: 'clientId',
       label: this.languageService.t('issues.filters.client'),
-      type: 'select',
-      options: this.clients().map((item) => ({ value: String(item.id), label: item.name })),
+      type: 'party-search',
+      partyMode: 'client',
     },
   ]);
 

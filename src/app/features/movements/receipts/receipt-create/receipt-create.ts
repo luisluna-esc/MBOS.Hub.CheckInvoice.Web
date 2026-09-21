@@ -18,6 +18,10 @@ import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { DatePicker } from '../../../../shared/components/date-picker/date-picker';
 import { Input as AppInput } from '../../../../shared/components/input/input';
+import {
+  PartySearchInput,
+  PartySearchResult,
+} from '../../../../shared/components/party-search-input/party-search-input';
 import { ProductPickerDialog, ProductPickerResult } from '../../../../shared/components/product-picker-dialog/product-picker-dialog';
 import { Select, SelectOption } from '../../../../shared/components/select/select';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -41,7 +45,7 @@ const HIDDEN_RECEIPT_TYPE_NAMES = ['Devolucion', 'Ajuste'];
 
 @Component({
   selector: 'app-receipt-create',
-  imports: [ReactiveFormsModule, AppInput, Select, DatePicker, TranslatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, DatePicker, TranslatePipe, DecimalPipe],
   templateUrl: './receipt-create.html',
 })
 export class ReceiptCreate {
@@ -56,20 +60,18 @@ export class ReceiptCreate {
 
   protected readonly saving = signal(false);
   protected readonly supplierLocked = signal(false);
+  protected readonly lockedSupplierName = signal<string | null>(null);
+  protected readonly selectedSupplier = signal<PartySearchResult | null>(null);
   protected readonly headerConfirmed = signal(false);
   protected readonly lineProducts = signal<(ProductPickerResult | null)[]>([]);
   protected readonly todayIso = new Date().toISOString().slice(0, 10);
 
   protected readonly warehouses = signal<CatalogItem[]>([]);
-  protected readonly suppliers = signal<CatalogItem[]>([]);
   protected readonly receiptTypes = signal<CatalogItem[]>([]);
   protected readonly warehousePeriods = signal<CatalogItem[]>([]);
 
   protected readonly warehouseOptions = computed<SelectOption[]>(() =>
     operationalWarehouseOnly(this.warehouses()).map((item) => ({ value: String(item.id), label: item.name }))
-  );
-  protected readonly supplierOptions = computed<SelectOption[]>(() =>
-    this.suppliers().map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly receiptTypeOptions = computed<SelectOption[]>(() =>
     this.receiptTypes()
@@ -188,18 +190,27 @@ export class ReceiptCreate {
     this.headerForm.controls.supplierId.disable();
     this.headerForm.controls.taxId.setValue(supplier.taxId ?? '');
     this.headerForm.controls.taxId.disable();
+    this.lockedSupplierName.set(supplier.name);
     this.supplierLocked.set(true);
   }
 
+  protected onSupplierPicked(result: PartySearchResult): void {
+    this.selectedSupplier.set(result);
+    this.headerForm.controls.supplierId.setValue(String(result.id));
+  }
+
+  protected clearSupplier(): void {
+    this.selectedSupplier.set(null);
+    this.headerForm.controls.supplierId.setValue('');
+  }
+
   private async loadCatalogs(): Promise<void> {
-    const [warehouses, suppliers, receiptTypes, warehousePeriods] = await settleCatalogs([
+    const [warehouses, receiptTypes, warehousePeriods] = await settleCatalogs([
       this.catalogService.getWarehouses(),
-      this.catalogService.getSuppliers(),
       this.catalogService.getReceiptTypes(),
       this.catalogService.getWarehousePeriods(),
     ]);
     this.warehouses.set(warehouses);
-    this.suppliers.set(suppliers);
     this.receiptTypes.set(receiptTypes);
     this.warehousePeriods.set(warehousePeriods);
 

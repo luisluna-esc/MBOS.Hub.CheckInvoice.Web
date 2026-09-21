@@ -61,8 +61,8 @@ export class ReceiptsList {
     {
       key: 'supplierId',
       label: this.languageService.t('receipts.filters.supplier'),
-      type: 'select',
-      options: this.suppliers().map((item) => ({ value: String(item.id), label: item.name })),
+      type: 'party-search',
+      partyMode: 'supplier',
     },
     {
       key: 'receiptTypeId',

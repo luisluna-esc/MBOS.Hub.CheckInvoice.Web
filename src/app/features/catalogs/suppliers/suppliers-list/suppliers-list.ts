@@ -72,7 +72,6 @@ export class SuppliersList {
         header: this.languageService.t('suppliers.columns.country'),
         format: (value) => (value ? (countryNames[value as number] ?? String(value)) : '—'),
       },
-      { key: 'phone', header: this.languageService.t('suppliers.columns.phone'), format: (value) => (value as string) || '—' },
       { key: 'email', header: this.languageService.t('suppliers.columns.email'), format: (value) => (value as string) || '—' },
       {
         key: 'isActive',

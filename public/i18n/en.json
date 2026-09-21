@@ -36,10 +36,11 @@
     "roles": "Roles",
     "permissions": "Permissions",
     "users": "Users",
-    "catalogs": "Catalogs",
+    "catalogs": "Third Parties and Products",
     "suppliers": "Suppliers",
     "products": "Products",
     "clients": "Clients",
+    "pastors": "Pastors",
     "settings": "System Settings",
     "settingsCountries": "Countries",
     "settingsDocumentTypes": "Document Types",
@@ -402,7 +403,8 @@
   },
   "filters": {
     "search": "Search",
-    "clear": "Clear"
+    "clear": "Clear",
+    "changeParty": "Change"
   },
   "errorState": {
     "400": {
@@ -489,6 +491,7 @@
       "receiptType": "Receipt type",
       "invoiceNumber": "Invoice #",
       "taxId": "Tax ID",
+      "changeSupplier": "Change",
       "supplierLocked": "Supplier selected.",
       "invoiceTotal": "Invoice total",
       "issueDate": "Issue Date",
@@ -571,6 +574,7 @@
       "warehouse": "Warehouse",
       "warehousePeriod": "Warehouse Period",
       "client": "Client",
+      "changeClient": "Change",
       "clientLocked": "Client selected.",
       "documentType": "Document Type",
       "clientTaxId": "ID Number",
@@ -904,6 +908,8 @@
       "description": "Kardex ledger for one product: every Receipt and Issue with its running balance.",
       "hint": "Does not include Transfers. The opening balance and every row are explained only by Receipts and Issues of the product in the selected warehouse.",
       "product": "Product",
+      "selectProduct": "Select product",
+      "changeProduct": "Change",
       "warehouse": "Warehouse",
       "dateFrom": "Start date",
       "dateTo": "End date",
@@ -915,6 +921,7 @@
       "description": "Printable record for one pastor/client: their accounts receivable and their history of deliveries and deposits.",
       "hint": "\"Deposit\" here is a Payment against an Account Receivable, same as in the Pastor's self-service screen. The date filter only affects the Deliveries and Deposits tables; Accounts Receivable are always shown in full.",
       "client": "Pastor / Client",
+      "changeClient": "Change",
       "dateFrom": "Start date",
       "dateTo": "End date",
       "selectPrompt": "Select a pastor or client to generate the report.",
@@ -925,6 +932,7 @@
       "description": "Full accounts receivable portfolio across all clients, with client, status, and due date filters.",
       "client": "Client",
       "allClients": "All clients",
+      "changeClient": "Change",
       "status": "Status",
       "allStatuses": "All statuses",
       "dateFrom": "Due date from",
@@ -972,6 +980,7 @@
       "sourceWarehouse": "Source warehouse",
       "destinationWarehouse": "Destination warehouse",
       "receiver": "Receiver",
+      "changeReceiver": "Change",
       "sentBy": "Sent by",
       "notes": "Notes",
       "sameWarehouseError": "The destination warehouse must be different from the source.",
@@ -1013,10 +1022,6 @@
     "title": "Clients",
     "new": "New client",
     "portalAccess": {
-      "pendingLink": "Pastors without access",
-      "pendingTitle": "Pastors without portal access",
-      "pendingDescription": "Clients marked as Pastor who don't have a portal account yet.",
-      "pendingEmpty": "No pastors are pending access.",
       "grant": "Grant portal access",
       "error": "Could not grant access.",
       "grantedTitle": "Access granted",
@@ -1086,6 +1091,28 @@
       "error": "The client could not be deleted."
     }
   },
+  "pastors": {
+    "title": "Pastors",
+    "description": "Clients marked as Pastor: edit them, grant portal access, or reset their password.",
+    "empty": "No pastors registered.",
+    "columns": {
+      "access": "Portal access",
+      "accessGranted": "Has access",
+      "accessPending": "No access"
+    },
+    "actions": {
+      "resetPassword": "Reset password"
+    },
+    "resetConfirm": {
+      "title": "Reset password",
+      "message": "A new temporary password will be generated for \"{{name}}\" and the previous one will stop working. Continue?"
+    },
+    "resetSuccess": {
+      "title": "Password reset",
+      "message": "A new temporary password was generated for \"{{name}}\"."
+    },
+    "resetError": "Could not reset the password."
+  },
   "suppliers": {
     "title": "Suppliers",
     "new": "New supplier",
@@ -1101,7 +1128,6 @@
       "legalName": "Legal Name",
       "taxId": "Tax ID",
       "country": "Country",
-      "phone": "Phone",
       "email": "Email",
       "status": "Status"
     },
@@ -1117,7 +1143,6 @@
       "legalName": "Legal name",
       "taxId": "Tax ID",
       "country": "Country",
-      "phone": "Phone",
       "mobilePhone": "Mobile phone",
       "email": "Email",
       "address": "Address",

@@ -87,6 +87,7 @@ export class DistrictFormDialog {
 
   protected async onSave(): Promise<void> {
     if (this.saveDisabled()) {
+      this.form.markAllAsTouched();
       return;
     }
 

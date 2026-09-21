@@ -5,7 +5,8 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { GrantPortalAccessResult } from '../client.models';
 
 export interface PortalAccessGrantedDialogData {
-  clientName: string;
+  title: string;
+  message: string;
   username: string;
   result: GrantPortalAccessResult;
 }

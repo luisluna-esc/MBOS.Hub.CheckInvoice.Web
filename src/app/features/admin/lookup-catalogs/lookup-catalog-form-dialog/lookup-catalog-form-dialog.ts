@@ -60,6 +60,7 @@ export class LookupCatalogFormDialog {
 
   protected async onSave(): Promise<void> {
     if (this.saveDisabled()) {
+      this.form.markAllAsTouched();
       return;
     }
 

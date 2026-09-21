@@ -91,7 +91,6 @@ export class SupplierFormDialog {
       { nonNullable: true }
     ),
     address: new FormControl(this.data.supplier?.address ?? '', { nonNullable: true }),
-    phone: new FormControl(this.data.supplier?.phone ?? '', { nonNullable: true }),
     mobilePhone: new FormControl(this.data.supplier?.mobilePhone ?? '', { nonNullable: true }),
     email: new FormControl(this.data.supplier?.email ?? '', { nonNullable: true }),
     notes: new FormControl(this.data.supplier?.notes ?? '', { nonNullable: true }),
@@ -188,6 +187,7 @@ export class SupplierFormDialog {
 
   protected async onSave(): Promise<void> {
     if (this.saveDisabled()) {
+      this.form.markAllAsTouched();
       return;
     }
 
@@ -202,7 +202,9 @@ export class SupplierFormDialog {
       taxId: raw.taxId || null,
       countryId: raw.countryId ? Number(raw.countryId) : null,
       address: raw.address || null,
-      phone: raw.phone || null,
+      // Ya no se edita desde el formulario; se conserva el valor existente tal cual para no
+      // borrarlo en registros que ya lo tenían antes de quitar el campo.
+      phone: this.data.supplier?.phone ?? null,
       mobilePhone: raw.mobilePhone || null,
       email: raw.email || null,
       notes: raw.notes || null,

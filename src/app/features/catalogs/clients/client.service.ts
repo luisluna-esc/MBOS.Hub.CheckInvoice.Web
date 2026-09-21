@@ -48,6 +48,13 @@ export class ClientService {
     return response.data;
   }
 
+  async resetPortalPassword(clientId: number): Promise<GrantPortalAccessResult> {
+    const response = await firstValueFrom(
+      this.http.post<GrantPortalAccessResponse>(`${environment.apiUrl}/Clients/${clientId}/reset-portal-password`, {})
+    );
+    return response.data;
+  }
+
   private cleanFilters(filters: ClientFilters): Record<string, string | number | boolean> {
     const clean: Record<string, string | number | boolean> = {};
     for (const [key, value] of Object.entries(filters)) {

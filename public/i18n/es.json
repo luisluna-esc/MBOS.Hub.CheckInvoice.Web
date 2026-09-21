@@ -36,10 +36,11 @@
     "roles": "Roles",
     "permissions": "Permisos",
     "users": "Usuarios",
-    "catalogs": "Catálogos",
+    "catalogs": "Terceros y Productos",
     "suppliers": "Proveedores",
     "products": "Productos",
     "clients": "Clientes",
+    "pastors": "Pastores",
     "settings": "Configuración del Sistema",
     "settingsCountries": "Países",
     "settingsDocumentTypes": "Tipos de Documento",
@@ -402,7 +403,8 @@
   },
   "filters": {
     "search": "Buscar",
-    "clear": "Limpiar"
+    "clear": "Limpiar",
+    "changeParty": "Cambiar"
   },
   "errorState": {
     "400": {
@@ -489,6 +491,7 @@
       "receiptType": "Tipo de entrada",
       "invoiceNumber": "N° de factura",
       "taxId": "NIT",
+      "changeSupplier": "Cambiar",
       "supplierLocked": "Proveedor seleccionado.",
       "invoiceTotal": "Total de factura",
       "issueDate": "Fecha de Emisión",
@@ -571,6 +574,7 @@
       "warehouse": "Almacén",
       "warehousePeriod": "Periodo de Almacén",
       "client": "Cliente",
+      "changeClient": "Cambiar",
       "clientLocked": "Cliente seleccionado.",
       "documentType": "Tipo Documento",
       "clientTaxId": "Carnet de Identidad",
@@ -904,6 +908,8 @@
       "description": "Ficha kardex de un producto: cada Entrada y Salida con su saldo acumulado.",
       "hint": "No incluye Transferencias. El saldo inicial y cada fila se explican solo por Entradas y Salidas del producto en el almacén seleccionado.",
       "product": "Producto",
+      "selectProduct": "Seleccionar producto",
+      "changeProduct": "Cambiar",
       "warehouse": "Almacén",
       "dateFrom": "Fecha inicio",
       "dateTo": "Fecha fin",
@@ -915,6 +921,7 @@
       "description": "Ficha imprimible de un pastor/cliente: sus cuentas por cobrar y su historial de entregas y depósitos.",
       "hint": "\"Depósito\" aquí es un Pago contra una Cuenta por Cobrar, igual que en la pantalla de autoservicio del Pastor. El filtro de fecha solo afecta las tablas de Entregas y Depósitos; las Cuentas por Cobrar siempre se muestran completas.",
       "client": "Pastor / Cliente",
+      "changeClient": "Cambiar",
       "dateFrom": "Fecha inicio",
       "dateTo": "Fecha fin",
       "selectPrompt": "Selecciona un pastor o cliente para generar el reporte.",
@@ -925,6 +932,7 @@
       "description": "Cartera completa de cuentas por cobrar de todos los clientes, con filtros de cliente, estado y fecha límite.",
       "client": "Cliente",
       "allClients": "Todos los clientes",
+      "changeClient": "Cambiar",
       "status": "Estado",
       "allStatuses": "Todos los estados",
       "dateFrom": "Fecha límite desde",
@@ -972,6 +980,7 @@
       "sourceWarehouse": "Almacén origen",
       "destinationWarehouse": "Almacén destino",
       "receiver": "Receptor",
+      "changeReceiver": "Cambiar",
       "sentBy": "Enviado por",
       "notes": "Notas",
       "sameWarehouseError": "El almacén de destino debe ser diferente al de origen.",
@@ -1013,10 +1022,6 @@
     "title": "Clientes",
     "new": "Nuevo cliente",
     "portalAccess": {
-      "pendingLink": "Pastores sin acceso",
-      "pendingTitle": "Pastores sin acceso al portal",
-      "pendingDescription": "Clientes marcados como Pastor que todavía no tienen una cuenta para entrar al portal.",
-      "pendingEmpty": "No hay pastores pendientes de acceso.",
       "grant": "Otorgar acceso al portal",
       "error": "No se pudo otorgar el acceso.",
       "grantedTitle": "Acceso otorgado",
@@ -1086,6 +1091,28 @@
       "error": "No se pudo eliminar el cliente."
     }
   },
+  "pastors": {
+    "title": "Pastores",
+    "description": "Clientes marcados como Pastor: edítalos, otorga su acceso al portal o resetea su contraseña.",
+    "empty": "No hay pastores registrados.",
+    "columns": {
+      "access": "Acceso al portal",
+      "accessGranted": "Con acceso",
+      "accessPending": "Sin acceso"
+    },
+    "actions": {
+      "resetPassword": "Resetear contraseña"
+    },
+    "resetConfirm": {
+      "title": "Resetear contraseña",
+      "message": "Se generará una nueva contraseña temporal para \"{{name}}\" y la anterior dejará de funcionar. ¿Continuar?"
+    },
+    "resetSuccess": {
+      "title": "Contraseña reseteada",
+      "message": "Se generó una nueva contraseña temporal para \"{{name}}\"."
+    },
+    "resetError": "No se pudo resetear la contraseña."
+  },
   "suppliers": {
     "title": "Proveedores",
     "new": "Nuevo proveedor",
@@ -1101,7 +1128,6 @@
       "legalName": "Razón Social",
       "taxId": "NIT",
       "country": "País",
-      "phone": "Teléfono",
       "email": "Email",
       "status": "Estado"
     },
@@ -1117,7 +1143,6 @@
       "legalName": "Razón social",
       "taxId": "NIT",
       "country": "País",
-      "phone": "Teléfono",
       "mobilePhone": "Celular",
       "email": "Correo",
       "address": "Dirección",

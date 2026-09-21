@@ -36,10 +36,11 @@
     "roles": "Funções",
     "permissions": "Permissões",
     "users": "Usuários",
-    "catalogs": "Catálogos",
+    "catalogs": "Terceiros e Produtos",
     "suppliers": "Fornecedores",
     "products": "Produtos",
     "clients": "Clientes",
+    "pastors": "Pastores",
     "settings": "Configuração do Sistema",
     "settingsCountries": "Países",
     "settingsDocumentTypes": "Tipos de Documento",
@@ -402,7 +403,8 @@
   },
   "filters": {
     "search": "Buscar",
-    "clear": "Limpar"
+    "clear": "Limpar",
+    "changeParty": "Alterar"
   },
   "errorState": {
     "400": {
@@ -489,6 +491,7 @@
       "receiptType": "Tipo de entrada",
       "invoiceNumber": "N° da fatura",
       "taxId": "NIT",
+      "changeSupplier": "Alterar",
       "supplierLocked": "Fornecedor selecionado.",
       "invoiceTotal": "Total da fatura",
       "issueDate": "Data de Emissão",
@@ -571,6 +574,7 @@
       "warehouse": "Armazém",
       "warehousePeriod": "Período de Armazém",
       "client": "Cliente",
+      "changeClient": "Alterar",
       "clientLocked": "Cliente selecionado.",
       "documentType": "Tipo de Documento",
       "clientTaxId": "Carteira de Identidade",
@@ -904,6 +908,8 @@
       "description": "Ficha kardex de um produto: cada Entrada e Saída com seu saldo acumulado.",
       "hint": "Não inclui Transferências. O saldo inicial e cada linha se explicam somente por Entradas e Saídas do produto no armazém selecionado.",
       "product": "Produto",
+      "selectProduct": "Selecionar produto",
+      "changeProduct": "Alterar",
       "warehouse": "Armazém",
       "dateFrom": "Data inicial",
       "dateTo": "Data final",
@@ -915,6 +921,7 @@
       "description": "Ficha imprimível de um pastor/cliente: suas contas a receber e seu histórico de entregas e depósitos.",
       "hint": "\"Depósito\" aqui é um Pagamento contra uma Conta a Receber, igual à tela de autoatendimento do Pastor. O filtro de data afeta apenas as tabelas de Entregas e Depósitos; as Contas a Receber sempre são mostradas por completo.",
       "client": "Pastor / Cliente",
+      "changeClient": "Alterar",
       "dateFrom": "Data inicial",
       "dateTo": "Data final",
       "selectPrompt": "Selecione um pastor ou cliente para gerar o relatório.",
@@ -925,6 +932,7 @@
       "description": "Carteira completa de contas a receber de todos os clientes, com filtros de cliente, status e data limite.",
       "client": "Cliente",
       "allClients": "Todos os clientes",
+      "changeClient": "Alterar",
       "status": "Status",
       "allStatuses": "Todos os status",
       "dateFrom": "Data limite de",
@@ -972,6 +980,7 @@
       "sourceWarehouse": "Almoxarifado origem",
       "destinationWarehouse": "Almoxarifado destino",
       "receiver": "Receptor",
+      "changeReceiver": "Alterar",
       "sentBy": "Enviado por",
       "notes": "Notas",
       "sameWarehouseError": "O almoxarifado destino deve ser diferente do de origem.",
@@ -1013,10 +1022,6 @@
     "title": "Clientes",
     "new": "Novo cliente",
     "portalAccess": {
-      "pendingLink": "Pastores sem acesso",
-      "pendingTitle": "Pastores sem acesso ao portal",
-      "pendingDescription": "Clientes marcados como Pastor que ainda não têm uma conta para entrar no portal.",
-      "pendingEmpty": "Não há pastores pendentes de acesso.",
       "grant": "Conceder acesso ao portal",
       "error": "Não foi possível conceder o acesso.",
       "grantedTitle": "Acesso concedido",
@@ -1086,6 +1091,28 @@
       "error": "Não foi possível excluir o cliente."
     }
   },
+  "pastors": {
+    "title": "Pastores",
+    "description": "Clientes marcados como Pastor: edite-os, conceda acesso ao portal ou redefina a senha.",
+    "empty": "Nenhum pastor cadastrado.",
+    "columns": {
+      "access": "Acesso ao portal",
+      "accessGranted": "Com acesso",
+      "accessPending": "Sem acesso"
+    },
+    "actions": {
+      "resetPassword": "Redefinir senha"
+    },
+    "resetConfirm": {
+      "title": "Redefinir senha",
+      "message": "Uma nova senha temporária será gerada para \"{{name}}\" e a anterior deixará de funcionar. Continuar?"
+    },
+    "resetSuccess": {
+      "title": "Senha redefinida",
+      "message": "Uma nova senha temporária foi gerada para \"{{name}}\"."
+    },
+    "resetError": "Não foi possível redefinir a senha."
+  },
   "suppliers": {
     "title": "Fornecedores",
     "new": "Novo fornecedor",
@@ -1101,7 +1128,6 @@
       "legalName": "Razão Social",
       "taxId": "NIT",
       "country": "País",
-      "phone": "Telefone",
       "email": "Email",
       "status": "Status"
     },
@@ -1117,7 +1143,6 @@
       "legalName": "Razão social",
       "taxId": "NIT",
       "country": "País",
-      "phone": "Telefone",
       "mobilePhone": "Celular",
       "email": "E-mail",
       "address": "Endereço",

@@ -7,6 +7,8 @@ import { SupplierService } from '../../../features/catalogs/suppliers/supplier.s
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface PartySearchResult {
+  /** Id propio del registro (clientId o supplierId según `mode`), no el partyId compartido. */
+  id: number;
   partyId: number;
   name: string;
   taxId: string | null;
@@ -91,6 +93,7 @@ export class PartySearchInput {
       return;
     }
     this.picked.emit({
+      id: this.mode() === 'client' ? (row as Client).clientId : (row as Supplier).supplierId,
       partyId: row.partyId,
       name: row.name,
       taxId: row.taxId,

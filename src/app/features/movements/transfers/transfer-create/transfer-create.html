@@ -27,12 +27,21 @@
         [options]="warehouseOptions()"
         [required]="true"
       />
-      <app-select
-        formControlName="receiverClientId"
-        [label]="'transfers.form.receiver' | translate"
-        [options]="receiverOptions()"
-        [required]="true"
-      />
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-foreground">{{ 'transfers.form.receiver' | translate }}</label>
+        @if (receiverParty(); as receiver) {
+          <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
+            <span class="text-foreground">{{ receiver.name }}</span>
+            @if (!headerConfirmed()) {
+              <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearReceiver()">
+                {{ 'transfers.form.changeReceiver' | translate }}
+              </button>
+            }
+          </div>
+        } @else {
+          <app-party-search-input mode="client" (picked)="onReceiverPicked($event)" />
+        }
+      </div>
     </div>
 
     @if (sameWarehouseError()) {

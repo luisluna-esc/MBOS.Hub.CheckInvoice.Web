@@ -171,11 +171,9 @@ export const routes: Routes = [
           import('./features/catalogs/clients/clients-list/clients-list').then((m) => m.ClientsList),
       },
       {
-        path: 'catalogs/clients/pastors-pending',
+        path: 'catalogs/pastors',
         loadComponent: () =>
-          import('./features/catalogs/clients/pastors-pending-list/pastors-pending-list').then(
-            (m) => m.PastorsPendingList
-          ),
+          import('./features/catalogs/pastors/pastors-list/pastors-list').then((m) => m.PastorsList),
       },
       {
         path: 'catalogs/suppliers',

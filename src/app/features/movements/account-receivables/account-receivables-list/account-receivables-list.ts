@@ -48,8 +48,8 @@ export class AccountReceivablesList {
     {
       key: 'clientId',
       label: this.languageService.t('accountReceivables.filters.client'),
-      type: 'select',
-      options: this.clients().map((item) => ({ value: String(item.id), label: item.name })),
+      type: 'party-search',
+      partyMode: 'client',
     },
     {
       key: 'status',

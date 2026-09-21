@@ -19,12 +19,19 @@
     <p class="text-xs text-muted-foreground">{{ 'reports.pastorField.description' | translate }}</p>
 
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-      <app-select
-        [label]="'reports.pastorField.client' | translate"
-        [options]="clients()"
-        [ngModel]="clientId()"
-        (ngModelChange)="clientId.set($event)"
-      />
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-foreground">{{ 'reports.pastorField.client' | translate }}</label>
+        @if (selectedClient(); as client) {
+          <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
+            <span class="text-foreground">{{ client.name }}</span>
+            <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearClient()">
+              {{ 'reports.pastorField.changeClient' | translate }}
+            </button>
+          </div>
+        } @else {
+          <app-party-search-input mode="client" (picked)="onClientPicked($event)" />
+        }
+      </div>
       <app-date-picker
         [label]="'reports.pastorField.dateFrom' | translate"
         [ngModel]="dateFrom()"

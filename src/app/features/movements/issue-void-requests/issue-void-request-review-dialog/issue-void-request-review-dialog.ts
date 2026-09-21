@@ -1,6 +1,8 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { startWith } from 'rxjs';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { Dialog } from '../../../../shared/components/dialog/dialog';
@@ -32,11 +34,27 @@ export class IssueVoidRequestReviewDialog {
     reviewNotes: new FormControl('', { nonNullable: true }),
   });
 
+  // computed() no reacciona a form.controls.reviewNotes.value directamente (no es una señal) —
+  // sin este puente por toSignal(valueChanges), el botón queda deshabilitado para siempre al
+  // rechazar, aunque el usuario sí escriba el motivo.
+  private readonly reviewNotesValue = toSignal(
+    this.form.controls.reviewNotes.valueChanges.pipe(
+      startWith(this.form.controls.reviewNotes.value),
+      takeUntilDestroyed()
+    ),
+    { initialValue: '' }
+  );
+
   protected readonly saveDisabled = computed(
-    () => this.saving() || (this.isReject && !this.form.controls.reviewNotes.value.trim())
+    () => this.saving() || (this.isReject && !this.reviewNotesValue().trim())
   );
 
   protected async onSave(): Promise<void> {
+    if (this.saveDisabled()) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     this.saving.set(true);
     try {
       const review = { reviewNotes: this.form.controls.reviewNotes.value || null };

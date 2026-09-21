@@ -21,6 +21,10 @@ import { Checkbox } from '../../../../shared/components/checkbox/checkbox';
 import { DatePicker } from '../../../../shared/components/date-picker/date-picker';
 import { Input as AppInput } from '../../../../shared/components/input/input';
 import {
+  PartySearchInput,
+  PartySearchResult,
+} from '../../../../shared/components/party-search-input/party-search-input';
+import {
   ProductPickerData,
   ProductPickerDialog,
   ProductPickerResult,
@@ -42,7 +46,7 @@ const PAYMENT_TYPE_CODES = ['cash', 'credit', 'installments'] as const;
 
 @Component({
   selector: 'app-issue-create',
-  imports: [ReactiveFormsModule, AppInput, Select, Checkbox, DatePicker, TranslatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, Checkbox, DatePicker, TranslatePipe, DecimalPipe],
   templateUrl: './issue-create.html',
 })
 export class IssueCreate {
@@ -65,8 +69,8 @@ export class IssueCreate {
   protected readonly lineProducts = signal<(ProductPickerResult | null)[]>([]);
   protected readonly lineStock = signal<(StockInfo | null)[]>([]);
 
+  protected readonly selectedClient = signal<PartySearchResult | null>(null);
   protected readonly warehouses = signal<CatalogItem[]>([]);
-  protected readonly clients = signal<CatalogItem[]>([]);
   protected readonly issueTypes = signal<CatalogItem[]>([]);
   protected readonly printTypes = signal<CatalogItem[]>([]);
   protected readonly departments = signal<CatalogItem[]>([]);
@@ -86,9 +90,6 @@ export class IssueCreate {
 
   protected readonly warehouseOptions = computed<SelectOption[]>(() =>
     operationalWarehouseOnly(this.warehouses()).map((item) => ({ value: String(item.id), label: item.name }))
-  );
-  protected readonly clientOptions = computed<SelectOption[]>(() =>
-    this.clients().map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly issueTypeOptions = computed<SelectOption[]>(() =>
     this.issueTypes().map((item) => ({ value: String(item.id), label: item.name }))
@@ -240,15 +241,24 @@ export class IssueCreate {
     this.clientLocked.set(true);
   }
 
+  protected onClientPicked(result: PartySearchResult): void {
+    this.selectedClient.set(result);
+    this.headerForm.controls.clientId.setValue(String(result.id));
+  }
+
+  protected clearClient(): void {
+    this.selectedClient.set(null);
+    this.headerForm.controls.clientId.setValue('');
+  }
+
   protected documentTypeName(documentTypeId: number | null): string {
     return documentTypeId ? (this.documentTypeNames()[documentTypeId] ?? '—') : '—';
   }
 
   private async loadCatalogs(): Promise<void> {
-    const [warehouses, clients, issueTypes, printTypes, departments, mediaTypes, documentTypes, warehousePeriods] =
+    const [warehouses, issueTypes, printTypes, departments, mediaTypes, documentTypes, warehousePeriods] =
       await settleCatalogs([
         this.catalogService.getWarehouses(),
-        this.catalogService.getClients(),
         this.catalogService.getIssueTypes(),
         this.catalogService.getPrintTypes(),
         this.catalogService.getDepartments(),
@@ -257,7 +267,6 @@ export class IssueCreate {
         this.catalogService.getWarehousePeriods(),
       ]);
     this.warehouses.set(warehouses);
-    this.clients.set(clients);
     this.issueTypes.set(issueTypes);
     this.printTypes.set(printTypes);
     this.departments.set(departments);

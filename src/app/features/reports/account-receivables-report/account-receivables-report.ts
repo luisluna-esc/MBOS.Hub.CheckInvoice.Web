@@ -1,10 +1,13 @@
 import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { CatalogService } from '../../../core/catalogs/catalog.service';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { ToastService } from '../../../core/toast/toast.service';
 import { DatePicker } from '../../../shared/components/date-picker/date-picker';
+import {
+  PartySearchInput,
+  PartySearchResult,
+} from '../../../shared/components/party-search-input/party-search-input';
 import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -12,18 +15,17 @@ import { ReportService } from '../report.service';
 
 @Component({
   selector: 'app-account-receivables-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, TranslatePipe],
+  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, TranslatePipe],
   templateUrl: './account-receivables-report.html',
 })
 export class AccountReceivablesReport {
-  private readonly catalogService = inject(CatalogService);
   private readonly reportService = inject(ReportService);
   private readonly toastService = inject(ToastService);
   private readonly languageService = inject(LanguageService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly clients = signal<SelectOption[]>([]);
+  protected readonly selectedClient = signal<PartySearchResult | null>(null);
   protected readonly clientId = signal<string | null>(null);
   protected readonly status = signal<string | null>(null);
   protected readonly dateFrom = signal<string | null>(null);
@@ -41,7 +43,6 @@ export class AccountReceivablesReport {
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
-    void this.loadClients();
     this.destroyRef.onDestroy(() => {
       this.revokeObjectUrl();
       if (this.debounceTimer) {
@@ -66,9 +67,14 @@ export class AccountReceivablesReport {
     });
   }
 
-  private async loadClients(): Promise<void> {
-    const items = await this.catalogService.getClients();
-    this.clients.set(items.map((item) => ({ value: String(item.id), label: item.name })));
+  protected onClientPicked(result: PartySearchResult): void {
+    this.selectedClient.set(result);
+    this.clientId.set(String(result.id));
+  }
+
+  protected clearClient(): void {
+    this.selectedClient.set(null);
+    this.clientId.set(null);
   }
 
   private scheduleGenerate(): void {

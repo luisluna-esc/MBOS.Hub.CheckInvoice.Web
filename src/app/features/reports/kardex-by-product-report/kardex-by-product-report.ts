@@ -2,9 +2,14 @@ import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CatalogService } from '../../../core/catalogs/catalog.service';
+import { DialogService } from '../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { ToastService } from '../../../core/toast/toast.service';
 import { DatePicker } from '../../../shared/components/date-picker/date-picker';
+import {
+  ProductPickerDialog,
+  ProductPickerResult,
+} from '../../../shared/components/product-picker-dialog/product-picker-dialog';
 import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
@@ -24,8 +29,9 @@ export class KardexByProductReport {
   private readonly languageService = inject(LanguageService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialogService = inject(DialogService);
 
-  protected readonly products = signal<SelectOption[]>([]);
+  protected readonly selectedProduct = signal<ProductPickerResult | null>(null);
   protected readonly productId = signal<string | null>(null);
   protected readonly warehouses = signal<SelectOption[]>([]);
   protected readonly warehouseId = signal<string | null>(null);
@@ -39,7 +45,6 @@ export class KardexByProductReport {
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
-    void this.loadProducts();
     void this.loadWarehouses();
     this.destroyRef.onDestroy(() => {
       this.revokeObjectUrl();
@@ -57,9 +62,19 @@ export class KardexByProductReport {
     });
   }
 
-  private async loadProducts(): Promise<void> {
-    const items = await this.catalogService.getProducts();
-    this.products.set(items.map((item) => ({ value: String(item.id), label: item.name })));
+  protected pickProduct(): void {
+    const ref = this.dialogService.open<ProductPickerResult | null, unknown, ProductPickerDialog>(ProductPickerDialog);
+    ref.closed.subscribe((result) => {
+      if (result) {
+        this.selectedProduct.set(result);
+        this.productId.set(String(result.productId));
+      }
+    });
+  }
+
+  protected clearProduct(): void {
+    this.selectedProduct.set(null);
+    this.productId.set(null);
   }
 
   private async loadWarehouses(): Promise<void> {
