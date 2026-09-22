@@ -38,6 +38,15 @@ export class SupplierService {
     return firstValueFrom(this.http.delete<WriteResponse>(`${environment.apiUrl}/Suppliers/${supplierId}`));
   }
 
+  async checkTaxIdAvailable(taxId: string, excludePartyId?: number | null): Promise<boolean> {
+    const response = await firstValueFrom(
+      this.http.get<{ available: boolean }>(`${environment.apiUrl}/Suppliers/check-taxid`, {
+        params: excludePartyId ? { taxId, excludePartyId } : { taxId },
+      })
+    );
+    return response.available;
+  }
+
   private cleanFilters(filters: SupplierFilters): Record<string, string | number | boolean> {
     const clean: Record<string, string | number | boolean> = {};
     for (const [key, value] of Object.entries(filters)) {

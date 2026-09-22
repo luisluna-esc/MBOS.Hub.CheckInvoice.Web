@@ -13,6 +13,9 @@ export interface FilterField {
   type: FilterFieldType;
   placeholder?: string;
   options?: SelectOption[];
+  /** Solo type="date": límites ISO (ej. impedir buscar fechas futuras). */
+  min?: string;
+  max?: string;
 }
 
 export type FilterValues = Record<string, string | null>;

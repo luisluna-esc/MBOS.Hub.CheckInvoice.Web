@@ -95,6 +95,9 @@ export class ClientFormDialog {
     ...this.specialCases().map((item) => ({ value: String(item.id), label: `${item.code} (${item.name})` })),
   ]);
 
+  /** Solo dígitos y separadores comunes de teléfono; nada de letras. */
+  protected readonly phonePattern = /^[0-9+()\-\s]*$/;
+
   protected readonly form = new FormGroup({
     name: new FormControl(this.data.client?.name ?? '', { nonNullable: true }),
     documentTypeId: new FormControl(

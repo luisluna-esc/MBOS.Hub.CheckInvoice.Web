@@ -230,6 +230,7 @@ export class ReceiptCreate {
 
   protected onContinue(): void {
     if (this.continueDisabled()) {
+      this.headerForm.markAllAsTouched();
       return;
     }
     this.headerForm.disable();

@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 import { map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
@@ -82,10 +82,17 @@ export class SupplierFormDialog {
     this.countries().map((item) => ({ value: String(item.id), label: item.name }))
   );
 
+  /** Solo dígitos y separadores comunes de teléfono; nada de letras. */
+  protected readonly phonePattern = /^[0-9+()\-\s]*$/;
+
   protected readonly form = new FormGroup({
     legalName: new FormControl(this.data.supplier?.legalName ?? '', { nonNullable: true }),
     name: new FormControl(this.data.supplier?.name ?? '', { nonNullable: true }),
-    taxId: new FormControl(this.data.supplier?.taxId ?? '', { nonNullable: true }),
+    taxId: new FormControl(this.data.supplier?.taxId ?? '', {
+      nonNullable: true,
+      updateOn: 'blur',
+      asyncValidators: [this.taxIdAvailabilityValidator()],
+    }),
     countryId: new FormControl(
       this.data.supplier?.countryId ? String(this.data.supplier.countryId) : '',
       { nonNullable: true }
@@ -96,6 +103,19 @@ export class SupplierFormDialog {
     notes: new FormControl(this.data.supplier?.notes ?? '', { nonNullable: true }),
     isActive: new FormControl(this.data.supplier?.isActive ?? true, { nonNullable: true }),
   });
+
+  private taxIdAvailabilityValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Promise<ValidationErrors | null> => {
+      const taxId = (control.value as string)?.trim();
+      if (!taxId) {
+        return Promise.resolve(null);
+      }
+      const excludePartyId = this.linkedParty()?.partyId ?? this.data.supplier?.partyId ?? null;
+      return this.supplierService
+        .checkTaxIdAvailable(taxId, excludePartyId)
+        .then((available) => (available ? null : { taxIdTaken: true }));
+    };
+  }
 
   protected readonly formInvalid = toSignal(
     this.form.statusChanges.pipe(

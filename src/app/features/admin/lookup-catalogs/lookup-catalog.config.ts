@@ -1,3 +1,4 @@
+import { WAREHOUSE_PERIOD_NAME_PATTERN, nextMonthKey } from '../../../core/catalogs/current-warehouse-periods';
 import { LookupCatalogConfig } from './lookup-catalog.models';
 
 /** Un registro por cada tabla pequeña de catálogo que hoy solo se consumía como
@@ -156,5 +157,9 @@ export const LOOKUP_CATALOG_CONFIGS: Record<string, LookupCatalogConfig> = {
     hasAddress: false,
     nameMaxLength: 20,
     hasCloseAction: true,
+    namePattern: WAREHOUSE_PERIOD_NAME_PATTERN,
+    nameHintKey: 'lookupCatalogs.warehousePeriods.nameHint',
+    namePlaceholder: 'YYYY-MM',
+    defaultName: nextMonthKey,
   },
 };

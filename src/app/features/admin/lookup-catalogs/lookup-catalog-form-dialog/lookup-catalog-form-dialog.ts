@@ -42,7 +42,10 @@ export class LookupCatalogFormDialog {
 
   protected readonly form = new FormGroup({
     code: new FormControl(this.data.item?.code ?? '', { nonNullable: true }),
-    name: new FormControl(this.data.item?.name ?? '', { nonNullable: true, validators: [Validators.required] }),
+    name: new FormControl(
+      this.data.item?.name ?? this.config.defaultName?.() ?? '',
+      { nonNullable: true, validators: [Validators.required] }
+    ),
     address: new FormControl(this.data.item?.address ?? '', { nonNullable: true }),
     isActive: new FormControl(this.data.item?.isActive ?? true, { nonNullable: true }),
   });

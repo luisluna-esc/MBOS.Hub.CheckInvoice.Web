@@ -13,6 +13,10 @@
       [label]="'lookupCatalogs.form.name' | translate"
       [required]="true"
       [maxLength]="config.nameMaxLength"
+      [patternRule]="config.namePattern ?? null"
+      [placeholder]="config.namePlaceholder ?? ''"
+      [hint]="config.nameHintKey ? (config.nameHintKey | translate) : null"
+      [errorMessages]="{ pattern: (config.nameHintKey ? (config.nameHintKey | translate) : ('lookupCatalogs.form.nameInvalid' | translate)) }"
     />
     @if (config.hasAddress) {
       <app-input formControlName="address" [label]="'lookupCatalogs.form.address' | translate" [maxLength]="255" />

@@ -72,8 +72,7 @@
     "columns": {
       "code": "Code",
       "name": "Name"
-    },
-    "select": "Select"
+    }
   },
   "products": {
     "title": "Products",
@@ -217,6 +216,7 @@
     "form": {
       "code": "Code",
       "name": "Name",
+      "nameInvalid": "Invalid format.",
       "address": "Address",
       "isActive": "Active",
       "newTitle": "New: {{title}}",
@@ -244,7 +244,10 @@
     "specialCases": { "title": "Special Cases" },
     "voidReasons": { "title": "Void Reasons" },
     "warehouses": { "title": "Warehouses" },
-    "warehousePeriods": { "title": "Warehouse Periods" }
+    "warehousePeriods": {
+      "title": "Warehouse Periods",
+      "nameHint": "Format \"YYYY-MM\" (e.g. 2026-10). The system uses this value as a date to know which periods are currently active."
+    }
   },
   "roles": {
     "title": "Roles",
@@ -362,9 +365,12 @@
       "firstName": "First name",
       "lastName": "Last name",
       "email": "Email",
+      "emailInvalid": "Email must include an \"@\".",
       "username": "Username",
       "password": "Password",
       "passwordHint": "Leave blank to keep the current password.",
+      "confirmPassword": "Confirm password",
+      "passwordMismatch": "Passwords do not match.",
       "isActive": "Active",
       "success": "User saved successfully.",
       "error": "The user could not be saved."
@@ -592,6 +598,7 @@
       "issueDate": "Issue Date",
       "description": "Description",
       "sendToAccountsReceivable": "Send to accounts receivable",
+      "clientRequiredForAr": "You must select a client to send this to accounts receivable.",
       "paymentType": "Payment type",
       "paymentTypes": {
         "cash": "Cash",
@@ -954,6 +961,7 @@
     "filters": {
       "sourceWarehouse": "Source warehouse",
       "destinationWarehouse": "Destination warehouse",
+      "sameWarehouseWarning": "Source and destination warehouse cannot be the same.",
       "status": "Status",
       "dateFrom": "From",
       "dateTo": "To"
@@ -1068,6 +1076,7 @@
       "specialCaseNone": "None",
       "email": "Email",
       "mobilePhone": "Mobile",
+      "mobilePhoneInvalid": "Mobile phone cannot contain letters.",
       "district": "District",
       "church": "Church",
       "isActive": "Active",
@@ -1149,8 +1158,10 @@
       "code": "Code",
       "legalName": "Legal name",
       "taxId": "Tax ID",
+      "taxIdTaken": "This Tax ID is already registered to another supplier or client.",
       "country": "Country",
       "mobilePhone": "Mobile phone",
+      "mobilePhoneInvalid": "Mobile phone cannot contain letters.",
       "email": "Email",
       "address": "Address",
       "notes": "Notes",

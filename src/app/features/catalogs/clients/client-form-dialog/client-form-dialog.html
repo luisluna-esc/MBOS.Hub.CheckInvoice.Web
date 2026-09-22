@@ -148,7 +148,13 @@
           }
         </div>
         <app-input formControlName="email" type="email" [label]="'clients.form.email' | translate" [maxLength]="150" />
-        <app-input formControlName="mobilePhone" [label]="'clients.form.mobilePhone' | translate" [maxLength]="20" />
+        <app-input
+          formControlName="mobilePhone"
+          [label]="'clients.form.mobilePhone' | translate"
+          [maxLength]="20"
+          [patternRule]="phonePattern"
+          [errorMessages]="{ pattern: ('clients.form.mobilePhoneInvalid' | translate) }"
+        />
         <app-select
           formControlName="districtId"
           [label]="'clients.form.district' | translate"

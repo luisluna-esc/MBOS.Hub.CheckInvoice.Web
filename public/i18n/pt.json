@@ -72,8 +72,7 @@
     "columns": {
       "code": "Código",
       "name": "Nome"
-    },
-    "select": "Selecionar"
+    }
   },
   "products": {
     "title": "Produtos",
@@ -217,6 +216,7 @@
     "form": {
       "code": "Código",
       "name": "Nome",
+      "nameInvalid": "Formato inválido.",
       "address": "Endereço",
       "isActive": "Ativo",
       "newTitle": "Novo: {{title}}",
@@ -244,7 +244,10 @@
     "specialCases": { "title": "Casos Especiais" },
     "voidReasons": { "title": "Motivos de Anulação" },
     "warehouses": { "title": "Armazéns" },
-    "warehousePeriods": { "title": "Períodos de Armazém" }
+    "warehousePeriods": {
+      "title": "Períodos de Armazém",
+      "nameHint": "Formato \"YYYY-MM\" (ex. 2026-10). O sistema usa este valor como data para saber quais períodos estão vigentes."
+    }
   },
   "roles": {
     "title": "Funções",
@@ -362,9 +365,12 @@
       "firstName": "Nome",
       "lastName": "Sobrenome",
       "email": "E-mail",
+      "emailInvalid": "O e-mail deve incluir um \"@\".",
       "username": "Usuário",
       "password": "Senha",
       "passwordHint": "Deixe em branco para manter a senha atual.",
+      "confirmPassword": "Confirmar senha",
+      "passwordMismatch": "As senhas não coincidem.",
       "isActive": "Ativo",
       "success": "Usuário salvo com sucesso.",
       "error": "Não foi possível salvar o usuário."
@@ -592,6 +598,7 @@
       "issueDate": "Data de Emissão",
       "description": "Descrição",
       "sendToAccountsReceivable": "Enviar para contas a receber",
+      "clientRequiredForAr": "Selecione um cliente para enviar para contas a receber.",
       "paymentType": "Forma de pagamento",
       "paymentTypes": {
         "cash": "À vista",
@@ -954,6 +961,7 @@
     "filters": {
       "sourceWarehouse": "Almoxarifado origem",
       "destinationWarehouse": "Almoxarifado destino",
+      "sameWarehouseWarning": "O almoxarifado de origem e destino não podem ser o mesmo.",
       "status": "Status",
       "dateFrom": "De",
       "dateTo": "Até"
@@ -1068,6 +1076,7 @@
       "specialCaseNone": "Nenhuma",
       "email": "E-mail",
       "mobilePhone": "Celular",
+      "mobilePhoneInvalid": "O celular não pode conter letras.",
       "district": "Distrito",
       "church": "Igreja",
       "isActive": "Ativo",
@@ -1149,8 +1158,10 @@
       "code": "Código",
       "legalName": "Razão social",
       "taxId": "NIT",
+      "taxIdTaken": "Este NIT já está registrado com outro fornecedor ou cliente.",
       "country": "País",
       "mobilePhone": "Celular",
+      "mobilePhoneInvalid": "O celular não pode conter letras.",
       "email": "E-mail",
       "address": "Endereço",
       "notes": "Notas",

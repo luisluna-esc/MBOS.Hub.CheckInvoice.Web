@@ -44,7 +44,11 @@
           <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
         } @else {
           <app-party-search-input mode="client" (picked)="onClientPicked($event)" />
-          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
+          @if (continueAttempted() && sendToAccountsReceivable() && !headerValues()?.clientId) {
+            <p class="min-h-4 text-xs text-danger">{{ 'issues.form.clientRequiredForAr' | translate }}</p>
+          } @else {
+            <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
+          }
         }
       </div>
       <app-select
@@ -117,8 +121,9 @@
     @if (!headerConfirmed()) {
       <button
         type="button"
-        class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-        [disabled]="continueDisabled()"
+        class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
+        [class.cursor-not-allowed]="continueDisabled()"
+        [class.opacity-50]="continueDisabled()"
         (click)="onContinue()"
       >
         {{ 'issues.form.continue' | translate }}

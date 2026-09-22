@@ -288,8 +288,12 @@ export class IssueCreate {
     }
   }
 
+  protected readonly continueAttempted = signal(false);
+
   protected onContinue(): void {
     if (this.continueDisabled()) {
+      this.continueAttempted.set(true);
+      this.headerForm.markAllAsTouched();
       return;
     }
     this.headerForm.disable();

@@ -27,6 +27,11 @@ export class Input implements ControlValueAccessor {
   readonly decimals = input<number | null>(null);
   /** Permite sobrescribir/agregar mensajes por clave de error (ej. { pattern: 'Formato inválido.' }) */
   readonly errorMessages = input<Record<string, string>>({});
+  // Nombre "patternRule" (no "pattern"): Angular tiene un PatternValidator nativo que se
+  // auto-adjunta a cualquier elemento con [pattern] + formControlName/ngModel, sin importar si
+  // es un componente propio — coincide por nombre de atributo, no por selector de componente.
+  /** Patrón adicional a validar (ej. requerir un "@" en un campo type="text" sin las restricciones de type="email"). */
+  readonly patternRule = input<string | RegExp | null>(null);
 
   protected readonly stepAttr = computed<string | null>(() =>
     this.decimals() !== null ? (1 / Math.pow(10, this.decimals()!)).toString() : null
@@ -78,6 +83,9 @@ export class Input implements ControlValueAccessor {
         }
         if (this.type() === 'email') {
           validators.push(Validators.email);
+        }
+        if (this.patternRule() !== null) {
+          validators.push(Validators.pattern(this.patternRule()!));
         }
         if (this.min() !== null) {
           validators.push(Validators.min(this.min()!));
@@ -169,6 +177,8 @@ export class Input implements ControlValueAccessor {
         return `No puede superar los ${control.errors['maxlength'].requiredLength} caracteres.`;
       case 'email':
         return 'Correo electrónico inválido.';
+      case 'pattern':
+        return 'Formato inválido.';
       case 'min':
         return `No puede ser menor que ${control.errors['min'].min}.`;
       case 'decimals':

@@ -82,8 +82,9 @@
     @if (!headerConfirmed()) {
       <button
         type="button"
-        class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-        [disabled]="continueDisabled()"
+        class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
+        [class.cursor-not-allowed]="continueDisabled()"
+        [class.opacity-50]="continueDisabled()"
         (click)="onContinue()"
       >
         {{ 'receipts.form.continue' | translate }}

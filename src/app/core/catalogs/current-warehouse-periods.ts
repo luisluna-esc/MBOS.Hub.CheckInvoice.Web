@@ -10,6 +10,19 @@ export function currentMonthKey(): string {
   return monthKey(new Date());
 }
 
+/** Nombre del período (formato "YYYY-MM") del mes siguiente — se usa para sugerir el valor al
+ * crear un nuevo Período de Almacén, ya que hay que crearlo con anticipación (el catálogo no
+ * genera los períodos solo; si nadie crea el de octubre, en octubre solo aparecerá septiembre). */
+export function nextMonthKey(): string {
+  const now = new Date();
+  return monthKey(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+}
+
+/** Formato exigido para el nombre de un Período de Almacén: "YYYY-MM". El resto del sistema
+ * (selección de períodos vigentes, rango de Fecha de Emisión) interpreta el Name como una fecha
+ * parseándolo con esta misma forma — un nombre libre rompería esa lógica en silencio. */
+export const WAREHOUSE_PERIOD_NAME_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+
 /** Primer día del mes anterior, en formato ISO (YYYY-MM-DD) — límite mínimo de la Fecha de
  * Emisión: junto con el `max` de hoy, mantiene la fecha dentro de la misma ventana que el
  * Periodo de Almacén (mes actual o el anterior), nunca más atrás. */

@@ -86,14 +86,26 @@
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <app-input formControlName="name" [label]="'suppliers.form.name' | translate" [required]="true" [maxLength]="150" />
         <app-input formControlName="legalName" [label]="'suppliers.form.legalName' | translate" [required]="true" [maxLength]="150" />
-        <app-input formControlName="taxId" [label]="'suppliers.form.taxId' | translate" [required]="true" [maxLength]="20" />
+        <app-input
+          formControlName="taxId"
+          [label]="'suppliers.form.taxId' | translate"
+          [required]="true"
+          [maxLength]="20"
+          [errorMessages]="{ taxIdTaken: ('suppliers.form.taxIdTaken' | translate) }"
+        />
         <app-select
           formControlName="countryId"
           [label]="'suppliers.form.country' | translate"
           [options]="countryOptions()"
           [required]="true"
         />
-        <app-input formControlName="mobilePhone" [label]="'suppliers.form.mobilePhone' | translate" [maxLength]="20" />
+        <app-input
+          formControlName="mobilePhone"
+          [label]="'suppliers.form.mobilePhone' | translate"
+          [maxLength]="20"
+          [patternRule]="phonePattern"
+          [errorMessages]="{ pattern: ('suppliers.form.mobilePhoneInvalid' | translate) }"
+        />
         <app-input formControlName="email" type="email" [label]="'suppliers.form.email' | translate" [required]="true" [maxLength]="150" />
       </div>
 

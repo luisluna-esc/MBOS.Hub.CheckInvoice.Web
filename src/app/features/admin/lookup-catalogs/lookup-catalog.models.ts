@@ -30,4 +30,11 @@ export interface LookupCatalogConfig {
   /** Solo Períodos de Almacén: se cierran con una acción propia (PUT {id}/close), no se
    * editan como un booleano cualquiera — una vez cerrado, ya no se puede editar ni eliminar. */
   hasCloseAction?: boolean;
+  /** Restringe el formato del campo Nombre (ej. Períodos de Almacén exige "YYYY-MM" porque el
+   * resto del sistema parsea ese valor como fecha). */
+  namePattern?: RegExp;
+  nameHintKey?: string;
+  namePlaceholder?: string;
+  /** Valor sugerido al crear un registro nuevo (ej. el próximo mes para Períodos de Almacén). */
+  defaultName?: () => string;
 }

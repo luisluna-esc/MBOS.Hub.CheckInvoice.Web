@@ -41,6 +41,7 @@ export class TransfersReceivedList {
   protected readonly warehouses = signal<CatalogItem[]>([]);
 
   private currentFilters: TransferFilters = {};
+  private readonly todayIso = new Date().toISOString().slice(0, 10);
 
   protected readonly filterFields = computed<FilterField[]>(() => [
     {
@@ -62,11 +63,13 @@ export class TransfersReceivedList {
       key: 'dateFrom',
       label: this.languageService.t('transfers.filters.dateFrom'),
       type: 'date',
+      max: this.todayIso,
     },
     {
       key: 'dateTo',
       label: this.languageService.t('transfers.filters.dateTo'),
       type: 'date',
+      max: this.todayIso,
     },
   ]);
 

@@ -72,8 +72,7 @@
     "columns": {
       "code": "Código",
       "name": "Nombre"
-    },
-    "select": "Seleccionar"
+    }
   },
   "products": {
     "title": "Productos",
@@ -217,6 +216,7 @@
     "form": {
       "code": "Código",
       "name": "Nombre",
+      "nameInvalid": "Formato inválido.",
       "address": "Dirección",
       "isActive": "Activo",
       "newTitle": "Nuevo: {{title}}",
@@ -244,7 +244,10 @@
     "specialCases": { "title": "Casos Especiales" },
     "voidReasons": { "title": "Motivos de Anulación" },
     "warehouses": { "title": "Almacenes" },
-    "warehousePeriods": { "title": "Períodos de Almacén" }
+    "warehousePeriods": {
+      "title": "Períodos de Almacén",
+      "nameHint": "Formato \"YYYY-MM\" (ej. 2026-10). El sistema usa este valor como fecha para saber qué períodos están vigentes."
+    }
   },
   "roles": {
     "title": "Roles",
@@ -362,9 +365,12 @@
       "firstName": "Nombre",
       "lastName": "Apellido",
       "email": "Correo",
+      "emailInvalid": "El correo debe incluir un \"@\".",
       "username": "Usuario",
       "password": "Contraseña",
       "passwordHint": "Deja en blanco para mantener la contraseña actual.",
+      "confirmPassword": "Confirmar contraseña",
+      "passwordMismatch": "Las contraseñas no coinciden.",
       "isActive": "Activo",
       "success": "Usuario guardado correctamente.",
       "error": "No se pudo guardar el usuario."
@@ -592,6 +598,7 @@
       "issueDate": "Fecha de Emisión",
       "description": "Descripción",
       "sendToAccountsReceivable": "Enviar a cuentas por cobrar",
+      "clientRequiredForAr": "Debes seleccionar un cliente para enviar a cuentas por cobrar.",
       "paymentType": "Forma de pago",
       "paymentTypes": {
         "cash": "Al contado",
@@ -954,6 +961,7 @@
     "filters": {
       "sourceWarehouse": "Almacén origen",
       "destinationWarehouse": "Almacén destino",
+      "sameWarehouseWarning": "El almacén origen y destino no pueden ser el mismo.",
       "status": "Estado",
       "dateFrom": "Desde",
       "dateTo": "Hasta"
@@ -1068,6 +1076,7 @@
       "specialCaseNone": "Ninguna",
       "email": "Correo",
       "mobilePhone": "Celular",
+      "mobilePhoneInvalid": "El celular no puede contener letras.",
       "district": "Distrito",
       "church": "Iglesia",
       "isActive": "Activo",
@@ -1149,8 +1158,10 @@
       "code": "Código",
       "legalName": "Razón social",
       "taxId": "NIT",
+      "taxIdTaken": "Este NIT ya está registrado con otro proveedor o cliente.",
       "country": "País",
       "mobilePhone": "Celular",
+      "mobilePhoneInvalid": "El celular no puede contener letras.",
       "email": "Correo",
       "address": "Dirección",
       "notes": "Notas",

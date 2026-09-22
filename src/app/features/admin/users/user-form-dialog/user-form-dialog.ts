@@ -1,7 +1,15 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { map, startWith } from 'rxjs';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
@@ -31,20 +39,47 @@ export class UserFormDialog {
   protected readonly saving = signal(false);
   protected readonly isEdit = !!this.data.user;
 
+  /** Solo se exige un "@" con algo a cada lado; el correo puede llevar mayúsculas y otros caracteres libremente. */
+  protected readonly emailPattern = /^\S+@\S+$/;
+
+  private readonly passwordControl = new FormControl('', {
+    nonNullable: true,
+    validators: this.isEdit ? [Validators.minLength(8)] : [Validators.required, Validators.minLength(8)],
+  });
+
+  // Validador async (no sync): el componente app-input reescribe los validadores síncronos del
+  // control en su propio efecto (según sus inputs required/minLength/...), lo que borraría un
+  // validador síncrono agregado aquí. Los asyncValidators no los toca, así que sobreviven.
+  private readonly confirmPasswordControl = new FormControl('', {
+    nonNullable: true,
+    asyncValidators: [this.passwordsMatchValidator()],
+  });
+
   protected readonly form = new FormGroup({
     firstName: new FormControl(this.data.user?.firstName ?? '', { nonNullable: true, validators: [Validators.required] }),
     lastName: new FormControl(this.data.user?.lastName ?? '', { nonNullable: true, validators: [Validators.required] }),
-    email: new FormControl(this.data.user?.email ?? '', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.email],
-    }),
+    email: new FormControl(this.data.user?.email ?? '', { nonNullable: true, validators: [Validators.required] }),
     username: new FormControl(this.data.user?.username ?? '', { nonNullable: true, validators: [Validators.required] }),
-    password: new FormControl('', {
-      nonNullable: true,
-      validators: this.isEdit ? [Validators.minLength(8)] : [Validators.required, Validators.minLength(8)],
-    }),
+    password: this.passwordControl,
+    confirmPassword: this.confirmPasswordControl,
     isActive: new FormControl(this.data.user?.isActive ?? true, { nonNullable: true }),
   });
+
+  constructor() {
+    this.passwordControl.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.confirmPasswordControl.updateValueAndValidity({ onlySelf: true });
+    });
+  }
+
+  private passwordsMatchValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Promise<ValidationErrors | null> => {
+      const password = this.passwordControl.value;
+      if (!password) {
+        return Promise.resolve(null);
+      }
+      return Promise.resolve(control.value === password ? null : { passwordMismatch: true });
+    };
+  }
 
   protected readonly formInvalid = toSignal(
     this.form.statusChanges.pipe(

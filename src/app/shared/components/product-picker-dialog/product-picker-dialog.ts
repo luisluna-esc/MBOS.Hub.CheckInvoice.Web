@@ -7,7 +7,8 @@ import { ProductService } from '../../../features/catalogs/products/product.serv
 import { Dialog } from '../dialog/dialog';
 import { ErrorState } from '../error-state/error-state';
 import { FilterField, Filters, FilterValues } from '../filters/filters';
-import { Table, TableAction, TableColumn } from '../table/table';
+import { SelectableTable } from '../selectable-table/selectable-table';
+import { TableColumn } from '../table/table';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface ProductPickerResult {
@@ -24,7 +25,7 @@ export interface ProductPickerData {
 
 @Component({
   selector: 'app-product-picker-dialog',
-  imports: [Dialog, Filters, Table, ErrorState, TranslatePipe],
+  imports: [Dialog, Filters, SelectableTable, ErrorState, TranslatePipe],
   templateUrl: './product-picker-dialog.html',
 })
 export class ProductPickerDialog {
@@ -60,14 +61,6 @@ export class ProductPickerDialog {
   protected readonly columns = computed<TableColumn<Product>[]>(() => [
     { key: 'code', header: this.languageService.t('productPicker.columns.code'), format: (value) => (value as string) || '—' },
     { key: 'name', header: this.languageService.t('productPicker.columns.name') },
-  ]);
-
-  protected readonly actions = computed<TableAction<Product>[]>(() => [
-    {
-      label: this.languageService.t('productPicker.select'),
-      icon: 'create',
-      onClick: (row) => this.select(row),
-    },
   ]);
 
   constructor() {
@@ -115,7 +108,7 @@ export class ProductPickerDialog {
     void this.load();
   }
 
-  protected select(row: Product): void {
+  protected onRowSelected(row: Product): void {
     this.dialogRef.close({
       productId: row.productId,
       name: row.name,

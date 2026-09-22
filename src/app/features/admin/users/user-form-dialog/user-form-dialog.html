@@ -8,7 +8,15 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <app-input formControlName="firstName" [label]="'users.form.firstName' | translate" [required]="true" [maxLength]="100" />
       <app-input formControlName="lastName" [label]="'users.form.lastName' | translate" [required]="true" [maxLength]="100" />
-      <app-input formControlName="email" type="email" [label]="'users.form.email' | translate" [required]="true" [maxLength]="150" />
+      <app-input
+        formControlName="email"
+        type="text"
+        [patternRule]="emailPattern"
+        [errorMessages]="{ pattern: ('users.form.emailInvalid' | translate) }"
+        [label]="'users.form.email' | translate"
+        [required]="true"
+        [maxLength]="150"
+      />
       <app-input formControlName="username" [label]="'users.form.username' | translate" [required]="true" [maxLength]="50" />
       <app-input
         formControlName="password"
@@ -16,6 +24,13 @@
         [label]="'users.form.password' | translate"
         [required]="!isEdit"
         [hint]="isEdit ? ('users.form.passwordHint' | translate) : null"
+      />
+      <app-input
+        formControlName="confirmPassword"
+        type="password"
+        [label]="'users.form.confirmPassword' | translate"
+        [required]="!isEdit"
+        [errorMessages]="{ passwordMismatch: ('users.form.passwordMismatch' | translate) }"
       />
     </div>
 

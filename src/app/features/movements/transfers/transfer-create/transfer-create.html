@@ -21,12 +21,17 @@
         [options]="warehouseOptions()"
         [required]="true"
       />
-      <app-select
-        formControlName="destinationWarehouseId"
-        [label]="'transfers.form.destinationWarehouse' | translate"
-        [options]="warehouseOptions()"
-        [required]="true"
-      />
+      <div class="flex flex-col gap-1">
+        <app-select
+          formControlName="destinationWarehouseId"
+          [label]="'transfers.form.destinationWarehouse' | translate"
+          [options]="warehouseOptions()"
+          [required]="true"
+        />
+        @if (sameWarehouseError()) {
+          <p class="min-h-4 text-xs text-danger">{{ 'transfers.form.sameWarehouseError' | translate }}</p>
+        }
+      </div>
       <div class="flex flex-col gap-1">
         <label class="text-sm font-medium text-foreground">{{ 'transfers.form.receiver' | translate }}</label>
         @if (receiverParty(); as receiver) {
@@ -45,10 +50,6 @@
         }
       </div>
     </div>
-
-    @if (sameWarehouseError()) {
-      <p class="text-xs text-danger">{{ 'transfers.form.sameWarehouseError' | translate }}</p>
-    }
 
     <div class="text-sm text-muted-foreground">
       {{ 'transfers.form.sentBy' | translate }}: <span class="text-foreground">{{ senderName() }}</span>
