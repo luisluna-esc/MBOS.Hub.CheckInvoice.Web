@@ -23,13 +23,15 @@
         <label class="text-sm font-medium text-foreground">{{ 'reports.pastorField.client' | translate }}</label>
         @if (selectedClient(); as client) {
           <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
-            <span class="text-foreground">{{ client.name }}</span>
-            <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearClient()">
+            <span class="min-w-0 truncate text-foreground">{{ client.name }}</span>
+            <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="clearClient()">
               {{ 'reports.pastorField.changeClient' | translate }}
             </button>
           </div>
+          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
         } @else {
           <app-party-search-input mode="client" (picked)="onClientPicked($event)" />
+          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
         }
       </div>
       <app-date-picker

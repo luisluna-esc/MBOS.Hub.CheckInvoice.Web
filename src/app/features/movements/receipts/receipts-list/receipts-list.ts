@@ -59,10 +59,9 @@ export class ReceiptsList {
       options: this.warehouses().map((item) => ({ value: String(item.id), label: item.name })),
     },
     {
-      key: 'supplierId',
+      key: 'supplierName',
       label: this.languageService.t('receipts.filters.supplier'),
-      type: 'party-search',
-      partyMode: 'supplier',
+      type: 'text',
     },
     {
       key: 'receiptTypeId',
@@ -222,7 +221,7 @@ export class ReceiptsList {
   protected onSearch(values: FilterValues): void {
     this.currentFilters = {
       warehouseId: values['warehouseId'] ? Number(values['warehouseId']) : undefined,
-      supplierId: values['supplierId'] ? Number(values['supplierId']) : undefined,
+      supplierName: values['supplierName'] || undefined,
       receiptTypeId: values['receiptTypeId'] ? Number(values['receiptTypeId']) : undefined,
       invoiceNumber: values['invoiceNumber'] ?? undefined,
     };

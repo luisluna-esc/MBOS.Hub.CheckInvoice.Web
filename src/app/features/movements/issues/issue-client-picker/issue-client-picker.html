@@ -31,15 +31,15 @@
       <app-error-state [code]="errorCode()!" />
     </div>
   } @else {
-    <app-table
+    <app-selectable-table
       [columns]="columns()"
       [rows]="rows()"
-      [actions]="actions()"
       [totalRecords]="totalRecords()"
       [pageNumber]="pageNumber()"
       [pageSize]="pageSize()"
       [emptyMessage]="'table.empty' | translate"
       [loading]="loading()"
+      (rowSelected)="selectClient($event)"
       (pageChange)="onPageChange($event)"
       (pageSizeChange)="onPageSizeChange($event)"
     />

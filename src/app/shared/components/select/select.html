@@ -20,8 +20,8 @@
     [class.border-danger]="showError"
     (click)="toggle()"
   >
-    <span [class.text-muted-foreground]="!selectedOption()">
-      {{ selectedOption()?.label ?? placeholder() }}
+    <span class="min-w-0 truncate" [class.text-muted-foreground]="!selectedOption()">
+      {{ (selectedOption()?.label ?? placeholder()) || ' ' }}
     </span>
     <svg
       xmlns="http://www.w3.org/2000/svg"

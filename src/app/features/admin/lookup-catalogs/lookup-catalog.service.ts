@@ -38,4 +38,8 @@ export class LookupCatalogService {
   delete(resource: string, id: number): Promise<WriteResponse> {
     return firstValueFrom(this.http.delete<WriteResponse>(`${environment.apiUrl}/${resource}/${id}`));
   }
+
+  close(resource: string, id: number): Promise<WriteResponse> {
+    return firstValueFrom(this.http.put<WriteResponse>(`${environment.apiUrl}/${resource}/${id}/close`, {}));
+  }
 }

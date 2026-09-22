@@ -3,6 +3,7 @@ export interface LookupCatalogItem extends Record<string, unknown> {
   name: string;
   address?: string | null;
   isActive?: boolean;
+  isClosed?: boolean;
 }
 
 export interface LookupCatalogRequest {
@@ -26,4 +27,7 @@ export interface LookupCatalogConfig {
   hasAddress: boolean;
   nameMaxLength: number;
   codeMaxLength?: number;
+  /** Solo Períodos de Almacén: se cierran con una acción propia (PUT {id}/close), no se
+   * editan como un booleano cualquiera — una vez cerrado, ya no se puede editar ni eliminar. */
+  hasCloseAction?: boolean;
 }

@@ -30,14 +30,14 @@
       <div class="flex flex-col gap-1">
         <label class="text-sm font-medium text-foreground">{{ 'issues.form.client' | translate }}</label>
         @if (clientLocked()) {
-          <div class="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
+          <div class="truncate rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
             {{ lockedClient()?.name ?? '—' }}
           </div>
           <p class="min-h-4 text-xs text-muted-foreground">{{ 'issues.form.clientLocked' | translate }}</p>
         } @else if (selectedClient(); as client) {
           <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
-            <span class="text-foreground">{{ client.name }}</span>
-            <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearClient()">
+            <span class="min-w-0 truncate text-foreground">{{ client.name }}</span>
+            <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="clearClient()">
               {{ 'issues.form.changeClient' | translate }}
             </button>
           </div>

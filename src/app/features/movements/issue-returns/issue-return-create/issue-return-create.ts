@@ -86,10 +86,9 @@ export class IssueReturnCreate {
       options: operationalWarehouseOnly(this.warehouses()).map((item) => ({ value: String(item.id), label: item.name })),
     },
     {
-      key: 'clientId',
+      key: 'clientName',
       label: this.languageService.t('issues.filters.client'),
-      type: 'party-search',
-      partyMode: 'client',
+      type: 'text',
     },
   ]);
 
@@ -167,7 +166,7 @@ export class IssueReturnCreate {
     this.currentFilters = {
       issueId: values['issueId'] ? Number(values['issueId']) : undefined,
       warehouseId: values['warehouseId'] ? Number(values['warehouseId']) : undefined,
-      clientId: values['clientId'] ? Number(values['clientId']) : undefined,
+      clientName: values['clientName'] || undefined,
     };
     this.pageNumber.set(1);
     void this.load();

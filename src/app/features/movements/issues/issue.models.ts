@@ -53,4 +53,5 @@ export interface IssueFilters {
   clientId?: number;
   warehouseId?: number;
   issueTypeId?: number;
+  clientName?: string;
 }

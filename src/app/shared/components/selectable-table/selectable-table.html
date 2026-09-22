@@ -1,0 +1,95 @@
+<div class="w-full overflow-x-auto rounded-md border border-border">
+  <table class="w-full min-w-full divide-y divide-border text-sm">
+    <thead class="bg-surface">
+      <tr>
+        @for (column of columns(); track column.key) {
+          <th
+            class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground"
+            [class.text-center]="column.align === 'center'"
+            [class.text-right]="column.align === 'right'"
+          >
+            {{ column.header }}
+          </th>
+        }
+      </tr>
+    </thead>
+
+    <tbody class="divide-y divide-border">
+      @if (loading()) {
+        @for (skeletonRow of skeletonRows(); track $index) {
+          <tr>
+            @for (column of columns(); track column.key) {
+              <td class="px-3 py-2">
+                <app-skeleton height="1rem" width="80%" />
+              </td>
+            }
+          </tr>
+        }
+      } @else if (rows().length === 0) {
+        <tr>
+          <td [attr.colspan]="columns().length" class="px-3 py-6 text-center text-muted-foreground">
+            {{ emptyMessage() ?? ('table.empty' | translate) }}
+          </td>
+        </tr>
+      } @else {
+        @for (row of rows(); track $index; let rowIndex = $index) {
+          <tr
+            class="transition-colors"
+            [class.cursor-pointer]="!isRowDisabled(row)"
+            [class.hover:bg-brand-300]="!isRowDisabled(row)"
+            [class.cursor-not-allowed]="isRowDisabled(row)"
+            [class.opacity-40]="isRowDisabled(row)"
+            [attr.title]="getRowTitle(row)"
+            (click)="onRowClick(row)"
+          >
+            @for (column of columns(); track column.key) {
+              <td
+                class="px-3 py-2 text-foreground"
+                [class.text-center]="column.align === 'center'"
+                [class.text-right]="column.align === 'right'"
+              >
+                {{ getCellValue(row, column, rowIndex) }}
+              </td>
+            }
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+
+  @if (totalRecords() > 0) {
+    <div class="flex items-center justify-between border-t border-border bg-surface px-3 py-2 text-xs text-muted-foreground">
+      <div class="flex items-center gap-3">
+        <span>{{ 'table.pageInfo' | translate: { page: pageNumber(), total: totalPages() } }}</span>
+        <div class="flex items-center gap-1">
+          <span>{{ 'table.pageSize' | translate }}</span>
+          <span class="h-9 w-16 overflow-hidden">
+            <app-select
+              [options]="pageSizeSelectOptions()"
+              [ngModel]="pageSizeValue()"
+              (ngModelChange)="onPageSizeChange($event)"
+            />
+          </span>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="rounded border border-border px-2 py-1 transition-colors hover:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          [disabled]="pageNumber() <= 1"
+          (click)="goToPage(pageNumber() - 1)"
+        >
+          {{ 'table.previous' | translate }}
+        </button>
+        <button
+          type="button"
+          class="rounded border border-border px-2 py-1 transition-colors hover:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          [disabled]="pageNumber() >= totalPages()"
+          (click)="goToPage(pageNumber() + 1)"
+        >
+          {{ 'table.next' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

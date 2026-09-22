@@ -5,7 +5,8 @@ import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
-import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
+import { SelectableTable } from '../../../../shared/components/selectable-table/selectable-table';
+import { TableColumn } from '../../../../shared/components/table/table';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ClientFormDialog, ClientFormDialogData } from '../../../catalogs/clients/client-form-dialog/client-form-dialog';
 import { Client, ClientFilters } from '../../../catalogs/clients/client.models';
@@ -13,7 +14,7 @@ import { ClientService } from '../../../catalogs/clients/client.service';
 
 @Component({
   selector: 'app-issue-client-picker',
-  imports: [Filters, Table, ErrorState, TranslatePipe],
+  imports: [Filters, SelectableTable, ErrorState, TranslatePipe],
   templateUrl: './issue-client-picker.html',
 })
 export class IssueClientPicker {
@@ -43,14 +44,6 @@ export class IssueClientPicker {
     { key: 'taxId', header: this.languageService.t('issues.clientPicker.taxId'), format: (value) => (value as string) || '—' },
     { key: 'name', header: this.languageService.t('issues.clientPicker.fullName') },
     { key: 'email', header: this.languageService.t('issues.clientPicker.email'), format: (value) => (value as string) || '—' },
-  ]);
-
-  protected readonly actions = computed<TableAction<Client>[]>(() => [
-    {
-      label: this.languageService.t('issues.clientPicker.select'),
-      icon: 'create',
-      onClick: (row) => this.selectClient(row),
-    },
   ]);
 
   constructor() {
@@ -111,7 +104,7 @@ export class IssueClientPicker {
     });
   }
 
-  private selectClient(row: Client): void {
+  protected selectClient(row: Client): void {
     void this.router.navigate(['/issues/new/details'], { state: { clientId: row.clientId } });
   }
 }

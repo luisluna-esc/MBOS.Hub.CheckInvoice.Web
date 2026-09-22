@@ -58,6 +58,7 @@ export interface ReceiptFilters {
   warehouseId?: number;
   receiptTypeId?: number;
   invoiceNumber?: string;
+  supplierName?: string;
 }
 
 export interface ReturnableIssueLine {

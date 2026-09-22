@@ -23,11 +23,12 @@
         <label class="text-sm font-medium text-foreground">{{ 'reports.kardexByProduct.product' | translate }}</label>
         @if (selectedProduct(); as product) {
           <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
-            <span class="text-foreground">{{ product.name }}</span>
-            <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearProduct()">
+            <span class="min-w-0 truncate text-foreground">{{ product.name }}</span>
+            <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="clearProduct()">
               {{ 'reports.kardexByProduct.changeProduct' | translate }}
             </button>
           </div>
+          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
         } @else {
           <button
             type="button"
@@ -36,6 +37,7 @@
           >
             {{ 'reports.kardexByProduct.selectProduct' | translate }}
           </button>
+          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
         }
       </div>
       <app-select

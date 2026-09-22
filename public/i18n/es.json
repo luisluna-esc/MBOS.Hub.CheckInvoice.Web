@@ -194,6 +194,9 @@
     "new": "Nuevo",
     "active": "Activo",
     "inactive": "Inactivo",
+    "closed": "Cerrado",
+    "open": "Abierto",
+    "closedReason": "Este período ya está cerrado.",
     "columns": {
       "code": "Código",
       "name": "Nombre",
@@ -202,7 +205,14 @@
     },
     "actions": {
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "close": "Cerrar"
+    },
+    "close": {
+      "title": "Cerrar período",
+      "message": "¿Seguro que deseas cerrar el período \"{{name}}\"? Una vez cerrado ya no se puede editar, eliminar ni volver a abrir, y no se podrán registrar Entradas ni Salidas en ese período.",
+      "success": "Período cerrado correctamente.",
+      "error": "No se pudo cerrar el período."
     },
     "form": {
       "code": "Código",
@@ -233,7 +243,8 @@
     "provinces": { "title": "Provincias" },
     "specialCases": { "title": "Casos Especiales" },
     "voidReasons": { "title": "Motivos de Anulación" },
-    "warehouses": { "title": "Almacenes" }
+    "warehouses": { "title": "Almacenes" },
+    "warehousePeriods": { "title": "Períodos de Almacén" }
   },
   "roles": {
     "title": "Roles",
@@ -402,9 +413,7 @@
     "actions": "Opciones"
   },
   "filters": {
-    "search": "Buscar",
-    "clear": "Limpiar",
-    "changeParty": "Cambiar"
+    "clear": "Limpiar"
   },
   "errorState": {
     "400": {
@@ -445,7 +454,6 @@
       "search": "Nombre, razón social o NIT",
       "taxId": "NIT",
       "fullName": "Nombre completo",
-      "select": "Seleccionar",
       "createSupplier": "Crear proveedor"
     },
     "filters": {
@@ -530,7 +538,6 @@
       "taxId": "NIT",
       "fullName": "Nombre completo",
       "email": "Correo",
-      "select": "Seleccionar",
       "createClient": "Crear cliente"
     },
     "filters": {

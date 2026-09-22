@@ -16,6 +16,7 @@ export interface AccountReceivable extends Record<string, unknown> {
 export interface AccountReceivableFilters {
   clientId?: number;
   status?: string;
+  clientName?: string;
 }
 
 export interface Payment extends Record<string, unknown> {

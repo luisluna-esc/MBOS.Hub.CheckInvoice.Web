@@ -194,6 +194,9 @@
     "new": "New",
     "active": "Active",
     "inactive": "Inactive",
+    "closed": "Closed",
+    "open": "Open",
+    "closedReason": "This period is already closed.",
     "columns": {
       "code": "Code",
       "name": "Name",
@@ -202,7 +205,14 @@
     },
     "actions": {
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "close": "Close"
+    },
+    "close": {
+      "title": "Close period",
+      "message": "Are you sure you want to close period \"{{name}}\"? Once closed it can no longer be edited, deleted, or reopened, and no more Receipts or Issues can be recorded in it.",
+      "success": "Period closed successfully.",
+      "error": "Could not close the period."
     },
     "form": {
       "code": "Code",
@@ -233,7 +243,8 @@
     "provinces": { "title": "Provinces" },
     "specialCases": { "title": "Special Cases" },
     "voidReasons": { "title": "Void Reasons" },
-    "warehouses": { "title": "Warehouses" }
+    "warehouses": { "title": "Warehouses" },
+    "warehousePeriods": { "title": "Warehouse Periods" }
   },
   "roles": {
     "title": "Roles",
@@ -402,9 +413,7 @@
     "actions": "Options"
   },
   "filters": {
-    "search": "Search",
-    "clear": "Clear",
-    "changeParty": "Change"
+    "clear": "Clear"
   },
   "errorState": {
     "400": {
@@ -445,7 +454,6 @@
       "search": "Name, legal name, or tax ID",
       "taxId": "Tax ID",
       "fullName": "Full name",
-      "select": "Select",
       "createSupplier": "Create supplier"
     },
     "filters": {
@@ -530,7 +538,6 @@
       "taxId": "Tax ID",
       "fullName": "Full name",
       "email": "Email",
-      "select": "Select",
       "createClient": "Create client"
     },
     "filters": {

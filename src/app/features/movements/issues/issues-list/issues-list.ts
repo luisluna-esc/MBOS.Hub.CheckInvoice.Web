@@ -56,10 +56,9 @@ export class IssuesList {
       options: this.warehouses().map((item) => ({ value: String(item.id), label: item.name })),
     },
     {
-      key: 'clientId',
+      key: 'clientName',
       label: this.languageService.t('issues.filters.client'),
-      type: 'party-search',
-      partyMode: 'client',
+      type: 'text',
     },
     {
       key: 'issueTypeId',
@@ -203,7 +202,7 @@ export class IssuesList {
   protected onSearch(values: FilterValues): void {
     this.currentFilters = {
       warehouseId: values['warehouseId'] ? Number(values['warehouseId']) : undefined,
-      clientId: values['clientId'] ? Number(values['clientId']) : undefined,
+      clientName: values['clientName'] || undefined,
       issueTypeId: values['issueTypeId'] ? Number(values['issueTypeId']) : undefined,
     };
     this.pageNumber.set(1);

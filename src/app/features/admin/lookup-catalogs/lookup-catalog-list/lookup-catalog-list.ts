@@ -68,22 +68,48 @@ export class LookupCatalogList {
           value ? this.languageService.t('lookupCatalogs.active') : this.languageService.t('lookupCatalogs.inactive'),
       });
     }
+    if (config?.hasCloseAction) {
+      columns.push({
+        key: 'isClosed',
+        header: this.languageService.t('lookupCatalogs.columns.status'),
+        align: 'center',
+        format: (value) =>
+          value ? this.languageService.t('lookupCatalogs.closed') : this.languageService.t('lookupCatalogs.open'),
+      });
+    }
     return columns;
   });
 
-  protected readonly actions = computed<TableAction<LookupCatalogItem>[]>(() => [
-    {
-      label: this.languageService.t('lookupCatalogs.actions.edit'),
-      icon: 'edit',
-      onClick: (row) => this.openEdit(row),
-    },
-    {
-      label: this.languageService.t('lookupCatalogs.actions.delete'),
-      icon: 'delete',
-      variant: 'danger',
-      onClick: (row) => this.confirmDelete(row),
-    },
-  ]);
+  protected readonly actions = computed<TableAction<LookupCatalogItem>[]>(() => {
+    const config = this.config();
+    const actions: TableAction<LookupCatalogItem>[] = [
+      {
+        label: this.languageService.t('lookupCatalogs.actions.edit'),
+        icon: 'edit',
+        disabled: (row) => !!row.isClosed,
+        disabledReason: (row) => (row.isClosed ? this.languageService.t('lookupCatalogs.closedReason') : null),
+        onClick: (row) => this.openEdit(row),
+      },
+      {
+        label: this.languageService.t('lookupCatalogs.actions.delete'),
+        icon: 'delete',
+        variant: 'danger',
+        disabled: (row) => !!row.isClosed,
+        disabledReason: (row) => (row.isClosed ? this.languageService.t('lookupCatalogs.closedReason') : null),
+        onClick: (row) => this.confirmDelete(row),
+      },
+    ];
+    if (config?.hasCloseAction) {
+      actions.push({
+        label: this.languageService.t('lookupCatalogs.actions.close'),
+        icon: 'void',
+        disabled: (row) => !!row.isClosed,
+        disabledReason: (row) => (row.isClosed ? this.languageService.t('lookupCatalogs.closedReason') : null),
+        onClick: (row) => this.confirmClose(row),
+      });
+    }
+    return actions;
+  });
 
   constructor() {
     effect(() => {
@@ -174,6 +200,35 @@ export class LookupCatalogList {
       void this.load();
     } catch {
       this.toastService.show(this.languageService.t('lookupCatalogs.delete.error'));
+    }
+  }
+
+  protected confirmClose(row: LookupCatalogItem): void {
+    const ref = this.dialogService.open<boolean, ConfirmDialogData, ConfirmDialog>(ConfirmDialog, {
+      data: {
+        title: this.languageService.t('lookupCatalogs.close.title'),
+        message: this.languageService.t('lookupCatalogs.close.message', { name: row.name }),
+        confirmLabel: this.languageService.t('lookupCatalogs.actions.close'),
+      },
+    });
+    ref.closed.subscribe((confirmed) => {
+      if (confirmed) {
+        void this.closeItem(row);
+      }
+    });
+  }
+
+  private async closeItem(row: LookupCatalogItem): Promise<void> {
+    const config = this.config();
+    if (!config) {
+      return;
+    }
+    try {
+      await this.catalogService.close(config.resource, row[config.idField] as number);
+      this.toastService.show(this.languageService.t('lookupCatalogs.close.success'));
+      void this.load();
+    } catch {
+      this.toastService.show(this.languageService.t('lookupCatalogs.close.error'));
     }
   }
 }

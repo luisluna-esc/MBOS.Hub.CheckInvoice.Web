@@ -8,12 +8,13 @@ import { Supplier, SupplierFilters } from '../../../catalogs/suppliers/supplier.
 import { SupplierService } from '../../../catalogs/suppliers/supplier.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
-import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
+import { SelectableTable } from '../../../../shared/components/selectable-table/selectable-table';
+import { TableColumn } from '../../../../shared/components/table/table';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-receipt-supplier-picker',
-  imports: [Filters, Table, ErrorState, TranslatePipe],
+  imports: [Filters, SelectableTable, ErrorState, TranslatePipe],
   templateUrl: './receipt-supplier-picker.html',
 })
 export class ReceiptSupplierPicker {
@@ -44,14 +45,6 @@ export class ReceiptSupplierPicker {
       key: 'legalName',
       header: this.languageService.t('receipts.supplierPicker.fullName'),
       format: (value, row) => (value as string) || row.name,
-    },
-  ]);
-
-  protected readonly actions = computed<TableAction<Supplier>[]>(() => [
-    {
-      label: this.languageService.t('receipts.supplierPicker.select'),
-      icon: 'create',
-      onClick: (row) => this.selectSupplier(row),
     },
   ]);
 
@@ -111,7 +104,7 @@ export class ReceiptSupplierPicker {
     });
   }
 
-  private selectSupplier(row: Supplier): void {
+  protected selectSupplier(row: Supplier): void {
     void this.router.navigate(['/receipts/new/details'], { state: { supplierId: row.supplierId } });
   }
 }

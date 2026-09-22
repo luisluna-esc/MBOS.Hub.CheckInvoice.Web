@@ -46,10 +46,9 @@ export class AccountReceivablesList {
 
   protected readonly filterFields = computed<FilterField[]>(() => [
     {
-      key: 'clientId',
+      key: 'clientName',
       label: this.languageService.t('accountReceivables.filters.client'),
-      type: 'party-search',
-      partyMode: 'client',
+      type: 'text',
     },
     {
       key: 'status',
@@ -171,7 +170,7 @@ export class AccountReceivablesList {
 
   protected onSearch(values: FilterValues): void {
     this.currentFilters = {
-      clientId: values['clientId'] ? Number(values['clientId']) : undefined,
+      clientName: values['clientName'] || undefined,
       status: values['status'] ?? undefined,
     };
     this.pageNumber.set(1);

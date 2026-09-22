@@ -31,15 +31,17 @@
         <label class="text-sm font-medium text-foreground">{{ 'transfers.form.receiver' | translate }}</label>
         @if (receiverParty(); as receiver) {
           <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
-            <span class="text-foreground">{{ receiver.name }}</span>
+            <span class="min-w-0 truncate text-foreground">{{ receiver.name }}</span>
             @if (!headerConfirmed()) {
-              <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearReceiver()">
+              <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="clearReceiver()">
                 {{ 'transfers.form.changeReceiver' | translate }}
               </button>
             }
           </div>
+          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
         } @else {
           <app-party-search-input mode="client" (picked)="onReceiverPicked($event)" />
+          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
         }
       </div>
     </div>

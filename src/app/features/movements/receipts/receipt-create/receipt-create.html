@@ -30,14 +30,14 @@
       <div class="flex flex-col gap-1">
         <label class="text-sm font-medium text-foreground">{{ 'receipts.form.supplier' | translate }}</label>
         @if (supplierLocked()) {
-          <div class="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
+          <div class="truncate rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
             {{ lockedSupplierName() ?? '—' }}
           </div>
           <p class="min-h-4 text-xs text-muted-foreground">{{ 'receipts.form.supplierLocked' | translate }}</p>
         } @else if (selectedSupplier(); as supplier) {
           <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
-            <span class="text-foreground">{{ supplier.name }}</span>
-            <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearSupplier()">
+            <span class="min-w-0 truncate text-foreground">{{ supplier.name }}</span>
+            <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="clearSupplier()">
               {{ 'receipts.form.changeSupplier' | translate }}
             </button>
           </div>

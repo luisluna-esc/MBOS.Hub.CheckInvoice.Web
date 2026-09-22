@@ -146,4 +146,15 @@ export const LOOKUP_CATALOG_CONFIGS: Record<string, LookupCatalogConfig> = {
     hasAddress: true,
     nameMaxLength: 100,
   },
+  'warehouse-periods': {
+    slug: 'warehouse-periods',
+    resource: 'WarehousePeriods',
+    idField: 'warehousePeriodId',
+    titleKey: 'lookupCatalogs.warehousePeriods.title',
+    hasCode: false,
+    hasIsActive: false,
+    hasAddress: false,
+    nameMaxLength: 20,
+    hasCloseAction: true,
+  },
 };

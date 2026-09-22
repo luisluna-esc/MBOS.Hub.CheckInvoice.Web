@@ -7,34 +7,20 @@
           [placeholder]="field.placeholder ?? ''"
           [options]="field.options ?? []"
           [ngModel]="getValue(field.key)"
-          (ngModelChange)="setValue(field.key, $event)"
+          (ngModelChange)="setValue(field.key, $event, field.type)"
         />
       } @else if (field.type === 'date') {
         <app-date-picker
           [label]="field.label"
           [ngModel]="getValue(field.key)"
-          (ngModelChange)="setValue(field.key, $event)"
+          (ngModelChange)="setValue(field.key, $event, field.type)"
         />
-      } @else if (field.type === 'party-search') {
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-foreground">{{ field.label }}</label>
-          @if (partyLabels()[field.key]; as name) {
-            <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
-              <span class="text-foreground">{{ name }}</span>
-              <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearParty(field.key)">
-                {{ 'filters.changeParty' | translate }}
-              </button>
-            </div>
-          } @else {
-            <app-party-search-input [mode]="field.partyMode ?? 'client'" (picked)="onPartyPicked(field.key, $event)" />
-          }
-        </div>
       } @else {
         <app-input
           [label]="field.label"
           [placeholder]="field.placeholder ?? ''"
           [ngModel]="getValue(field.key)"
-          (ngModelChange)="setValue(field.key, $event)"
+          (ngModelChange)="setValue(field.key, $event, field.type)"
         />
       }
     </div>
@@ -42,22 +28,13 @@
 
   <div class="flex flex-col gap-1">
     <span class="invisible text-sm font-medium">&nbsp;</span>
-    <div class="flex gap-2">
-      <button
-        type="button"
-        class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
-        (click)="onSearch()"
-      >
-        {{ 'filters.search' | translate }}
-      </button>
-      <button
-        type="button"
-        class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-brand-300"
-        (click)="onClear()"
-      >
-        {{ 'filters.clear' | translate }}
-      </button>
-    </div>
+    <button
+      type="button"
+      class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-brand-300"
+      (click)="onClear()"
+    >
+      {{ 'filters.clear' | translate }}
+    </button>
     <span class="invisible min-h-4 text-xs">&nbsp;</span>
   </div>
 </div>
