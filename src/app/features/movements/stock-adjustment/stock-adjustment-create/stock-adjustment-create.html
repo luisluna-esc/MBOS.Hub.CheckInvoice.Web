@@ -1,5 +1,10 @@
 <div class="flex flex-col gap-4">
-  <h1 class="text-xl font-semibold text-foreground">{{ 'stockAdjustment.title' | translate }}</h1>
+  <div class="flex items-center gap-2">
+    <h1 class="text-xl font-semibold text-foreground">{{ 'stockAdjustment.title' | translate }}</h1>
+    <app-info-hint [title]="'stockAdjustment.info.title' | translate">
+      {{ 'stockAdjustment.info.body' | translate }}
+    </app-info-hint>
+  </div>
 
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <app-select

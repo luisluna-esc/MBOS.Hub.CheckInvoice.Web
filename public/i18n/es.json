@@ -687,6 +687,10 @@
   },
   "stockAdjustment": {
     "title": "Ajuste de Inventario",
+    "info": {
+      "title": "¿Qué es un Ajuste de Inventario?",
+      "body": "Sirve para corregir el stock del sistema cuando no coincide con lo que hay físicamente en el almacén (después de un conteo). Por cada producto comparas la cantidad actual contra la cantidad contada: si contaste más, el sistema genera automáticamente una Entrada por la diferencia; si contaste menos, genera automáticamente una Salida por la diferencia. Al guardar, el stock queda igual a lo contado."
+    },
     "warehouse": "Almacén",
     "reason": "Motivo",
     "lines": "Líneas",
@@ -704,6 +708,10 @@
   },
   "issueReturns": {
     "title": "Devoluciones",
+    "info": {
+      "title": "¿Qué es una Devolución?",
+      "body": "Permite devolver al almacén parte o todo de lo que se entregó en una Salida ya registrada (por ejemplo, si el cliente devuelve productos). Eliges la Salida original y, por cada producto, indicas cuánto se devuelve; el sistema no deja devolver más de lo que se entregó menos lo que ya se devolvió antes. Al guardar, esa cantidad se suma de nuevo al stock del almacén."
+    },
     "select": "Seleccionar",
     "selectDisabledVoided": "Esta salida ya está anulada",
     "selectedIssue": "Salida N°",

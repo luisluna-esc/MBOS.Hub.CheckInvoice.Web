@@ -687,6 +687,10 @@
   },
   "stockAdjustment": {
     "title": "Stock Adjustment",
+    "info": {
+      "title": "What is a Stock Adjustment?",
+      "body": "Used to correct system stock when it doesn't match what's physically in the warehouse (after a count). For each product, you compare the current quantity against the counted quantity: if you counted more, the system automatically generates a Receipt for the difference; if you counted less, it automatically generates an Issue for the difference. Once saved, stock matches the count."
+    },
     "warehouse": "Warehouse",
     "reason": "Reason",
     "lines": "Lines",
@@ -704,6 +708,10 @@
   },
   "issueReturns": {
     "title": "Returns",
+    "info": {
+      "title": "What is a Return?",
+      "body": "Lets you return to the warehouse part or all of what was delivered in an already recorded Issue (for example, if the client returns products). You pick the original Issue and, for each product, enter how much is being returned; the system won't let you return more than what was issued minus what was already returned. Once saved, that quantity is added back to the warehouse stock."
+    },
     "select": "Select",
     "selectDisabledVoided": "This issue is already voided",
     "selectedIssue": "Issue No.",

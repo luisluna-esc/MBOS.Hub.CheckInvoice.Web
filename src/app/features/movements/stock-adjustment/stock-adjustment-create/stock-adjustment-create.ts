@@ -10,6 +10,7 @@ import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { StockService } from '../../../../core/warehouses/stock.service';
+import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
 import { Input as AppInput } from '../../../../shared/components/input/input';
 import {
   ProductPickerDialog,
@@ -33,7 +34,7 @@ interface LineInfo {
 
 @Component({
   selector: 'app-stock-adjustment-create',
-  imports: [ReactiveFormsModule, AppInput, Select, TranslatePipe],
+  imports: [ReactiveFormsModule, AppInput, Select, TranslatePipe, InfoHint],
   templateUrl: './stock-adjustment-create.html',
 })
 export class StockAdjustmentCreate {

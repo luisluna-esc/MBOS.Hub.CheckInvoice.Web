@@ -9,6 +9,7 @@ import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
+import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
 import { Input as AppInput } from '../../../../shared/components/input/input';
 import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -28,7 +29,7 @@ interface ReturnLineRow {
 
 @Component({
   selector: 'app-issue-return-create',
-  imports: [Filters, Table, ErrorState, ReactiveFormsModule, AppInput, TranslatePipe],
+  imports: [Filters, Table, ErrorState, ReactiveFormsModule, AppInput, TranslatePipe, InfoHint],
   templateUrl: './issue-return-create.html',
 })
 export class IssueReturnCreate {

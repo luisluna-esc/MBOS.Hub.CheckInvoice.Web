@@ -687,6 +687,10 @@
   },
   "stockAdjustment": {
     "title": "Ajuste de Estoque",
+    "info": {
+      "title": "O que é um Ajuste de Estoque?",
+      "body": "Serve para corrigir o estoque do sistema quando não coincide com o que há fisicamente no armazém (após uma contagem). Para cada produto você compara a quantidade atual com a quantidade contada: se contou mais, o sistema gera automaticamente uma Entrada pela diferença; se contou menos, gera automaticamente uma Saída pela diferença. Ao salvar, o estoque fica igual ao contado."
+    },
     "warehouse": "Armazém",
     "reason": "Motivo",
     "lines": "Linhas",
@@ -704,6 +708,10 @@
   },
   "issueReturns": {
     "title": "Devoluções",
+    "info": {
+      "title": "O que é uma Devolução?",
+      "body": "Permite devolver ao armazém parte ou todo o que foi entregue em uma Saída já registrada (por exemplo, se o cliente devolver produtos). Você escolhe a Saída original e, para cada produto, informa quanto está sendo devolvido; o sistema não deixa devolver mais do que foi entregue menos o que já foi devolvido antes. Ao salvar, essa quantidade é somada novamente ao estoque do armazém."
+    },
     "select": "Selecionar",
     "selectDisabledVoided": "Esta saída já está anulada",
     "selectedIssue": "Saída N°",
