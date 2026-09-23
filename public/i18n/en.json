@@ -55,7 +55,8 @@
     "settingsProvinces": "Provinces",
     "settingsSpecialCases": "Special Cases",
     "settingsVoidReasons": "Void Reasons",
-    "settingsWarehouses": "Warehouses"
+    "settingsWarehouses": "Warehouses",
+    "settingsWarehousePeriods": "Warehouse Periods"
   },
   "partySearch": {
     "loading": "Searching...",

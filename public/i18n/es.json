@@ -55,7 +55,8 @@
     "settingsProvinces": "Provincias",
     "settingsSpecialCases": "Casos Especiales",
     "settingsVoidReasons": "Motivos de Anulación",
-    "settingsWarehouses": "Almacenes"
+    "settingsWarehouses": "Almacenes",
+    "settingsWarehousePeriods": "Períodos de Almacén"
   },
   "partySearch": {
     "loading": "Buscando...",
