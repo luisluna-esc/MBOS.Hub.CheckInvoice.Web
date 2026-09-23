@@ -136,6 +136,14 @@ export class ReportService {
     );
   }
 
+  async getAccountReceivableVoucherPdfBlob(accountReceivableId: number): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/account-receivable-voucher/${accountReceivableId}/pdf`, {
+        responseType: 'blob'
+      })
+    );
+  }
+
   private cleanFilters(
     filters:
       | StockReportFilters

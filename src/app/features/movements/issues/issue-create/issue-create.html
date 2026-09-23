@@ -72,22 +72,30 @@
 
     @if (clientLocked() && lockedClient(); as client) {
       <div class="grid grid-cols-1 gap-3 rounded-md border border-border bg-background p-3 text-sm text-foreground sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <span class="text-muted-foreground">{{ 'issues.form.documentType' | translate }}:</span>
-          {{ documentTypeName(client.documentTypeId) }}
-        </div>
-        <div>
-          <span class="text-muted-foreground">{{ 'issues.form.clientTaxId' | translate }}:</span>
-          {{ client.taxId || '—' }}
-        </div>
-        <div>
-          <span class="text-muted-foreground">{{ 'issues.form.complement' | translate }}:</span>
-          {{ client.complement || '—' }}
-        </div>
-        <div>
-          <span class="text-muted-foreground">{{ 'issues.form.email' | translate }}:</span>
-          {{ client.email || '—' }}
-        </div>
+        @if (client.documentTypeId) {
+          <div>
+            <span class="text-muted-foreground">{{ 'issues.form.documentType' | translate }}:</span>
+            {{ documentTypeName(client.documentTypeId) }}
+          </div>
+        }
+        @if (client.taxId) {
+          <div>
+            <span class="text-muted-foreground">{{ 'issues.form.clientTaxId' | translate }}:</span>
+            {{ client.taxId }}
+          </div>
+        }
+        @if (client.complement) {
+          <div>
+            <span class="text-muted-foreground">{{ 'issues.form.complement' | translate }}:</span>
+            {{ client.complement }}
+          </div>
+        }
+        @if (client.email) {
+          <div>
+            <span class="text-muted-foreground">{{ 'issues.form.email' | translate }}:</span>
+            {{ client.email }}
+          </div>
+        }
       </div>
     }
 
@@ -195,7 +203,7 @@
                     </button>
                   </td>
                   <td class="w-32 px-3 py-2 align-top">
-                    <app-input formControlName="quantity" type="number" [required]="true" [min]="0.01" [decimals]="2" />
+                    <app-input formControlName="quantity" type="number" [required]="true" [min]="1" [decimals]="0" />
                     @if (lineExceedsStock(i)) {
                       <p class="mt-1 text-xs text-danger">{{ 'issues.form.exceedsStock' | translate }}</p>
                     }

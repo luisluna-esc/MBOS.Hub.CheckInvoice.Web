@@ -5,6 +5,7 @@ import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
+import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
 import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { IssueDetailsDialog, IssueDetailsDialogData } from '../../issues/issue-details-dialog/issue-details-dialog';
@@ -19,7 +20,7 @@ const APPROVER_ROLES = ['Contador', 'M-BOS'];
 
 @Component({
   selector: 'app-issue-void-requests-list',
-  imports: [Filters, Table, ErrorState, TranslatePipe],
+  imports: [Filters, Table, ErrorState, TranslatePipe, InfoHint],
   templateUrl: './issue-void-requests-list.html',
 })
 export class IssueVoidRequestsList {

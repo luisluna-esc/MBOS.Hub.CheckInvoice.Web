@@ -5,6 +5,8 @@
 
   <p class="text-sm text-muted-foreground">{{ 'pastors.description' | translate }}</p>
 
+  <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
+
   @if (errorCode()) {
     <div class="rounded-lg border border-border">
       <app-error-state [code]="errorCode()!" />

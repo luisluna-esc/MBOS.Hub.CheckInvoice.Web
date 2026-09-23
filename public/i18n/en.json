@@ -9,7 +9,7 @@
     "home": "Home",
     "receipts": "Receipts",
     "issues": "Issues",
-    "issueVoidRequests": "Voids",
+    "issueVoidRequests": "Issue Voids",
     "receiptVoidRequests": "Receipt Voids",
     "stockAdjustment": "Stock Adjustment",
     "issueReturns": "Returns",
@@ -636,7 +636,11 @@
     }
   },
   "issueVoidRequests": {
-    "title": "Voids",
+    "title": "Issue Voids",
+    "info": {
+      "title": "What is an Issue void?",
+      "body": "Lets you cancel an Issue that was already recorded (for example, if something was charged or delivered by mistake). Any user can request it with a reason; the Accountant or M-BOS must approve or reject it. Once approved, the Issue is marked as voided and the stock that was deducted is automatically returned to the warehouse. This is always safe: it can never leave inventory negative."
+    },
     "filters": {
       "status": "Status"
     },
@@ -718,6 +722,10 @@
   },
   "receiptVoidRequests": {
     "title": "Receipt Voids",
+    "info": {
+      "title": "What is a Receipt void?",
+      "body": "Lets you cancel a Receipt that was already recorded (for example, if it was entered by mistake). Any user can request it with a reason; the Accountant or M-BOS must approve or reject it. Once approved, the Receipt is marked as voided and the system deducts from the warehouse the stock that receipt had added. If part of that stock was already used by a later Issue or Transfer and there isn't enough left to reverse it, the void is automatically rejected so inventory is never left negative."
+    },
     "filters": {
       "status": "Status"
     },
@@ -803,16 +811,7 @@
       "success": "Payment registered.",
       "error": "The payment could not be registered."
     },
-    "detail": {
-      "title": "Account receivable details",
-      "loading": "Loading...",
-      "payments": "Payments",
-      "noPayments": "This account has no payments yet.",
-      "paymentDate": "Payment date",
-      "paymentAmount": "Amount paid",
-      "paymentMethod": "Method",
-      "balanceAfter": "Outstanding balance"
-    }
+    "detailError": "The account receivable voucher could not be generated."
   },
   "portal": {
     "myAccount": {
@@ -961,7 +960,7 @@
     "filters": {
       "sourceWarehouse": "Source warehouse",
       "destinationWarehouse": "Destination warehouse",
-      "sameWarehouseWarning": "Source and destination warehouse cannot be the same.",
+      "allWarehouses": "All",
       "status": "Status",
       "dateFrom": "From",
       "dateTo": "To"
@@ -998,7 +997,6 @@
       "changeReceiver": "Change",
       "sentBy": "Sent by",
       "notes": "Notes",
-      "sameWarehouseError": "The destination warehouse must be different from the source.",
       "continue": "Continue",
       "editHeader": "Edit",
       "lines": "Lines",
@@ -1111,6 +1109,9 @@
     "title": "Pastors",
     "description": "Clients marked as Pastor: edit them, grant portal access, or reset their password.",
     "empty": "No pastors registered.",
+    "filters": {
+      "access": "Portal access"
+    },
     "columns": {
       "access": "Portal access",
       "accessGranted": "Has access",
@@ -1154,7 +1155,7 @@
     "form": {
       "newTitle": "New supplier",
       "editTitle": "Edit supplier",
-      "name": "Name",
+      "name": "Full name",
       "code": "Code",
       "legalName": "Legal name",
       "taxId": "Tax ID",

@@ -5,14 +5,12 @@ import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
+import { ToastService } from '../../../../core/toast/toast.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
 import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-import {
-  AccountReceivableDetailDialog,
-  AccountReceivableDetailDialogData,
-} from '../account-receivable-detail-dialog/account-receivable-detail-dialog';
+import { ReportService } from '../../../reports/report.service';
 import { AccountReceivable, AccountReceivableFilters } from '../account-receivable.models';
 import { AccountReceivableService } from '../account-receivable.service';
 import { RegisterPaymentDialog, RegisterPaymentDialogData } from '../register-payment-dialog/register-payment-dialog';
@@ -30,6 +28,8 @@ export class AccountReceivablesList {
   private readonly dialogService = inject(DialogService);
   private readonly authService = inject(AuthService);
   private readonly languageService = inject(LanguageService);
+  private readonly reportService = inject(ReportService);
+  private readonly toastService = inject(ToastService);
 
   protected readonly rows = signal<AccountReceivable[]>([]);
   protected readonly totalRecords = signal(0);
@@ -123,7 +123,7 @@ export class AccountReceivablesList {
     {
       label: this.languageService.t('accountReceivables.actions.viewDetails'),
       icon: 'view',
-      onClick: (row) => this.openDetails(row),
+      onClick: (row) => void this.openDetails(row),
     },
     {
       label: this.languageService.t('accountReceivables.actions.registerPayment'),
@@ -194,17 +194,22 @@ export class AccountReceivablesList {
     void this.load();
   }
 
-  protected openDetails(row: AccountReceivable): void {
-    const clientNames = this.nameMap(this.clients());
-    this.dialogService.open<void, AccountReceivableDetailDialogData, AccountReceivableDetailDialog>(
-      AccountReceivableDetailDialog,
-      {
-        data: {
-          accountReceivable: row,
-          clientName: row.clientId ? (clientNames[row.clientId] ?? null) : null,
-        },
+  // Se abre la pestaña en blanco de forma síncrona al hacer clic, antes del fetch async del
+  // PDF — así el navegador no la trata como un popup no solicitado y la bloquea.
+  protected async openDetails(row: AccountReceivable): Promise<void> {
+    const newTab = window.open('', '_blank');
+    try {
+      const blob = await this.reportService.getAccountReceivableVoucherPdfBlob(row.accountReceivableId);
+      const url = URL.createObjectURL(blob);
+      if (newTab) {
+        newTab.location.href = url;
+      } else {
+        window.open(url, '_blank');
       }
-    );
+    } catch {
+      newTab?.close();
+      this.toastService.show(this.languageService.t('accountReceivables.detailError'));
+    }
   }
 
   protected openRegisterPayment(row: AccountReceivable): void {

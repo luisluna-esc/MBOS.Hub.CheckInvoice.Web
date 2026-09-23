@@ -12,10 +12,6 @@
 
   <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
 
-  @if (sameWarehouseFilterWarning()) {
-    <p class="text-xs text-danger">{{ 'transfers.filters.sameWarehouseWarning' | translate }}</p>
-  }
-
   @if (errorCode()) {
     <div class="rounded-lg border border-border">
       <app-error-state [code]="errorCode()!" />

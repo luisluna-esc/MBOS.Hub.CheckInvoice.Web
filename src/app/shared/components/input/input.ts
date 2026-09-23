@@ -140,7 +140,8 @@ export class Input implements ControlValueAccessor {
   }
 
   private decimalsValidator(maxDecimals: number): ValidatorFn {
-    const pattern = new RegExp(`^-?\\d+(\\.\\d{1,${maxDecimals}})?$`);
+    const pattern =
+      maxDecimals > 0 ? new RegExp(`^-?\\d+(\\.\\d{1,${maxDecimals}})?$`) : /^-?\d+$/;
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
       if (value === '' || value === null || value === undefined) {

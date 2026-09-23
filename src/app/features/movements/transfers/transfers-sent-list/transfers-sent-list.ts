@@ -43,35 +43,48 @@ export class TransfersSentList {
   protected readonly clients = signal<CatalogItem[]>([]);
 
   private currentFilters: TransferFilters = {};
-  protected readonly sameWarehouseFilterWarning = signal(false);
   private readonly todayIso = new Date().toISOString().slice(0, 10);
 
-  protected readonly filterFields = computed<FilterField[]>(() => [
-    {
-      key: 'sourceWarehouseId',
-      label: this.languageService.t('transfers.filters.sourceWarehouse'),
-      type: 'select',
-      options: this.warehouses().map((item) => ({ value: String(item.id), label: item.name })),
-    },
-    {
-      key: 'destinationWarehouseId',
-      label: this.languageService.t('transfers.filters.destinationWarehouse'),
-      type: 'select',
-      options: this.warehouses().map((item) => ({ value: String(item.id), label: item.name })),
-    },
-    {
-      key: 'dateFrom',
-      label: this.languageService.t('transfers.filters.dateFrom'),
-      type: 'date',
-      max: this.todayIso,
-    },
-    {
-      key: 'dateTo',
-      label: this.languageService.t('transfers.filters.dateTo'),
-      type: 'date',
-      max: this.todayIso,
-    },
-  ]);
+  // Ninguna transferencia tiene el mismo almacén de origen y destino: en vez de dejar elegir
+  // el mismo y luego avisar, se excluye directamente del otro select — así nunca se puede
+  // llegar a ese estado y no hace falta ningún mensaje de validación.
+  private readonly selectedSourceId = signal<number | null>(null);
+  private readonly selectedDestId = signal<number | null>(null);
+
+  protected readonly filterFields = computed<FilterField[]>(() => {
+    const allOptions = this.warehouses().map((item) => ({ value: String(item.id), label: item.name }));
+    const destId = this.selectedDestId();
+    const sourceId = this.selectedSourceId();
+
+    return [
+      {
+        key: 'sourceWarehouseId',
+        label: this.languageService.t('transfers.filters.sourceWarehouse'),
+        type: 'select',
+        placeholder: this.languageService.t('transfers.filters.allWarehouses'),
+        options: destId === null ? allOptions : allOptions.filter((o) => Number(o.value) !== destId),
+      },
+      {
+        key: 'destinationWarehouseId',
+        label: this.languageService.t('transfers.filters.destinationWarehouse'),
+        type: 'select',
+        placeholder: this.languageService.t('transfers.filters.allWarehouses'),
+        options: sourceId === null ? allOptions : allOptions.filter((o) => Number(o.value) !== sourceId),
+      },
+      {
+        key: 'dateFrom',
+        label: this.languageService.t('transfers.filters.dateFrom'),
+        type: 'date',
+        max: this.todayIso,
+      },
+      {
+        key: 'dateTo',
+        label: this.languageService.t('transfers.filters.dateTo'),
+        type: 'date',
+        max: this.todayIso,
+      },
+    ];
+  });
 
   protected readonly columns = computed<TableColumn<Transfer>[]>(() => {
     const warehouseNames = this.nameMap(this.warehouses());
@@ -168,27 +181,16 @@ export class TransfersSentList {
       dateFrom: values['dateFrom'] ?? undefined,
       dateTo: values['dateTo'] ?? undefined,
     };
+    this.selectedSourceId.set(this.currentFilters.sourceWarehouseId ?? null);
+    this.selectedDestId.set(this.currentFilters.destinationWarehouseId ?? null);
     this.pageNumber.set(1);
-
-    // Un almacén nunca se transfiere a sí mismo: filtrar con el mismo origen y destino
-    // siempre da cero resultados — se avisa en vez de disparar un fetch inútil.
-    const sameWarehouse =
-      !!this.currentFilters.sourceWarehouseId &&
-      !!this.currentFilters.destinationWarehouseId &&
-      this.currentFilters.sourceWarehouseId === this.currentFilters.destinationWarehouseId;
-    this.sameWarehouseFilterWarning.set(sameWarehouse);
-    if (sameWarehouse) {
-      this.rows.set([]);
-      this.totalRecords.set(0);
-      return;
-    }
-
     void this.load();
   }
 
   protected onClear(): void {
     this.currentFilters = {};
-    this.sameWarehouseFilterWarning.set(false);
+    this.selectedSourceId.set(null);
+    this.selectedDestId.set(null);
     this.pageNumber.set(1);
     void this.load();
   }

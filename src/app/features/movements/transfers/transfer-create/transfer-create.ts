@@ -64,10 +64,6 @@ export class TransferCreate {
     return this.users().find((item) => item.id === appUserId)?.name ?? this.authService.session()?.username ?? '—';
   });
 
-  protected readonly warehouseOptions = computed<SelectOption[]>(() =>
-    this.warehouses().map((item) => ({ value: String(item.id), label: item.name }))
-  );
-
   protected readonly headerForm = new FormGroup({
     sourceWarehouseId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     destinationWarehouseId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -90,10 +86,21 @@ export class TransferCreate {
     this.headerForm.valueChanges.pipe(startWith(this.headerForm.value), takeUntilDestroyed())
   );
 
-  protected readonly sameWarehouseError = computed(() => {
-    const values = this.headerValues();
-    return !!values?.sourceWarehouseId && !!values?.destinationWarehouseId
-      && values.sourceWarehouseId === values.destinationWarehouseId;
+  // Un almacén nunca se transfiere a sí mismo: en vez de dejar elegir el mismo en ambos y
+  // mostrar un error, se excluye directamente del otro select — así nunca se puede llegar a
+  // ese estado.
+  protected readonly sourceWarehouseOptions = computed<SelectOption[]>(() => {
+    const destId = this.headerValues()?.destinationWarehouseId;
+    return this.warehouses()
+      .filter((item) => String(item.id) !== destId)
+      .map((item) => ({ value: String(item.id), label: item.name }));
+  });
+
+  protected readonly destinationWarehouseOptions = computed<SelectOption[]>(() => {
+    const sourceId = this.headerValues()?.sourceWarehouseId;
+    return this.warehouses()
+      .filter((item) => String(item.id) !== sourceId)
+      .map((item) => ({ value: String(item.id), label: item.name }));
   });
 
   protected readonly detailsInvalid = toSignal(
@@ -105,9 +112,7 @@ export class TransferCreate {
     { initialValue: true }
   );
 
-  protected readonly continueDisabled = computed(
-    () => this.headerInvalid() || this.headerConfirmed() || this.sameWarehouseError()
-  );
+  protected readonly continueDisabled = computed(() => this.headerInvalid() || this.headerConfirmed());
 
   protected readonly detailsValues = toSignal(
     this.detailsArray.valueChanges.pipe(startWith(this.detailsArray.value), takeUntilDestroyed())

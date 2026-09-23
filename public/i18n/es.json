@@ -9,7 +9,7 @@
     "home": "Inicio",
     "receipts": "Entradas",
     "issues": "Salidas",
-    "issueVoidRequests": "Anulaciones",
+    "issueVoidRequests": "Anulaciones de Salidas",
     "receiptVoidRequests": "Anulaciones de Entradas",
     "stockAdjustment": "Ajuste de Inventario",
     "issueReturns": "Devoluciones",
@@ -636,7 +636,11 @@
     }
   },
   "issueVoidRequests": {
-    "title": "Anulaciones",
+    "title": "Anulaciones de Salidas",
+    "info": {
+      "title": "¿Qué es una anulación de Salida?",
+      "body": "Permite dejar sin efecto una Salida ya registrada (por ejemplo, si se cobró o entregó algo por error). Cualquier usuario puede solicitarla indicando un motivo; el Contador o M-BOS debe aprobarla o rechazarla. Al aprobarse, la Salida queda marcada como anulada y el stock que se había descontado se devuelve automáticamente al almacén. Es una operación segura: nunca deja el inventario en negativo."
+    },
     "filters": {
       "status": "Estado"
     },
@@ -718,6 +722,10 @@
   },
   "receiptVoidRequests": {
     "title": "Anulaciones de Entradas",
+    "info": {
+      "title": "¿Qué es una anulación de Entrada?",
+      "body": "Permite dejar sin efecto una Entrada ya registrada (por ejemplo, si se ingresó por error). Cualquier usuario puede solicitarla indicando un motivo; el Contador o M-BOS debe aprobarla o rechazarla. Al aprobarse, la Entrada queda marcada como anulada y el sistema descuenta del almacén el stock que esa entrada había agregado. Si parte de ese stock ya se usó en otra Salida o Transferencia y no alcanza para revertirlo, la anulación se rechaza automáticamente para no dejar el inventario en negativo."
+    },
     "filters": {
       "status": "Estado"
     },
@@ -803,16 +811,7 @@
       "success": "Pago registrado.",
       "error": "No se pudo registrar el pago."
     },
-    "detail": {
-      "title": "Detalle de cuenta por cobrar",
-      "loading": "Cargando...",
-      "payments": "Pagos",
-      "noPayments": "Esta cuenta no tiene pagos registrados.",
-      "paymentDate": "Fecha de pago",
-      "paymentAmount": "Monto pagado",
-      "paymentMethod": "Método",
-      "balanceAfter": "Saldo pendiente"
-    }
+    "detailError": "No se pudo generar el comprobante de la cuenta por cobrar."
   },
   "portal": {
     "myAccount": {
@@ -961,7 +960,7 @@
     "filters": {
       "sourceWarehouse": "Almacén origen",
       "destinationWarehouse": "Almacén destino",
-      "sameWarehouseWarning": "El almacén origen y destino no pueden ser el mismo.",
+      "allWarehouses": "Todos",
       "status": "Estado",
       "dateFrom": "Desde",
       "dateTo": "Hasta"
@@ -998,7 +997,6 @@
       "changeReceiver": "Cambiar",
       "sentBy": "Enviado por",
       "notes": "Notas",
-      "sameWarehouseError": "El almacén de destino debe ser diferente al de origen.",
       "continue": "Continuar",
       "editHeader": "Editar",
       "lines": "Líneas",
@@ -1111,6 +1109,9 @@
     "title": "Pastores",
     "description": "Clientes marcados como Pastor: edítalos, otorga su acceso al portal o resetea su contraseña.",
     "empty": "No hay pastores registrados.",
+    "filters": {
+      "access": "Acceso al portal"
+    },
     "columns": {
       "access": "Acceso al portal",
       "accessGranted": "Con acceso",
@@ -1154,7 +1155,7 @@
     "form": {
       "newTitle": "Nuevo proveedor",
       "editTitle": "Editar proveedor",
-      "name": "Nombre",
+      "name": "Nombre completo",
       "code": "Código",
       "legalName": "Razón social",
       "taxId": "NIT",

@@ -9,7 +9,7 @@
     "home": "Início",
     "receipts": "Entradas",
     "issues": "Saídas",
-    "issueVoidRequests": "Anulações",
+    "issueVoidRequests": "Anulações de Saídas",
     "receiptVoidRequests": "Anulações de Entradas",
     "stockAdjustment": "Ajuste de Estoque",
     "issueReturns": "Devoluções",
@@ -636,7 +636,11 @@
     }
   },
   "issueVoidRequests": {
-    "title": "Anulações",
+    "title": "Anulações de Saídas",
+    "info": {
+      "title": "O que é uma anulação de Saída?",
+      "body": "Permite cancelar uma Saída já registrada (por exemplo, se algo foi cobrado ou entregue por engano). Qualquer usuário pode solicitá-la indicando um motivo; o Contador ou M-BOS deve aprová-la ou rejeitá-la. Ao ser aprovada, a Saída fica marcada como anulada e o estoque que havia sido descontado é devolvido automaticamente ao armazém. É uma operação sempre segura: nunca deixa o estoque negativo."
+    },
     "filters": {
       "status": "Status"
     },
@@ -718,6 +722,10 @@
   },
   "receiptVoidRequests": {
     "title": "Anulações de Entradas",
+    "info": {
+      "title": "O que é uma anulação de Entrada?",
+      "body": "Permite cancelar uma Entrada já registrada (por exemplo, se foi lançada por engano). Qualquer usuário pode solicitá-la indicando um motivo; o Contador ou M-BOS deve aprová-la ou rejeitá-la. Ao ser aprovada, a Entrada fica marcada como anulada e o sistema desconta do armazém o estoque que essa entrada havia adicionado. Se parte desse estoque já foi usada em outra Saída ou Transferência e não é suficiente para reverter, a anulação é rejeitada automaticamente para não deixar o estoque negativo."
+    },
     "filters": {
       "status": "Status"
     },
@@ -803,16 +811,7 @@
       "success": "Pagamento registrado.",
       "error": "Não foi possível registrar o pagamento."
     },
-    "detail": {
-      "title": "Detalhe da conta a receber",
-      "loading": "Carregando...",
-      "payments": "Pagamentos",
-      "noPayments": "Esta conta não tem pagamentos registrados.",
-      "paymentDate": "Data do pagamento",
-      "paymentAmount": "Valor pago",
-      "paymentMethod": "Método",
-      "balanceAfter": "Saldo pendente"
-    }
+    "detailError": "Não foi possível gerar o comprovante da conta a receber."
   },
   "portal": {
     "myAccount": {
@@ -961,7 +960,7 @@
     "filters": {
       "sourceWarehouse": "Almoxarifado origem",
       "destinationWarehouse": "Almoxarifado destino",
-      "sameWarehouseWarning": "O almoxarifado de origem e destino não podem ser o mesmo.",
+      "allWarehouses": "Todos",
       "status": "Status",
       "dateFrom": "De",
       "dateTo": "Até"
@@ -998,7 +997,6 @@
       "changeReceiver": "Alterar",
       "sentBy": "Enviado por",
       "notes": "Notas",
-      "sameWarehouseError": "O almoxarifado destino deve ser diferente do de origem.",
       "continue": "Continuar",
       "editHeader": "Editar",
       "lines": "Linhas",
@@ -1111,6 +1109,9 @@
     "title": "Pastores",
     "description": "Clientes marcados como Pastor: edite-os, conceda acesso ao portal ou redefina a senha.",
     "empty": "Nenhum pastor cadastrado.",
+    "filters": {
+      "access": "Acesso ao portal"
+    },
     "columns": {
       "access": "Acesso ao portal",
       "accessGranted": "Com acesso",
@@ -1154,7 +1155,7 @@
     "form": {
       "newTitle": "Novo fornecedor",
       "editTitle": "Editar fornecedor",
-      "name": "Nome",
+      "name": "Nome completo",
       "code": "Código",
       "legalName": "Razão social",
       "taxId": "NIT",

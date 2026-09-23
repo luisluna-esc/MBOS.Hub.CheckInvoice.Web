@@ -1,5 +1,10 @@
 <div class="flex flex-col gap-4">
-  <h1 class="text-xl font-semibold text-foreground">{{ 'receiptVoidRequests.title' | translate }}</h1>
+  <div class="flex items-center gap-2">
+    <h1 class="text-xl font-semibold text-foreground">{{ 'receiptVoidRequests.title' | translate }}</h1>
+    <app-info-hint [title]="'receiptVoidRequests.info.title' | translate">
+      {{ 'receiptVoidRequests.info.body' | translate }}
+    </app-info-hint>
+  </div>
 
   <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
 

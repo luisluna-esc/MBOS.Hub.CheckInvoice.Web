@@ -1,5 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
+import { CatalogItem } from '../../../../core/catalogs/catalog.models';
+import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
@@ -12,16 +14,18 @@ import {
 } from '../../clients/portal-access-granted-dialog/portal-access-granted-dialog';
 import { ConfirmDialog, ConfirmDialogData } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
+import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
 import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-pastors-list',
-  imports: [Table, ErrorState, TranslatePipe],
+  imports: [Filters, Table, ErrorState, TranslatePipe],
   templateUrl: './pastors-list.html',
 })
 export class PastorsList {
   private readonly clientService = inject(ClientService);
+  private readonly catalogService = inject(CatalogService);
   private readonly languageService = inject(LanguageService);
   private readonly toastService = inject(ToastService);
   private readonly dialogService = inject(DialogService);
@@ -34,7 +38,29 @@ export class PastorsList {
   protected readonly loading = signal(false);
   protected readonly busyId = signal<number | null>(null);
 
-  private readonly filters: ClientFilters = { isPastor: true };
+  protected readonly districts = signal<CatalogItem[]>([]);
+
+  private currentFilters: ClientFilters = { isPastor: true };
+
+  protected readonly filterFields = computed<FilterField[]>(() => [
+    {
+      key: 'searchCriteria',
+      label: this.languageService.t('clients.filters.search'),
+      type: 'text',
+    },
+    {
+      key: 'districtId',
+      label: this.languageService.t('clients.filters.district'),
+      type: 'select',
+      options: this.districts().map((item) => ({ value: String(item.id), label: item.name })),
+    },
+    {
+      key: 'pendingPortalAccess',
+      label: this.languageService.t('pastors.filters.access'),
+      type: 'select',
+      options: [{ value: 'true', label: this.languageService.t('pastors.columns.accessPending') }],
+    },
+  ]);
 
   protected readonly columns = computed<TableColumn<Client>[]>(() => [
     { key: 'name', header: this.languageService.t('clients.columns.name') },
@@ -72,14 +98,19 @@ export class PastorsList {
   ]);
 
   constructor() {
+    void this.loadCatalogs();
     void this.load();
+  }
+
+  private async loadCatalogs(): Promise<void> {
+    this.districts.set(await this.catalogService.getDistricts());
   }
 
   private async load(): Promise<void> {
     this.errorCode.set(null);
     this.loading.set(true);
     try {
-      const result = await this.clientService.list(this.pageNumber(), this.pageSize(), this.filters);
+      const result = await this.clientService.list(this.pageNumber(), this.pageSize(), this.currentFilters);
       this.rows.set(result.items);
       this.totalRecords.set(result.totalRecords);
     } catch (error) {
@@ -87,6 +118,23 @@ export class PastorsList {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected onSearch(values: FilterValues): void {
+    this.currentFilters = {
+      isPastor: true,
+      searchCriteria: values['searchCriteria'] ?? undefined,
+      districtId: values['districtId'] ? Number(values['districtId']) : undefined,
+      pendingPortalAccess: values['pendingPortalAccess'] ? values['pendingPortalAccess'] === 'true' : undefined,
+    };
+    this.pageNumber.set(1);
+    void this.load();
+  }
+
+  protected onClear(): void {
+    this.currentFilters = { isPastor: true };
+    this.pageNumber.set(1);
+    void this.load();
   }
 
   protected onPageChange(page: number): void {
