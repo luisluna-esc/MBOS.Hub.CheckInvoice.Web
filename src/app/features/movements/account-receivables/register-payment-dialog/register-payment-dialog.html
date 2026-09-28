@@ -16,10 +16,11 @@
       [label]="'accountReceivables.payment.amount' | translate"
       [required]="true"
     />
-    <app-input
+    <app-select
       formControlName="paymentMethod"
       [label]="'accountReceivables.payment.method' | translate"
-      [maxLength]="30"
+      [options]="paymentMethodOptions"
+      [required]="true"
     />
     <app-input
       formControlName="notes"

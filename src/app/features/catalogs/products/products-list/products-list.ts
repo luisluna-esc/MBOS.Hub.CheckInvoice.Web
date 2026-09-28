@@ -190,8 +190,9 @@ export class ProductsList {
       await this.productService.delete(row.productId);
       this.toastService.show(this.languageService.t('products.delete.success'));
       void this.load();
-    } catch {
-      this.toastService.show(this.languageService.t('products.delete.error'));
+    } catch (error) {
+      const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]?.description;
+      this.toastService.show(this.languageService.t('products.delete.error'), message);
     }
   }
 }

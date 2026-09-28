@@ -5,6 +5,7 @@ import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { Input as AppInput } from '../../../../shared/components/input/input';
+import { Select, SelectOption } from '../../../../shared/components/select/select';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { AccountReceivableService } from '../account-receivable.service';
 
@@ -15,7 +16,7 @@ export interface RegisterPaymentDialogData {
 
 @Component({
   selector: 'app-register-payment-dialog',
-  imports: [ReactiveFormsModule, Dialog, AppInput, TranslatePipe],
+  imports: [ReactiveFormsModule, Dialog, AppInput, Select, TranslatePipe],
   templateUrl: './register-payment-dialog.html',
 })
 export class RegisterPaymentDialog {
@@ -26,6 +27,11 @@ export class RegisterPaymentDialog {
   private readonly languageService = inject(LanguageService);
 
   protected readonly saving = signal(false);
+
+  protected readonly paymentMethodOptions: SelectOption[] = [
+    { value: 'transfer', label: this.languageService.t('accountReceivables.payment.methodTransfer') },
+    { value: 'cash', label: this.languageService.t('accountReceivables.payment.methodCash') },
+  ];
 
   protected readonly form = new FormGroup({
     amount: new FormControl('', { nonNullable: true }),

@@ -168,10 +168,9 @@
             <thead class="bg-background">
               <tr>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.form.rowNumber' | translate }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.form.type' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.form.code' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.form.sector' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'issues.form.stock' | translate }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.form.code' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.form.product' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.form.quantity' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'issues.form.unitCost' | translate }}</th>
@@ -183,12 +182,11 @@
               @for (line of detailsArray.controls; track line; let i = $index) {
                 <tr [formGroup]="line">
                   <td class="px-3 py-2 align-top text-foreground">{{ i + 1 }}</td>
-                  <td class="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">{{ lineMediaTypeName(i) }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">{{ lineProducts()[i]?.code || '—' }}</td>
                   <td class="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">{{ lineDepartmentName(i) }}</td>
                   <td class="whitespace-nowrap px-3 py-2 text-right align-top text-foreground">
                     {{ lineStock()[i] ? lineStock()[i]!.quantity : '—' }}
                   </td>
-                  <td class="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">{{ lineProducts()[i]?.code || '—' }}</td>
                   <td class="px-3 py-2 align-top">
                     <button
                       type="button"

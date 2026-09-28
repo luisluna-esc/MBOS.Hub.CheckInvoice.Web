@@ -142,6 +142,13 @@ export const routes: Routes = [
       {
         path: 'transfers/new',
         loadComponent: () =>
+          import('./features/movements/transfers/transfer-receiver-picker/transfer-receiver-picker').then(
+            (m) => m.TransferReceiverPicker
+          ),
+      },
+      {
+        path: 'transfers/new/details',
+        loadComponent: () =>
           import('./features/movements/transfers/transfer-create/transfer-create').then((m) => m.TransferCreate),
       },
       {

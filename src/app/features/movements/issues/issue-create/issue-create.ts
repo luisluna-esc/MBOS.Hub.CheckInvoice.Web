@@ -74,15 +74,11 @@ export class IssueCreate {
   protected readonly issueTypes = signal<CatalogItem[]>([]);
   protected readonly printTypes = signal<CatalogItem[]>([]);
   protected readonly departments = signal<CatalogItem[]>([]);
-  protected readonly mediaTypes = signal<CatalogItem[]>([]);
   protected readonly documentTypes = signal<CatalogItem[]>([]);
   protected readonly warehousePeriods = signal<CatalogItem[]>([]);
 
   private readonly departmentNames = computed(() =>
     Object.fromEntries(this.departments().map((item) => [item.id, item.name]))
-  );
-  private readonly mediaTypeNames = computed(() =>
-    Object.fromEntries(this.mediaTypes().map((item) => [item.id, item.name]))
   );
   private readonly documentTypeNames = computed(() =>
     Object.fromEntries(this.documentTypes().map((item) => [item.id, item.name]))
@@ -256,13 +252,12 @@ export class IssueCreate {
   }
 
   private async loadCatalogs(): Promise<void> {
-    const [warehouses, issueTypes, printTypes, departments, mediaTypes, documentTypes, warehousePeriods] =
+    const [warehouses, issueTypes, printTypes, departments, documentTypes, warehousePeriods] =
       await settleCatalogs([
         this.catalogService.getWarehouses(),
         this.catalogService.getIssueTypes(),
         this.catalogService.getPrintTypes(),
         this.catalogService.getDepartments(),
-        this.catalogService.getMediaTypes(),
         this.catalogService.getDocumentTypes(),
         this.catalogService.getWarehousePeriods(),
       ]);
@@ -270,7 +265,6 @@ export class IssueCreate {
     this.issueTypes.set(issueTypes);
     this.printTypes.set(printTypes);
     this.departments.set(departments);
-    this.mediaTypes.set(mediaTypes);
     this.documentTypes.set(documentTypes);
     this.warehousePeriods.set(warehousePeriods);
 
@@ -358,11 +352,6 @@ export class IssueCreate {
   protected lineDepartmentName(index: number): string {
     const departmentId = this.lineProducts()[index]?.departmentId;
     return departmentId ? (this.departmentNames()[departmentId] ?? '—') : '—';
-  }
-
-  protected lineMediaTypeName(index: number): string {
-    const mediaTypeId = this.lineProducts()[index]?.mediaTypeId;
-    return mediaTypeId ? (this.mediaTypeNames()[mediaTypeId] ?? '—') : '—';
   }
 
   protected async pickProduct(index: number): Promise<void> {

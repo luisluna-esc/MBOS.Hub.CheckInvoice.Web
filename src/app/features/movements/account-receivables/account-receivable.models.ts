@@ -5,6 +5,7 @@ export interface AccountReceivable extends Record<string, unknown> {
   clientId: number | null;
   totalAmount: number;
   outstandingBalance: number;
+  paidAmount: number;
   paymentType: string;
   paymentDetail: string | null;
   dueDate: string | null;

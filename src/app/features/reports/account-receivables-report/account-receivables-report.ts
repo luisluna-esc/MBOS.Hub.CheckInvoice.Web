@@ -33,6 +33,7 @@ export class AccountReceivablesReport {
 
   protected readonly statusOptions = computed<SelectOption[]>(() => [
     { value: 'pending', label: this.languageService.t('accountReceivables.status.pending') },
+    { value: 'late', label: this.languageService.t('accountReceivables.status.late') },
     { value: 'paid', label: this.languageService.t('accountReceivables.status.paid') },
   ]);
 

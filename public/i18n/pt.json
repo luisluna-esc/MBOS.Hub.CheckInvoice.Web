@@ -618,8 +618,7 @@
       "rowNumber": "N°",
       "available": "Disponível",
       "exceedsStock": "A quantidade excede o estoque disponível.",
-      "type": "Unidade de Medida",
-      "sector": "Setor",
+      "sector": "Departamento",
       "stock": "Estoque",
       "code": "Código",
       "unitCost": "Custo Unitário (Bs.)",
@@ -786,6 +785,7 @@
     },
     "status": {
       "pending": "Pendente",
+      "late": "Pagamento atrasado",
       "paid": "Paga"
     },
     "paymentTypes": {
@@ -801,6 +801,7 @@
       "paymentDetail": "Descrição",
       "dueDate": "Data limite",
       "total": "Total",
+      "paid": "Pagamentos",
       "outstandingBalance": "Saldo pendente",
       "status": "Status"
     },
@@ -816,6 +817,8 @@
       "amount": "Valor",
       "amountRequired": "Informe um valor válido.",
       "method": "Método de pagamento",
+      "methodTransfer": "Transação",
+      "methodCash": "Dinheiro",
       "notes": "Notas",
       "success": "Pagamento registrado.",
       "error": "Não foi possível registrar o pagamento."
@@ -966,6 +969,15 @@
     "titleSent": "Transferências Realizadas",
     "titleReceived": "Transferências Recebidas",
     "new": "Nova transferência",
+    "receiverPicker": {
+      "title": "Selecionar receptor",
+      "description": "Busque o cliente por nome para continuar com o registro da transferência.",
+      "search": "Nome",
+      "taxId": "NIT",
+      "fullName": "Nome completo",
+      "email": "E-mail",
+      "createClient": "Criar cliente"
+    },
     "filters": {
       "sourceWarehouse": "Almoxarifado origem",
       "destinationWarehouse": "Almoxarifado destino",
@@ -1004,6 +1016,7 @@
       "destinationWarehouse": "Almoxarifado destino",
       "receiver": "Receptor",
       "changeReceiver": "Alterar",
+      "receiverLocked": "Receptor selecionado.",
       "sentBy": "Enviado por",
       "notes": "Notas",
       "continue": "Continuar",

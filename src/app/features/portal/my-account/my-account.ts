@@ -190,7 +190,7 @@ export class MyAccount {
       {
         key: 'paymentMethod',
         header: this.languageService.t('portal.myAccount.columns.paymentMethod'),
-        format: (value) => (value as string) || '—',
+        format: (value) => this.paymentMethodLabel(value as string | null),
       },
     ];
   });
@@ -245,6 +245,17 @@ export class MyAccount {
 
   constructor() {
     void this.loadAll();
+  }
+
+  private paymentMethodLabel(paymentMethod: string | null): string {
+    switch (paymentMethod) {
+      case 'cash':
+        return this.languageService.t('accountReceivables.payment.methodCash');
+      case 'transfer':
+        return this.languageService.t('accountReceivables.payment.methodTransfer');
+      default:
+        return paymentMethod || '—';
+    }
   }
 
   private async loadAll(): Promise<void> {

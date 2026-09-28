@@ -56,6 +56,7 @@ export class AccountReceivablesList {
       type: 'select',
       options: [
         { value: 'pending', label: this.languageService.t('accountReceivables.status.pending') },
+        { value: 'late', label: this.languageService.t('accountReceivables.status.late') },
         { value: 'paid', label: this.languageService.t('accountReceivables.status.paid') },
       ],
     },
@@ -101,6 +102,12 @@ export class AccountReceivablesList {
       {
         key: 'totalAmount',
         header: this.languageService.t('accountReceivables.columns.total'),
+        align: 'right',
+        format: (value) => Number(value).toFixed(2),
+      },
+      {
+        key: 'paidAmount',
+        header: this.languageService.t('accountReceivables.columns.paid'),
         align: 'right',
         format: (value) => Number(value).toFixed(2),
       },

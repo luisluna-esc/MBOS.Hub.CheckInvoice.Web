@@ -17,6 +17,8 @@ import {
   PartySearchInput,
   PartySearchResult,
 } from '../../../../shared/components/party-search-input/party-search-input';
+import { Client } from '../../../catalogs/clients/client.models';
+import { ClientService } from '../../../catalogs/clients/client.service';
 import {
   ProductPickerData,
   ProductPickerDialog,
@@ -49,6 +51,7 @@ export class TransferCreate {
   private readonly toastService = inject(ToastService);
   private readonly languageService = inject(LanguageService);
   private readonly reportService = inject(ReportService);
+  private readonly clientService = inject(ClientService);
 
   protected readonly saving = signal(false);
   protected readonly headerConfirmed = signal(false);
@@ -58,6 +61,8 @@ export class TransferCreate {
   protected readonly warehouses = signal<CatalogItem[]>([]);
   protected readonly users = signal<CatalogItem[]>([]);
   protected readonly receiverParty = signal<PartySearchResult | null>(null);
+  protected readonly receiverLocked = signal(false);
+  protected readonly lockedReceiver = signal<Client | null>(null);
 
   protected readonly senderName = computed(() => {
     const appUserId = this.authService.session()?.appUserId;
@@ -134,6 +139,11 @@ export class TransferCreate {
 
   constructor() {
     void this.loadCatalogs();
+
+    const state = history.state as { clientId?: number };
+    if (state.clientId) {
+      void this.lockReceiver(state.clientId);
+    }
   }
 
   private async loadCatalogs(): Promise<void> {
@@ -143,6 +153,19 @@ export class TransferCreate {
     ]);
     this.warehouses.set(warehouses);
     this.users.set(users);
+  }
+
+  private async lockReceiver(clientId: number): Promise<void> {
+    const result = await this.clientService.list(1, 1, { clientId });
+    const client = result.items[0];
+    if (!client) {
+      return;
+    }
+
+    this.headerForm.controls.receiverClientId.setValue(String(clientId));
+    this.headerForm.controls.receiverClientId.disable();
+    this.lockedReceiver.set(client);
+    this.receiverLocked.set(true);
   }
 
   protected onReceiverPicked(result: PartySearchResult): void {
@@ -174,6 +197,9 @@ export class TransferCreate {
 
   protected onEditHeader(): void {
     this.headerForm.enable();
+    if (this.receiverLocked()) {
+      this.headerForm.controls.receiverClientId.disable();
+    }
     this.headerConfirmed.set(false);
   }
 

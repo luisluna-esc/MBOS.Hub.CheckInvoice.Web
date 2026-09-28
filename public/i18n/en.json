@@ -618,8 +618,7 @@
       "rowNumber": "No.",
       "available": "Available",
       "exceedsStock": "The quantity exceeds the available stock.",
-      "type": "Unit of Measure",
-      "sector": "Sector",
+      "sector": "Department",
       "stock": "Stock",
       "code": "Code",
       "unitCost": "Unit Cost (Bs.)",
@@ -786,6 +785,7 @@
     },
     "status": {
       "pending": "Pending",
+      "late": "Late payment",
       "paid": "Paid"
     },
     "paymentTypes": {
@@ -801,6 +801,7 @@
       "paymentDetail": "Description",
       "dueDate": "Due date",
       "total": "Total",
+      "paid": "Payments",
       "outstandingBalance": "Outstanding balance",
       "status": "Status"
     },
@@ -816,6 +817,8 @@
       "amount": "Amount",
       "amountRequired": "Enter a valid amount.",
       "method": "Payment method",
+      "methodTransfer": "Transfer",
+      "methodCash": "Cash",
       "notes": "Notes",
       "success": "Payment registered.",
       "error": "The payment could not be registered."
@@ -966,6 +969,15 @@
     "titleSent": "Transfers Sent",
     "titleReceived": "Transfers Received",
     "new": "New transfer",
+    "receiverPicker": {
+      "title": "Select receiver",
+      "description": "Search for the client by name to continue with the transfer registration.",
+      "search": "Name",
+      "taxId": "Tax ID",
+      "fullName": "Full name",
+      "email": "Email",
+      "createClient": "Create client"
+    },
     "filters": {
       "sourceWarehouse": "Source warehouse",
       "destinationWarehouse": "Destination warehouse",
@@ -1004,6 +1016,7 @@
       "destinationWarehouse": "Destination warehouse",
       "receiver": "Receiver",
       "changeReceiver": "Change",
+      "receiverLocked": "Receiver selected.",
       "sentBy": "Sent by",
       "notes": "Notes",
       "continue": "Continue",

@@ -618,8 +618,7 @@
       "rowNumber": "Nro.",
       "available": "Disponible",
       "exceedsStock": "La cantidad supera el stock disponible.",
-      "type": "Unidad de Medida",
-      "sector": "Sector",
+      "sector": "Departamento",
       "stock": "Stock",
       "code": "Código",
       "unitCost": "Costo Unitario (Bs.)",
@@ -786,6 +785,7 @@
     },
     "status": {
       "pending": "Pendiente",
+      "late": "Pago retrasado",
       "paid": "Pagada"
     },
     "paymentTypes": {
@@ -801,6 +801,7 @@
       "paymentDetail": "Descripción",
       "dueDate": "Fecha límite",
       "total": "Total",
+      "paid": "Pagos",
       "outstandingBalance": "Saldo pendiente",
       "status": "Estado"
     },
@@ -816,6 +817,8 @@
       "amount": "Monto",
       "amountRequired": "Ingresa un monto válido.",
       "method": "Método de pago",
+      "methodTransfer": "Transacción",
+      "methodCash": "Efectivo",
       "notes": "Notas",
       "success": "Pago registrado.",
       "error": "No se pudo registrar el pago."
@@ -966,6 +969,15 @@
     "titleSent": "Transferencias Realizadas",
     "titleReceived": "Transferencias Recibidas",
     "new": "Nueva transferencia",
+    "receiverPicker": {
+      "title": "Seleccionar receptor",
+      "description": "Busca al cliente por nombre para continuar con el registro de la transferencia.",
+      "search": "Nombre",
+      "taxId": "NIT",
+      "fullName": "Nombre completo",
+      "email": "Correo",
+      "createClient": "Crear cliente"
+    },
     "filters": {
       "sourceWarehouse": "Almacén origen",
       "destinationWarehouse": "Almacén destino",
@@ -1004,6 +1016,7 @@
       "destinationWarehouse": "Almacén destino",
       "receiver": "Receptor",
       "changeReceiver": "Cambiar",
+      "receiverLocked": "Receptor seleccionado.",
       "sentBy": "Enviado por",
       "notes": "Notas",
       "continue": "Continuar",
