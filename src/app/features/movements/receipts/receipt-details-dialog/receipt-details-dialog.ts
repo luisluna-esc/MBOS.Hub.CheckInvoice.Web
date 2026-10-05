@@ -1,5 +1,6 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Component, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -12,7 +13,7 @@ export interface ReceiptDetailsDialogData {
 
 @Component({
   selector: 'app-receipt-details-dialog',
-  imports: [Dialog, TranslatePipe],
+  imports: [Dialog, TranslatePipe, DecimalPipe],
   templateUrl: './receipt-details-dialog.html',
 })
 export class ReceiptDetailsDialog {
@@ -24,6 +25,10 @@ export class ReceiptDetailsDialog {
   protected readonly lines = signal<ReceiptDetail[]>([]);
   protected readonly productNames = signal<Record<number, string>>({});
   protected readonly loading = signal(true);
+  protected readonly totalQuantity = computed(() => this.lines().reduce((sum, line) => sum + line.quantity, 0));
+  protected readonly grandTotal = computed(() => this.lines().reduce((sum, line) => sum + (line.totalCost ?? 0), 0));
+  protected readonly hasWorkOrders = computed(() => this.lines().some((line) => !!line.workOrder));
+  protected readonly hasDetails = computed(() => this.lines().some((line) => !!line.detail));
 
   constructor() {
     void this.load();

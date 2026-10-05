@@ -532,7 +532,17 @@
       "title": "Receipt details",
       "loading": "Loading...",
       "empty": "This receipt has no lines.",
-      "total": "Total"
+      "rowNumber": "#",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitCost": "Unit cost (Bs.)",
+      "unitPrice": "Unit price (Bs.)",
+      "subtotal": "Subtotal (Bs.)",
+      "workOrder": "Work order",
+      "detail": "Detail",
+      "grandTotal": "Grand total (Bs.)",
+      "totalQuantity": "Total units",
+      "summary": "{{count}} products"
     }
   },
   "issues": {
@@ -632,7 +642,17 @@
       "title": "Issue details",
       "loading": "Loading...",
       "empty": "This issue has no lines.",
-      "total": "Total"
+      "rowNumber": "#",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitCost": "Unit cost (Bs.)",
+      "unitPrice": "Unit price (Bs.)",
+      "subtotal": "Subtotal (Bs.)",
+      "workOrder": "Work order",
+      "detail": "Detail",
+      "grandTotal": "Grand total (Bs.)",
+      "totalQuantity": "Total units",
+      "summary": "{{count}} products"
     }
   },
   "issueVoidRequests": {
@@ -642,7 +662,11 @@
       "body": "Lets you cancel an Issue that was already recorded (for example, if something was charged or delivered by mistake). Any user can request it with a reason; the Accountant or M-BOS must approve or reject it. Once approved, the Issue is marked as voided and the stock that was deducted is automatically returned to the warehouse. This is always safe: it can never leave inventory negative."
     },
     "filters": {
-      "status": "Status"
+      "status": "Status",
+      "reason": "Reason",
+      "requestedBy": "Requested by",
+      "dateFrom": "Requested from",
+      "dateTo": "Requested to"
     },
     "status": {
       "pending": "Pending",
@@ -735,7 +759,11 @@
       "body": "Lets you cancel a Receipt that was already recorded (for example, if it was entered by mistake). Any user can request it with a reason; the Accountant or M-BOS must approve or reject it. Once approved, the Receipt is marked as voided and the system deducts from the warehouse the stock that receipt had added. If part of that stock was already used by a later Issue or Transfer and there isn't enough left to reverse it, the void is automatically rejected so inventory is never left negative."
     },
     "filters": {
-      "status": "Status"
+      "status": "Status",
+      "reason": "Reason",
+      "requestedBy": "Requested by",
+      "dateFrom": "Requested from",
+      "dateTo": "Requested to"
     },
     "status": {
       "pending": "Pending",
@@ -1049,7 +1077,17 @@
       "title": "Transfer details",
       "loading": "Loading...",
       "empty": "This transfer has no lines.",
-      "total": "Total",
+      "rowNumber": "#",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitCost": "Unit cost (Bs.)",
+      "unitPrice": "Unit price (Bs.)",
+      "subtotal": "Subtotal (Bs.)",
+      "workOrder": "Work order",
+      "detail": "Detail",
+      "grandTotal": "Grand total (Bs.)",
+      "totalQuantity": "Total units",
+      "summary": "{{count}} products",
       "pendingNotice": "This record hasn't been reviewed yet. A received transfer is only an informational record: it never changes stock or the product's cost."
     }
   },
@@ -1094,6 +1132,8 @@
       "complementHint": "Only applies when the document type is NIT.",
       "specialCase": "Special Cases",
       "specialCaseNone": "None",
+      "specialCasePlaceholder": "Choose a special case",
+      "specialCaseEmpty": "There are no special cases registered in the system. Ask the administrator to load them, or go back and register a new client.",
       "email": "Email",
       "mobilePhone": "Mobile",
       "mobilePhoneInvalid": "Mobile phone cannot contain letters.",

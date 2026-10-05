@@ -80,6 +80,8 @@ export class ClientFormDialog {
   protected readonly districts = signal<CatalogItem[]>([]);
   protected readonly churches = signal<CatalogItem[]>([]);
   protected readonly specialCases = signal<SpecialCaseItem[]>([]);
+  /** Distingue "todavía cargando" de "el catálogo está vacío" para no mostrar el aviso antes de tiempo. */
+  protected readonly specialCasesLoaded = signal(false);
 
   protected readonly documentTypeOptions = computed<SelectOption[]>(() =>
     this.documentTypes().map((item) => ({ value: String(item.id), label: item.name }))
@@ -90,8 +92,9 @@ export class ClientFormDialog {
   protected readonly churchOptions = computed<SelectOption[]>(() =>
     this.churches().map((item) => ({ value: String(item.id), label: item.name }))
   );
+  /** Sin opción "Ninguna": a esta pantalla solo se llega eligiendo "Caso especial", así que
+   *  quedarse sin elegir uno no es una salida válida (se vuelve con el botón Atrás). */
   protected readonly specialCaseOptions = computed<SelectOption[]>(() => [
-    { value: '', label: this.languageService.t('clients.form.specialCaseNone') },
     ...this.specialCases().map((item) => ({ value: String(item.id), label: `${item.code} (${item.name})` })),
   ]);
 
@@ -254,6 +257,9 @@ export class ClientFormDialog {
   }
 
   protected onContinue(): void {
+    if (this.preStage() === 'special' && !this.hasSpecialCase()) {
+      return;
+    }
     this.decisionsConfirmed.set(true);
   }
 
@@ -276,6 +282,8 @@ export class ClientFormDialog {
   }
 
   protected backToChoose(): void {
+    // Volver atrás descarta el caso especial elegido: si no, "Cliente nuevo" seguiría arrastrándolo.
+    this.form.controls.specialCaseId.setValue('');
     this.preStage.set('choose');
   }
 
@@ -303,6 +311,7 @@ export class ClientFormDialog {
     this.districts.set(districts);
     this.churches.set(churches);
     this.specialCases.set(specialCases);
+    this.specialCasesLoaded.set(true);
     this.countries.set(countries);
   }
 

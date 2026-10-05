@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { CatalogService, VoidReasonItem } from '../../../../core/catalogs/catalog.service';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
@@ -28,6 +29,7 @@ export class ReceiptVoidRequestsList {
   private readonly dialogService = inject(DialogService);
   private readonly authService = inject(AuthService);
   private readonly languageService = inject(LanguageService);
+  private readonly catalogService = inject(CatalogService);
 
   protected readonly rows = signal<ReceiptVoidRequest[]>([]);
   protected readonly totalRecords = signal(0);
@@ -36,7 +38,11 @@ export class ReceiptVoidRequestsList {
   protected readonly errorCode = signal<number | null>(null);
   protected readonly loading = signal(false);
 
+  /** La bandeja abre en "Pendiente" (lo que hay que revisar); la barra de filtros lo muestra igual. */
+  protected readonly initialFilterValues: FilterValues = { status: 'pending' };
   private currentFilters: ReceiptVoidRequestFilters = { status: 'pending' };
+  private readonly voidReasons = signal<VoidReasonItem[]>([]);
+  private readonly todayIso = new Date().toISOString().slice(0, 10);
 
   protected readonly canReview = computed(() => APPROVER_ROLES.includes(this.authService.activeRole() ?? ''));
 
@@ -50,6 +56,29 @@ export class ReceiptVoidRequestsList {
         { value: 'approved', label: this.languageService.t('receiptVoidRequests.status.approved') },
         { value: 'rejected', label: this.languageService.t('receiptVoidRequests.status.rejected') },
       ],
+    },
+    {
+      key: 'voidReasonId',
+      label: this.languageService.t('receiptVoidRequests.filters.reason'),
+      type: 'select',
+      options: this.voidReasons().map((item) => ({ value: String(item.id), label: item.name })),
+    },
+    {
+      key: 'requestedByName',
+      label: this.languageService.t('receiptVoidRequests.filters.requestedBy'),
+      type: 'text',
+    },
+    {
+      key: 'dateFrom',
+      label: this.languageService.t('receiptVoidRequests.filters.dateFrom'),
+      type: 'date',
+      max: this.todayIso,
+    },
+    {
+      key: 'dateTo',
+      label: this.languageService.t('receiptVoidRequests.filters.dateTo'),
+      type: 'date',
+      max: this.todayIso,
     },
   ]);
 
@@ -127,6 +156,7 @@ export class ReceiptVoidRequestsList {
 
   constructor() {
     void this.load();
+    void this.catalogService.getVoidReasons().then((items) => this.voidReasons.set(items)).catch(() => undefined);
   }
 
   private async load(): Promise<void> {
@@ -144,7 +174,13 @@ export class ReceiptVoidRequestsList {
   }
 
   protected onSearch(values: FilterValues): void {
-    this.currentFilters = { status: values['status'] ?? undefined };
+    this.currentFilters = {
+      status: values['status'] ?? undefined,
+      voidReasonId: values['voidReasonId'] ? Number(values['voidReasonId']) : undefined,
+      requestedByName: values['requestedByName']?.trim() || undefined,
+      dateFrom: values['dateFrom'] ?? undefined,
+      dateTo: values['dateTo'] ?? undefined,
+    };
     this.pageNumber.set(1);
     void this.load();
   }

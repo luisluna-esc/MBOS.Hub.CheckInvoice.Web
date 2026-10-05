@@ -30,4 +30,8 @@ export interface IssueVoidRequestReview {
 
 export interface IssueVoidRequestFilters {
   status?: string;
+  voidReasonId?: number;
+  requestedByName?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }

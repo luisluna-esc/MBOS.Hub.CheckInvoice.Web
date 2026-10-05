@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, OnInit, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePicker } from '../date-picker/date-picker';
@@ -29,8 +29,11 @@ const TEXT_DEBOUNCE_MS = 400;
   imports: [FormsModule, AppInput, Select, DatePicker, TranslatePipe],
   templateUrl: './filters.html',
 })
-export class Filters {
+export class Filters implements OnInit {
   readonly fields = input.required<FilterField[]>();
+  /** Valores con los que arranca la barra (ej. una lista que abre filtrada en "Pendiente"),
+   *  para que lo que se ve en los campos coincida con lo que la lista está filtrando. */
+  readonly initialValues = input<FilterValues>({});
 
   readonly search = output<FilterValues>();
   readonly clear = output<void>();
@@ -38,6 +41,10 @@ export class Filters {
   protected readonly values = signal<FilterValues>({});
 
   private debounceTimer?: ReturnType<typeof setTimeout>;
+
+  ngOnInit(): void {
+    this.values.set({ ...this.initialValues() });
+  }
 
   protected getValue(key: string): string | null {
     return this.values()[key] ?? null;

@@ -45,7 +45,7 @@ export class ReceiptVoidRequestService {
     const clean: Record<string, string> = {};
     for (const [key, value] of Object.entries(filters)) {
       if (value !== null && value !== undefined && value !== '') {
-        clean[key] = value as string;
+        clean[key] = String(value);
       }
     }
     return clean;

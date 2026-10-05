@@ -532,7 +532,17 @@
       "title": "Detalhe da entrada",
       "loading": "Carregando...",
       "empty": "Esta entrada não tem linhas.",
-      "total": "Total"
+      "rowNumber": "N°",
+      "product": "Produto",
+      "quantity": "Quantidade",
+      "unitCost": "Custo unitário (Bs.)",
+      "unitPrice": "Preço unitário (Bs.)",
+      "subtotal": "Subtotal (Bs.)",
+      "workOrder": "Ordem de trabalho",
+      "detail": "Detalhe",
+      "grandTotal": "Total geral (Bs.)",
+      "totalQuantity": "Total de unidades",
+      "summary": "{{count}} produtos"
     }
   },
   "issues": {
@@ -632,7 +642,17 @@
       "title": "Detalhe da saída",
       "loading": "Carregando...",
       "empty": "Esta saída não tem linhas.",
-      "total": "Total"
+      "rowNumber": "N°",
+      "product": "Produto",
+      "quantity": "Quantidade",
+      "unitCost": "Custo unitário (Bs.)",
+      "unitPrice": "Preço unitário (Bs.)",
+      "subtotal": "Subtotal (Bs.)",
+      "workOrder": "Ordem de trabalho",
+      "detail": "Detalhe",
+      "grandTotal": "Total geral (Bs.)",
+      "totalQuantity": "Total de unidades",
+      "summary": "{{count}} produtos"
     }
   },
   "issueVoidRequests": {
@@ -642,7 +662,11 @@
       "body": "Permite cancelar uma Saída já registrada (por exemplo, se algo foi cobrado ou entregue por engano). Qualquer usuário pode solicitá-la indicando um motivo; o Contador ou M-BOS deve aprová-la ou rejeitá-la. Ao ser aprovada, a Saída fica marcada como anulada e o estoque que havia sido descontado é devolvido automaticamente ao armazém. É uma operação sempre segura: nunca deixa o estoque negativo."
     },
     "filters": {
-      "status": "Status"
+      "status": "Status",
+      "reason": "Motivo",
+      "requestedBy": "Solicitado por",
+      "dateFrom": "Solicitado de",
+      "dateTo": "Solicitado até"
     },
     "status": {
       "pending": "Pendente",
@@ -735,7 +759,11 @@
       "body": "Permite cancelar uma Entrada já registrada (por exemplo, se foi lançada por engano). Qualquer usuário pode solicitá-la indicando um motivo; o Contador ou M-BOS deve aprová-la ou rejeitá-la. Ao ser aprovada, a Entrada fica marcada como anulada e o sistema desconta do armazém o estoque que essa entrada havia adicionado. Se parte desse estoque já foi usada em outra Saída ou Transferência e não é suficiente para reverter, a anulação é rejeitada automaticamente para não deixar o estoque negativo."
     },
     "filters": {
-      "status": "Status"
+      "status": "Status",
+      "reason": "Motivo",
+      "requestedBy": "Solicitado por",
+      "dateFrom": "Solicitado de",
+      "dateTo": "Solicitado até"
     },
     "status": {
       "pending": "Pendente",
@@ -1049,7 +1077,17 @@
       "title": "Detalhe da transferência",
       "loading": "Carregando...",
       "empty": "Esta transferência não tem linhas.",
-      "total": "Total",
+      "rowNumber": "N°",
+      "product": "Produto",
+      "quantity": "Quantidade",
+      "unitCost": "Custo unitário (Bs.)",
+      "unitPrice": "Preço unitário (Bs.)",
+      "subtotal": "Subtotal (Bs.)",
+      "workOrder": "Ordem de trabalho",
+      "detail": "Detalhe",
+      "grandTotal": "Total geral (Bs.)",
+      "totalQuantity": "Total de unidades",
+      "summary": "{{count}} produtos",
       "pendingNotice": "Este registro ainda não foi revisado. Uma transferência recebida é apenas um registro informativo: nunca altera o estoque nem o custo do produto."
     }
   },
@@ -1094,6 +1132,8 @@
       "complementHint": "Só se aplica se o tipo de documento for NIT.",
       "specialCase": "Casos Especiais",
       "specialCaseNone": "Nenhuma",
+      "specialCasePlaceholder": "Escolha um caso especial",
+      "specialCaseEmpty": "Não há casos especiais cadastrados no sistema. Peça ao administrador para carregá-los, ou volte e cadastre um cliente novo.",
       "email": "E-mail",
       "mobilePhone": "Celular",
       "mobilePhoneInvalid": "O celular não pode conter letras.",

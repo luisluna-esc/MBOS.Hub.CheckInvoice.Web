@@ -85,15 +85,24 @@
             </button>
           </app-tooltip>
 
-          <app-select
-            formControlName="specialCaseId"
-            [label]="'clients.form.specialCase' | translate"
-            [options]="specialCaseOptions()"
-          />
+          @if (specialCasesLoaded() && specialCases().length === 0) {
+            <p class="rounded-md border border-border bg-surface p-3 text-sm text-danger">
+              {{ 'clients.form.specialCaseEmpty' | translate }}
+            </p>
+          } @else {
+            <app-select
+              formControlName="specialCaseId"
+              [label]="'clients.form.specialCase' | translate"
+              [placeholder]="'clients.form.specialCasePlaceholder' | translate"
+              [options]="specialCaseOptions()"
+              [required]="true"
+            />
+          }
 
           <button
             type="button"
-            class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors hover:opacity-90"
+            class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            [disabled]="!hasSpecialCase()"
             (click)="onContinue()"
           >
             {{ 'clients.form.continue' | translate }}

@@ -43,9 +43,12 @@ export class Shell {
   protected readonly accountMenuOpen = signal(false);
   protected readonly expandedItems = signal<ReadonlySet<number>>(new Set());
 
-  protected readonly username = computed(() => this.authService.session()?.username ?? '');
   protected readonly email = computed(() => this.authService.session()?.email ?? '');
-  protected readonly initials = computed(() => this.username().charAt(0).toUpperCase() || '?');
+  protected readonly activeRole = computed(() => this.authService.activeRole() ?? '');
+  protected readonly initials = computed(() => {
+    const session = this.authService.session();
+    return (session?.fullName || session?.email || '').charAt(0).toUpperCase() || '?';
+  });
 
   protected readonly roleOptions = computed<SelectOption[]>(() =>
     this.authService.roles().map((role) => ({ value: role, label: role }))

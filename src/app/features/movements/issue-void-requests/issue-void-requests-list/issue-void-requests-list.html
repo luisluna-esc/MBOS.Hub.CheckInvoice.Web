@@ -6,7 +6,7 @@
     </app-info-hint>
   </div>
 
-  <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
+  <app-filters [fields]="filterFields()" [initialValues]="initialFilterValues" (search)="onSearch($event)" (clear)="onClear()" />
 
   @if (errorCode()) {
     <div class="rounded-lg border border-border">

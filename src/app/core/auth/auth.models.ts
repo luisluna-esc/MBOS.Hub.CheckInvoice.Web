@@ -7,6 +7,8 @@ export interface AuthResponse {
   appUserId: number;
   username: string;
   email: string;
+  /** Opcional: las sesiones guardadas antes de que el login lo devolviera no lo traen. */
+  fullName?: string;
   accessToken: string;
   accessTokenExpiresAt: string;
   refreshToken: string;

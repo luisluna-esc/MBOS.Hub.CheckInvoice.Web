@@ -1,5 +1,6 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Component, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -12,7 +13,7 @@ export interface IssueDetailsDialogData {
 
 @Component({
   selector: 'app-issue-details-dialog',
-  imports: [Dialog, TranslatePipe],
+  imports: [Dialog, TranslatePipe, DecimalPipe],
   templateUrl: './issue-details-dialog.html',
 })
 export class IssueDetailsDialog {
@@ -24,6 +25,8 @@ export class IssueDetailsDialog {
   protected readonly lines = signal<IssueDetail[]>([]);
   protected readonly productNames = signal<Record<number, string>>({});
   protected readonly loading = signal(true);
+  protected readonly totalQuantity = computed(() => this.lines().reduce((sum, line) => sum + line.quantity, 0));
+  protected readonly grandTotal = computed(() => this.lines().reduce((sum, line) => sum + (line.totalCost ?? 0), 0));
 
   constructor() {
     void this.load();

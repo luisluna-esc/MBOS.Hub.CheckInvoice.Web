@@ -1,5 +1,6 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Component, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -13,7 +14,7 @@ export interface TransferDetailsDialogData {
 
 @Component({
   selector: 'app-transfer-details-dialog',
-  imports: [Dialog, TranslatePipe],
+  imports: [Dialog, TranslatePipe, DecimalPipe],
   templateUrl: './transfer-details-dialog.html',
 })
 export class TransferDetailsDialog {
@@ -25,6 +26,9 @@ export class TransferDetailsDialog {
   protected readonly lines = signal<TransferDetail[]>([]);
   protected readonly productNames = signal<Record<number, string>>({});
   protected readonly loading = signal(true);
+  protected readonly totalQuantity = computed(() => this.lines().reduce((sum, line) => sum + line.quantity, 0));
+  protected readonly grandTotal = computed(() => this.lines().reduce((sum, line) => sum + (line.totalSalePrice ?? 0), 0));
+  protected readonly hasPrices = computed(() => this.lines().some((line) => line.unitPrice != null));
   protected readonly showPendingNotice = this.data.isApproved === false;
 
   constructor() {

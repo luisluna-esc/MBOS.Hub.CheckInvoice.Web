@@ -46,7 +46,7 @@
             <tbody class="divide-y divide-border">
               @for (line of linesArray.controls; track line; let i = $index) {
                 <tr [formGroup]="line">
-                  <td class="px-3 py-2 align-top">
+                  <td class="min-w-64 px-3 py-2 align-middle">
                     <button
                       type="button"
                       class="w-full rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background"
@@ -59,17 +59,17 @@
                       }
                     </button>
                   </td>
-                  <td class="px-3 py-2 text-right align-top text-muted-foreground">{{ lineInfos()[i]?.currentQuantity ?? 0 }}</td>
-                  <td class="w-32 px-3 py-2 align-top">
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle tabular-nums text-muted-foreground">{{ lineInfos()[i]?.currentQuantity ?? 0 }}</td>
+                  <td class="w-32 px-3 py-2 align-middle">
                     <app-input formControlName="countedQuantity" type="number" [min]="0" [decimals]="2" />
                   </td>
-                  <td class="px-3 py-2 text-right align-top" [class.text-danger]="difference(i) < 0" [class.text-primary]="difference(i) > 0">
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle font-medium tabular-nums" [class.text-danger]="difference(i) < 0" [class.text-primary]="difference(i) > 0">
                     {{ difference(i) > 0 ? '+' : '' }}{{ difference(i) }}
                   </td>
-                  <td class="px-3 py-2 text-center align-top">
+                  <td class="px-3 py-2 text-center align-middle">
                     <button
                       type="button"
-                      class="rounded p-1.5 text-danger transition-colors hover:bg-danger/10"
+                      class="inline-flex items-center justify-center rounded p-1.5 text-danger transition-colors hover:bg-danger/10"
                       [attr.aria-label]="'stockAdjustment.removeLine' | translate"
                       (click)="removeLine(i)"
                     >

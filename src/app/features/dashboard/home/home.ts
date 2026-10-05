@@ -21,7 +21,11 @@ export class Home {
   private readonly reportService = inject(ReportService);
   private readonly languageService = inject(LanguageService);
 
-  protected readonly username = computed(() => this.authService.session()?.username ?? '');
+  /** Se saluda con el nombre real: el username muchas veces es el mismo correo. */
+  protected readonly username = computed(() => {
+    const session = this.authService.session();
+    return session?.fullName || session?.username || '';
+  });
   protected readonly showDashboard = computed(() => DASHBOARD_ROLES.includes(this.authService.activeRole() ?? ''));
 
   protected readonly data = signal<FinancialDashboardData | null>(null);

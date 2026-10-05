@@ -30,4 +30,8 @@ export interface ReceiptVoidRequestReview {
 
 export interface ReceiptVoidRequestFilters {
   status?: string;
+  voidReasonId?: number;
+  requestedByName?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
