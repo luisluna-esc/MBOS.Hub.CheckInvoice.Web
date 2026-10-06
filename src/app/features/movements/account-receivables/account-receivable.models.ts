@@ -35,4 +35,24 @@ export interface PaymentCreate {
   amount: number;
   paymentMethod?: string | null;
   notes?: string | null;
+  /** Reparto del depósito por producto (línea de la salida). Vacío si la cuenta no tiene salida. */
+  details: { issueDetailId: number; amount: number }[];
+}
+
+export interface PaymentLine {
+  issueDetailId: number;
+  productId: number;
+  code: string | null;
+  name: string;
+  quantity: number;
+  totalAmount: number;
+  paidAmount: number;
+  remainingAmount: number;
+}
+
+export interface PaymentLines {
+  accountReceivableId: number;
+  outstandingBalance: number;
+  hasProducts: boolean;
+  lines: PaymentLine[];
 }

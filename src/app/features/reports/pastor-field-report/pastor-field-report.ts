@@ -12,11 +12,13 @@ import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
+import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { PastorFieldReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 
 @Component({
   selector: 'app-pastor-field-report',
-  imports: [FormsModule, PartySearchInput, DatePicker, Skeleton, Tooltip, TranslatePipe],
+  imports: [FormsModule, PartySearchInput, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton],
   templateUrl: './pastor-field-report.html',
 })
 export class PastorFieldReport {
@@ -33,6 +35,7 @@ export class PastorFieldReport {
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
+  protected readonly exporting = signal(false);
 
   private objectUrl: string | null = null;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -78,11 +81,7 @@ export class PastorFieldReport {
 
     this.loading.set(true);
     try {
-      const blob = await this.reportService.getPastorFieldReportPdfBlob({
-        clientId: Number(this.clientId()),
-        dateFrom: this.dateFrom() ?? undefined,
-        dateTo: this.dateTo() ?? undefined
-      });
+      const blob = await this.reportService.getPastorFieldReportPdfBlob(this.currentFilters());
       this.revokeObjectUrl();
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
@@ -90,6 +89,25 @@ export class PastorFieldReport {
       this.toastService.show(this.languageService.t('reports.pastorField.error'));
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private currentFilters(): PastorFieldReportFilters {
+    return {
+      clientId: Number(this.clientId()),
+      dateFrom: this.dateFrom() ?? undefined,
+      dateTo: this.dateTo() ?? undefined
+    };
+  }
+
+  protected async onExportExcel(): Promise<void> {
+    this.exporting.set(true);
+    try {
+      downloadBlob(await this.reportService.getPastorFieldReportExcelBlob(this.currentFilters()), 'campo-pastor.xlsx');
+    } catch {
+      this.toastService.show(this.languageService.t('reports.excel.error'));
+    } finally {
+      this.exporting.set(false);
     }
   }
 

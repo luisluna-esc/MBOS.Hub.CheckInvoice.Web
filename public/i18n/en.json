@@ -847,10 +847,25 @@
     },
     "payment": {
       "title": "Register payment",
+      "loadingLines": "Loading products...",
+      "linesError": "The account products could not be loaded.",
+      "byProductHint": "Enter how much is deposited for each product. Leave blank the ones not paid now.",
+      "product": "Product",
+      "quantity": "Qty",
+      "lineTotal": "Value (Bs.)",
+      "linePaid": "Paid (Bs.)",
+      "lineRemaining": "Remaining (Bs.)",
+      "lineAmount": "Amount to deposit (Bs.)",
+      "fillRemaining": "All",
+      "linePaidOff": "Paid",
+      "depositTotal": "Deposit total",
+      "lineExceeds": "{{name}}: only {{amount}} Bs. remaining.",
+      "noProductsHint": "This account has no products: the total amount is recorded.",
       "outstandingHint": "Outstanding balance: {{amount}}",
       "amount": "Amount",
       "amountRequired": "Enter a valid amount.",
       "method": "Payment method",
+      "methodRequired": "Select the payment method.",
       "methodTransfer": "Transfer",
       "methodCash": "Cash",
       "notes": "Notes",
@@ -892,6 +907,11 @@
     }
   },
   "reports": {
+    "excel": {
+      "download": "Download Excel",
+      "downloading": "Generating Excel...",
+      "error": "The Excel file could not be generated."
+    },
     "title": "Reports",
     "filters": {
       "allWarehouses": "General (all warehouses)"

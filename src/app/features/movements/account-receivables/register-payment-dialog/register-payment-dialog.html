@@ -1,5 +1,6 @@
 <app-dialog
   [title]="'accountReceivables.payment.title' | translate"
+  [size]="hasProducts() ? 'large' : 'default'"
   [saveDisabled]="saveDisabled()"
   (save)="onSave()"
   (cancel)="onCancel()"
@@ -8,24 +9,98 @@
     <p class="text-sm text-muted-foreground">
       {{ 'accountReceivables.payment.outstandingHint' | translate: { amount: data.outstandingBalance.toFixed(2) } }}
     </p>
-    <app-input
-      formControlName="amount"
-      type="number"
-      [decimals]="2"
-      [min]="0.01"
-      [label]="'accountReceivables.payment.amount' | translate"
-      [required]="true"
-    />
-    <app-select
-      formControlName="paymentMethod"
-      [label]="'accountReceivables.payment.method' | translate"
-      [options]="paymentMethodOptions"
-      [required]="true"
-    />
-    <app-input
-      formControlName="notes"
-      [label]="'accountReceivables.payment.notes' | translate"
-      [maxLength]="255"
-    />
+
+    @if (loadingLines()) {
+      <p class="text-sm text-muted-foreground">{{ 'accountReceivables.payment.loadingLines' | translate }}</p>
+    } @else if (hasProducts()) {
+      <p class="text-xs text-muted-foreground">{{ 'accountReceivables.payment.byProductHint' | translate }}</p>
+
+      <div class="w-full overflow-x-auto rounded-md border border-border">
+        <table class="w-full min-w-full divide-y divide-border text-sm">
+          <thead class="bg-background">
+            <tr>
+              <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'accountReceivables.payment.product' | translate }}</th>
+              <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.quantity' | translate }}</th>
+              <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.lineTotal' | translate }}</th>
+              <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.linePaid' | translate }}</th>
+              <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.lineRemaining' | translate }}</th>
+              <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'accountReceivables.payment.lineAmount' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            @for (line of lines(); track line.issueDetailId; let i = $index) {
+              <tr [class.opacity-60]="line.remainingAmount <= 0">
+                <td class="px-3 py-2 align-middle text-foreground">
+                  @if (line.code) {
+                    <span class="font-medium">{{ line.code }}</span> —
+                  }
+                  {{ line.name }}
+                </td>
+                <td class="whitespace-nowrap px-3 py-2 text-right align-middle tabular-nums text-muted-foreground">{{ line.quantity | number: '1.0-2' }}</td>
+                <td class="whitespace-nowrap px-3 py-2 text-right align-middle tabular-nums text-foreground">{{ line.totalAmount | number: '1.2-2' }}</td>
+                <td class="whitespace-nowrap px-3 py-2 text-right align-middle tabular-nums text-muted-foreground">{{ line.paidAmount | number: '1.2-2' }}</td>
+                <td class="whitespace-nowrap px-3 py-2 text-right align-middle font-medium tabular-nums text-foreground">{{ line.remainingAmount | number: '1.2-2' }}</td>
+                <td class="w-56 px-3 py-2 align-middle">
+                  @if (line.remainingAmount > 0) {
+                    <div class="flex items-center gap-2">
+                      <div class="min-w-0 flex-1">
+                        <app-input
+                          [formControl]="lineAmounts.at(i)"
+                          type="number"
+                          errorDisplay="icon"
+                          placeholder="0.00"
+                          [min]="0"
+                          [decimals]="2"
+                          [externalError]="lineError(i)"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        class="shrink-0 text-xs font-medium text-primary hover:underline"
+                        (click)="fillRemaining(i)"
+                      >
+                        {{ 'accountReceivables.payment.fillRemaining' | translate }}
+                      </button>
+                    </div>
+                  } @else {
+                    <span class="text-xs text-muted-foreground">{{ 'accountReceivables.payment.linePaidOff' | translate }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+          <tfoot class="bg-background">
+            <tr>
+              <td colspan="5" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.depositTotal' | translate }}</td>
+              <td class="whitespace-nowrap px-3 py-2 font-semibold tabular-nums text-foreground">{{ depositTotal() | number: '1.2-2' }} Bs.</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    } @else {
+      <app-input
+        formControlName="amount"
+        type="number"
+        [decimals]="2"
+        [min]="0.01"
+        [label]="'accountReceivables.payment.amount' | translate"
+        [hint]="'accountReceivables.payment.noProductsHint' | translate"
+        [required]="true"
+      />
+    }
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <app-select
+        formControlName="paymentMethod"
+        [label]="'accountReceivables.payment.method' | translate"
+        [options]="paymentMethodOptions"
+        [required]="true"
+      />
+      <app-input
+        formControlName="notes"
+        [label]="'accountReceivables.payment.notes' | translate"
+        [maxLength]="255"
+      />
+    </div>
   </form>
 </app-dialog>

@@ -11,11 +11,13 @@ import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
 import { ALL_WAREHOUSES_VALUE, warehouseIdFilter, warehouseOptionsWithGeneral } from '../report-warehouse.util';
+import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { StockReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 
 @Component({
   selector: 'app-stock-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe],
+  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton],
   templateUrl: './stock-report.html',
 })
 export class StockReport {
@@ -33,6 +35,7 @@ export class StockReport {
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
+  protected readonly exporting = signal(false);
 
   private objectUrl: string | null = null;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -82,11 +85,7 @@ export class StockReport {
 
     this.loading.set(true);
     try {
-      const blob = await this.reportService.getStockReportPdfBlob({
-        warehouseId: warehouseIdFilter(this.warehouseId()),
-        dateFrom: this.dateFrom() ?? undefined,
-        dateTo: this.dateTo() ?? undefined
-      });
+      const blob = await this.reportService.getStockReportPdfBlob(this.currentFilters());
       this.revokeObjectUrl();
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
@@ -94,6 +93,25 @@ export class StockReport {
       this.toastService.show(this.languageService.t('reports.stock.error'));
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private currentFilters(): StockReportFilters {
+    return {
+      warehouseId: warehouseIdFilter(this.warehouseId()),
+      dateFrom: this.dateFrom() ?? undefined,
+      dateTo: this.dateTo() ?? undefined
+    };
+  }
+
+  protected async onExportExcel(): Promise<void> {
+    this.exporting.set(true);
+    try {
+      downloadBlob(await this.reportService.getStockReportExcelBlob(this.currentFilters()), 'inventario-general.xlsx');
+    } catch {
+      this.toastService.show(this.languageService.t('reports.excel.error'));
+    } finally {
+      this.exporting.set(false);
     }
   }
 

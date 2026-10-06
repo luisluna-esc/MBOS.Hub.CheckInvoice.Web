@@ -16,8 +16,6 @@ import { AccountReceivableService } from '../account-receivable.service';
 import { RegisterPaymentDialog, RegisterPaymentDialogData } from '../register-payment-dialog/register-payment-dialog';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 
-const MANAGE_CAPABLE_ROLES = ['Contador', 'Auxiliar Contador', 'M-BOS'];
-
 @Component({
   selector: 'app-account-receivables-list',
   imports: [Filters, Table, ErrorState, TranslatePipe],
@@ -43,7 +41,9 @@ export class AccountReceivablesList {
 
   private currentFilters: AccountReceivableFilters = {};
 
-  protected readonly canManage = computed(() => MANAGE_CAPABLE_ROLES.includes(this.authService.activeRole() ?? ''));
+  // Registra depósitos quien tenga "trabajo" en su rol activo (ej. Caja). Quién llega a esta
+  // pantalla lo decide el menú de cada rol, que administra M-BOS.
+  protected readonly canManage = computed(() => this.authService.hasActiveRolePermission('trabajo'));
 
   protected readonly filterFields = computed<FilterField[]>(() => [
     {

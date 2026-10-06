@@ -15,11 +15,13 @@ import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
+import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { KardexByProductReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 
 @Component({
   selector: 'app-kardex-by-product-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe],
+  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton],
   templateUrl: './kardex-by-product-report.html',
 })
 export class KardexByProductReport {
@@ -40,6 +42,7 @@ export class KardexByProductReport {
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
+  protected readonly exporting = signal(false);
 
   private objectUrl: string | null = null;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -97,12 +100,7 @@ export class KardexByProductReport {
 
     this.loading.set(true);
     try {
-      const blob = await this.reportService.getKardexByProductReportPdfBlob({
-        productId: Number(this.productId()),
-        warehouseId: Number(this.warehouseId()),
-        dateFrom: this.dateFrom() ?? undefined,
-        dateTo: this.dateTo() ?? undefined
-      });
+      const blob = await this.reportService.getKardexByProductReportPdfBlob(this.currentFilters());
       this.revokeObjectUrl();
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
@@ -110,6 +108,26 @@ export class KardexByProductReport {
       this.toastService.show(this.languageService.t('reports.kardexByProduct.error'));
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private currentFilters(): KardexByProductReportFilters {
+    return {
+      productId: Number(this.productId()),
+      warehouseId: Number(this.warehouseId()),
+      dateFrom: this.dateFrom() ?? undefined,
+      dateTo: this.dateTo() ?? undefined
+    };
+  }
+
+  protected async onExportExcel(): Promise<void> {
+    this.exporting.set(true);
+    try {
+      downloadBlob(await this.reportService.getKardexByProductReportExcelBlob(this.currentFilters()), 'kardex-por-material.xlsx');
+    } catch {
+      this.toastService.show(this.languageService.t('reports.excel.error'));
+    } finally {
+      this.exporting.set(false);
     }
   }
 

@@ -66,6 +66,9 @@
       }
     </div>
   } @else if (previewUrl(); as url) {
+    <div class="flex justify-end">
+      <app-excel-download-button [loading]="exporting()" (download)="onExportExcel()" />
+    </div>
     <iframe [src]="url" class="w-full rounded-md border border-border" style="height: 80vh"></iframe>
   } @else {
     <p class="text-sm text-muted-foreground">{{ 'reports.kardexByProduct.selectPrompt' | translate }}</p>

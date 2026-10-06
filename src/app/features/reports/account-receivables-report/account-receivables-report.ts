@@ -11,11 +11,13 @@ import {
 import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { AccountReceivablesReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 
 @Component({
   selector: 'app-account-receivables-report',
-  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, TranslatePipe],
+  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, TranslatePipe, ExcelDownloadButton],
   templateUrl: './account-receivables-report.html',
 })
 export class AccountReceivablesReport {
@@ -39,6 +41,7 @@ export class AccountReceivablesReport {
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
+  protected readonly exporting = signal(false);
 
   private objectUrl: string | null = null;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -88,12 +91,7 @@ export class AccountReceivablesReport {
   private async onGenerate(): Promise<void> {
     this.loading.set(true);
     try {
-      const blob = await this.reportService.getAccountReceivablesReportPdfBlob({
-        clientId: this.clientId() ? Number(this.clientId()) : undefined,
-        status: this.status() ?? undefined,
-        dateFrom: this.dateFrom() ?? undefined,
-        dateTo: this.dateTo() ?? undefined
-      });
+      const blob = await this.reportService.getAccountReceivablesReportPdfBlob(this.currentFilters());
       this.revokeObjectUrl();
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
@@ -101,6 +99,26 @@ export class AccountReceivablesReport {
       this.toastService.show(this.languageService.t('reports.accountReceivables.error'));
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private currentFilters(): AccountReceivablesReportFilters {
+    return {
+      clientId: this.clientId() ? Number(this.clientId()) : undefined,
+      status: this.status() ?? undefined,
+      dateFrom: this.dateFrom() ?? undefined,
+      dateTo: this.dateTo() ?? undefined
+    };
+  }
+
+  protected async onExportExcel(): Promise<void> {
+    this.exporting.set(true);
+    try {
+      downloadBlob(await this.reportService.getAccountReceivablesReportExcelBlob(this.currentFilters()), 'cuentas-por-cobrar.xlsx');
+    } catch {
+      this.toastService.show(this.languageService.t('reports.excel.error'));
+    } finally {
+      this.exporting.set(false);
     }
   }
 

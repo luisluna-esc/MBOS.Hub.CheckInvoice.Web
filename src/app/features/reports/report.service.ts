@@ -34,6 +34,15 @@ export class ReportService {
     );
   }
 
+  async getStockReportExcelBlob(filters: StockReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/stock/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getInventoryCountTemplatePdfBlob(filters: StockReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/inventory-count-template/pdf`, {
@@ -52,9 +61,27 @@ export class ReportService {
     );
   }
 
+  async getStockByDepartmentReportExcelBlob(filters: StockByDepartmentReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/stock-by-department/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getKardexReportPdfBlob(filters: KardexReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/kardex/pdf`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
+  async getKardexReportExcelBlob(filters: KardexReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/kardex/excel`, {
         params: this.cleanFilters(filters),
         responseType: 'blob'
       })
@@ -70,6 +97,15 @@ export class ReportService {
     );
   }
 
+  async getInventoryCountReportExcelBlob(filters: InventoryCountReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/inventory-count/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getIssuesReportPdfBlob(filters: IssuesReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/issues/pdf`, {
@@ -79,9 +115,27 @@ export class ReportService {
     );
   }
 
+  async getIssuesReportExcelBlob(filters: IssuesReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/issues/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getReceiptsReportPdfBlob(filters: ReceiptsReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/receipts/pdf`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
+  async getReceiptsReportExcelBlob(filters: ReceiptsReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/receipts/excel`, {
         params: this.cleanFilters(filters),
         responseType: 'blob'
       })
@@ -118,6 +172,15 @@ export class ReportService {
     );
   }
 
+  async getKardexByProductReportExcelBlob(filters: KardexByProductReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/kardex-by-product/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getPastorFieldReportPdfBlob(filters: PastorFieldReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/pastor-field/pdf`, {
@@ -127,9 +190,27 @@ export class ReportService {
     );
   }
 
+  async getPastorFieldReportExcelBlob(filters: PastorFieldReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/pastor-field/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getAccountReceivablesReportPdfBlob(filters: AccountReceivablesReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/account-receivables/pdf`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
+  async getAccountReceivablesReportExcelBlob(filters: AccountReceivablesReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/account-receivables/excel`, {
         params: this.cleanFilters(filters),
         responseType: 'blob'
       })

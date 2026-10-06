@@ -847,10 +847,25 @@
     },
     "payment": {
       "title": "Registrar pago",
+      "loadingLines": "Cargando productos...",
+      "linesError": "No se pudieron cargar los productos de la cuenta.",
+      "byProductHint": "Escribe cuánto se deposita de cada producto. Deja en blanco los que no se pagan ahora.",
+      "product": "Producto",
+      "quantity": "Cant.",
+      "lineTotal": "Valor (Bs.)",
+      "linePaid": "Pagado (Bs.)",
+      "lineRemaining": "Falta (Bs.)",
+      "lineAmount": "Monto a depositar (Bs.)",
+      "fillRemaining": "Todo",
+      "linePaidOff": "Pagado",
+      "depositTotal": "Total del depósito",
+      "lineExceeds": "{{name}}: solo faltan {{amount}} Bs.",
+      "noProductsHint": "Esta cuenta no tiene productos: se registra el monto total.",
       "outstandingHint": "Saldo pendiente: {{amount}} Bs.",
       "amount": "Monto",
       "amountRequired": "Ingresa un monto válido.",
       "method": "Método de pago",
+      "methodRequired": "Selecciona el método de pago.",
       "methodTransfer": "Transacción",
       "methodCash": "Efectivo",
       "notes": "Notas",
@@ -892,6 +907,11 @@
     }
   },
   "reports": {
+    "excel": {
+      "download": "Descargar Excel",
+      "downloading": "Generando Excel...",
+      "error": "No se pudo generar el Excel."
+    },
     "title": "Reportes",
     "filters": {
       "allWarehouses": "General (todos los almacenes)"

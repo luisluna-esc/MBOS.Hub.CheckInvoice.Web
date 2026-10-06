@@ -847,10 +847,25 @@
     },
     "payment": {
       "title": "Registrar pagamento",
+      "loadingLines": "Carregando produtos...",
+      "linesError": "Não foi possível carregar os produtos da conta.",
+      "byProductHint": "Digite quanto é depositado de cada produto. Deixe em branco os que não são pagos agora.",
+      "product": "Produto",
+      "quantity": "Qtd.",
+      "lineTotal": "Valor (Bs.)",
+      "linePaid": "Pago (Bs.)",
+      "lineRemaining": "Falta (Bs.)",
+      "lineAmount": "Valor a depositar (Bs.)",
+      "fillRemaining": "Tudo",
+      "linePaidOff": "Pago",
+      "depositTotal": "Total do depósito",
+      "lineExceeds": "{{name}}: faltam apenas {{amount}} Bs.",
+      "noProductsHint": "Esta conta não tem produtos: registra-se o valor total.",
       "outstandingHint": "Saldo pendente: {{amount}} Bs.",
       "amount": "Valor",
       "amountRequired": "Informe um valor válido.",
       "method": "Método de pagamento",
+      "methodRequired": "Selecione o método de pagamento.",
       "methodTransfer": "Transação",
       "methodCash": "Dinheiro",
       "notes": "Notas",
@@ -892,6 +907,11 @@
     }
   },
   "reports": {
+    "excel": {
+      "download": "Baixar Excel",
+      "downloading": "Gerando Excel...",
+      "error": "Não foi possível gerar o Excel."
+    },
     "title": "Relatórios",
     "filters": {
       "allWarehouses": "Geral (todos os armazéns)"

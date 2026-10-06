@@ -11,11 +11,13 @@ import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
 import { ALL_WAREHOUSES_VALUE, warehouseIdFilter, warehouseOptionsWithGeneral } from '../report-warehouse.util';
+import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { InventoryCountReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 
 @Component({
   selector: 'app-inventory-count-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe],
+  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton],
   templateUrl: './inventory-count-report.html',
 })
 export class InventoryCountReport {
@@ -44,6 +46,7 @@ export class InventoryCountReport {
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
+  protected readonly exporting = signal(false);
 
   private objectUrl: string | null = null;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -94,11 +97,7 @@ export class InventoryCountReport {
 
     this.loading.set(true);
     try {
-      const filters = {
-        warehouseId: warehouseIdFilter(this.warehouseId()),
-        dateFrom: this.dateFrom() ?? undefined,
-        dateTo: this.dateTo() ?? undefined
-      };
+      const filters = this.currentFilters();
       const blob =
         this.mode() === 'template'
           ? await this.reportService.getInventoryCountTemplatePdfBlob(filters)
@@ -110,6 +109,25 @@ export class InventoryCountReport {
       this.toastService.show(this.languageService.t('reports.inventoryCount.error'));
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private currentFilters(): InventoryCountReportFilters {
+    return {
+      warehouseId: warehouseIdFilter(this.warehouseId()),
+      dateFrom: this.dateFrom() ?? undefined,
+      dateTo: this.dateTo() ?? undefined
+    };
+  }
+
+  protected async onExportExcel(): Promise<void> {
+    this.exporting.set(true);
+    try {
+      downloadBlob(await this.reportService.getInventoryCountReportExcelBlob(this.currentFilters()), 'levantamiento-de-inventario.xlsx');
+    } catch {
+      this.toastService.show(this.languageService.t('reports.excel.error'));
+    } finally {
+      this.exporting.set(false);
     }
   }
 

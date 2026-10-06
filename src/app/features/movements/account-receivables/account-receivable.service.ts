@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiMessage } from '../../../core/auth/auth.models';
 import { PagedResult } from '../../../core/http/paged-result';
-import { AccountReceivable, AccountReceivableFilters, Payment, PaymentCreate } from './account-receivable.models';
+import { AccountReceivable, AccountReceivableFilters, Payment, PaymentCreate, PaymentLines } from './account-receivable.models';
 
 interface WriteResponse {
   id: number;
@@ -35,6 +35,13 @@ export class AccountReceivableService {
       })
     );
     return response.data.items;
+  }
+
+  async getPaymentLines(accountReceivableId: number): Promise<PaymentLines> {
+    const response = await firstValueFrom(
+      this.http.get<{ data: PaymentLines }>(`${environment.apiUrl}/Payments/lines/${accountReceivableId}`)
+    );
+    return response.data;
   }
 
   createPayment(payment: PaymentCreate): Promise<WriteResponse> {
