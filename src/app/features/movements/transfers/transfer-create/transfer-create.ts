@@ -29,6 +29,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ReportService } from '../../../reports/report.service';
 import { TransferRequest } from '../transfer.models';
 import { TransferService } from '../transfer.service';
+import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -38,7 +39,7 @@ type DetailLineGroup = FormGroup<{
 
 @Component({
   selector: 'app-transfer-create',
-  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, TranslatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, TranslatePipe, DecimalPipe, InfoHint],
   templateUrl: './transfer-create.html',
 })
 export class TransferCreate {
@@ -122,6 +123,34 @@ export class TransferCreate {
   protected readonly detailsValues = toSignal(
     this.detailsArray.valueChanges.pipe(startWith(this.detailsArray.value), takeUntilDestroyed())
   );
+
+  /** Productos de las líneas con unidades apartadas por una anulación de entrada pendiente (sin repetir). */
+  protected readonly reservedProducts = computed(() => {
+    const products = this.lineProducts();
+    const reserved = new Map<number, { name: string; quantity: number }>();
+    this.lineStock().forEach((stock, index) => {
+      const product = products[index];
+      if (product && stock?.reservedQuantity) {
+        reserved.set(product.productId, { name: product.name, quantity: stock.reservedQuantity });
+      }
+    });
+    return [...reserved.values()];
+  });
+
+  /** Productos cuya cantidad pedida supera el stock disponible (sin repetir), para el aviso arriba de la tabla. */
+  protected readonly exceedingProducts = computed(() => {
+    const values = this.detailsValues() ?? [];
+    const products = this.lineProducts();
+    const exceeding = new Map<number, { name: string; requested: number; available: number }>();
+    this.lineStock().forEach((stock, index) => {
+      const product = products[index];
+      const requested = Number(values[index]?.quantity) || 0;
+      if (product && stock && requested > stock.availableQuantity) {
+        exceeding.set(product.productId, { name: product.name, requested, available: stock.availableQuantity });
+      }
+    });
+    return [...exceeding.values()];
+  });
 
   protected readonly anyLineExceedsStock = computed(() => {
     const values = this.detailsValues() ?? [];
@@ -228,7 +257,7 @@ export class TransferCreate {
       return false;
     }
     const quantity = Number(line.quantity) || 0;
-    return quantity > stock.quantity;
+    return quantity > stock.availableQuantity;
   }
 
   protected lineTotal(index: number): number {
@@ -243,7 +272,7 @@ export class TransferCreate {
     const warehouseId = Number(this.headerForm.getRawValue().sourceWarehouseId) || null;
     const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(
       ProductPickerDialog,
-      { data: { warehouseId } }
+      { data: { warehouseId, excludedProductIds: this.lineProducts().flatMap((product, i) => (product && i !== index ? [product.productId] : [])) } }
     );
     ref.closed.subscribe((result) => {
       if (result) {

@@ -163,6 +163,46 @@
       @if (detailsArray.length === 0) {
         <p class="text-xs text-muted-foreground">{{ 'issues.form.noLines' | translate }}</p>
       } @else {
+        @if (exceedingProducts().length > 0) {
+          <div class="flex items-start gap-2 rounded-md border border-danger bg-background p-3 text-xs text-danger">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mt-px size-4 shrink-0">
+              <path d="M12 7.5V12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <circle cx="12" cy="16" r="1" fill="currentColor" />
+              <path
+                d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <p>
+              {{ 'issues.form.exceedsNotice' | translate }}
+              @for (product of exceedingProducts(); track product.name; let last = $last) {
+                <span class="font-medium">{{ 'issues.form.exceedsNoticeItem' | translate: product }}</span>{{ last ? '.' : ', ' }}
+              }
+            </p>
+          </div>
+        }
+        @if (reservedProducts().length > 0) {
+          <div class="flex items-start gap-2 rounded-md border border-border bg-background p-3 text-xs text-muted-foreground">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mt-px size-4 shrink-0">
+              <path d="M12 11.5V16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <circle cx="12" cy="8" r="1" fill="currentColor" />
+              <path
+                d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <p>
+              {{ 'issues.form.reservedNotice' | translate }}
+              @for (product of reservedProducts(); track product.name; let last = $last) {
+                <span class="font-medium text-foreground">{{ product.name }} ({{ product.quantity }})</span>{{ last ? '.' : ', ' }}
+              }
+            </p>
+          </div>
+        }
         <div class="w-full overflow-x-auto rounded-md border border-border">
           <table class="w-full min-w-full divide-y divide-border text-sm">
             <thead class="bg-background">
@@ -181,13 +221,23 @@
             <tbody class="divide-y divide-border">
               @for (line of detailsArray.controls; track line; let i = $index) {
                 <tr [formGroup]="line">
-                  <td class="px-3 py-2 align-top text-foreground">{{ i + 1 }}</td>
-                  <td class="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">{{ lineProducts()[i]?.code || '—' }}</td>
-                  <td class="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">{{ lineDepartmentName(i) }}</td>
-                  <td class="whitespace-nowrap px-3 py-2 text-right align-top text-foreground">
-                    {{ lineStock()[i] ? lineStock()[i]!.quantity : '—' }}
+                  <td class="px-3 py-2 align-middle text-foreground">{{ i + 1 }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 align-middle text-muted-foreground">{{ lineProducts()[i]?.code || '—' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 align-middle text-muted-foreground">{{ lineDepartmentName(i) }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
+                    <span class="inline-flex items-center justify-end gap-1.5">
+                      @if (lineStock()[i]?.reservedQuantity) {
+                        <app-info-hint
+                          [title]="'issues.form.reservedStockTitle' | translate"
+                          [label]="'issues.form.reservedStockTitle' | translate"
+                        >
+                          {{ 'issues.form.reservedStock' | translate: { count: lineStock()[i]!.reservedQuantity } }}
+                        </app-info-hint>
+                      }
+                      {{ lineStock()[i] ? lineStock()[i]!.availableQuantity : '—' }}
+                    </span>
                   </td>
-                  <td class="px-3 py-2 align-top">
+                  <td class="px-3 py-2 align-middle">
                     <button
                       type="button"
                       class="w-full rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background"
@@ -200,19 +250,24 @@
                       }
                     </button>
                   </td>
-                  <td class="w-32 px-3 py-2 align-top">
-                    <app-input formControlName="quantity" type="number" [required]="true" [min]="1" [decimals]="0" />
-                    @if (lineExceedsStock(i)) {
-                      <p class="mt-1 text-xs text-danger">{{ 'issues.form.exceedsStock' | translate }}</p>
-                    }
+                  <td class="w-32 px-3 py-2 align-middle">
+                    <app-input
+                      formControlName="quantity"
+                      type="number"
+                      errorDisplay="icon"
+                      [required]="true"
+                      [min]="1"
+                      [decimals]="0"
+                      [externalError]="lineExceedsStock(i) ? ('issues.form.exceedsStock' | translate) : null"
+                    />
                   </td>
-                  <td class="whitespace-nowrap px-3 py-2 text-right align-top text-foreground">
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
                     {{ lineStock()[i] ? (lineStock()[i]!.averageCost | number: '1.2-2') : '—' }}
                   </td>
-                  <td class="whitespace-nowrap px-3 py-2 text-right align-top text-foreground">
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
                     {{ lineTotalCost(i) | number: '1.2-2' }}
                   </td>
-                  <td class="px-3 py-2 text-center align-top">
+                  <td class="px-3 py-2 text-center align-middle">
                     <button
                       type="button"
                       class="rounded p-1.5 text-danger transition-colors hover:bg-danger/10"

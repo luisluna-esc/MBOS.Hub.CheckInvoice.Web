@@ -16,6 +16,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TransferDetailsDialog, TransferDetailsDialogData } from '../transfer-details-dialog/transfer-details-dialog';
 import { Transfer, TransferFilters } from '../transfer.models';
 import { TransferService } from '../transfer.service';
+import { localDateIso } from '../../../../core/dates/calendar-date';
 
 @Component({
   selector: 'app-transfers-received-list',
@@ -41,7 +42,7 @@ export class TransfersReceivedList {
   protected readonly warehouses = signal<CatalogItem[]>([]);
 
   private currentFilters: TransferFilters = {};
-  private readonly todayIso = new Date().toISOString().slice(0, 10);
+  private readonly todayIso = localDateIso();
 
   protected readonly filterFields = computed<FilterField[]>(() => [
     {

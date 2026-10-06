@@ -16,6 +16,7 @@ import {
   ReceiptVoidRequestReviewDialog,
   ReceiptVoidRequestReviewDialogData,
 } from '../receipt-void-request-review-dialog/receipt-void-request-review-dialog';
+import { formatCalendarDate, localDateIso } from '../../../../core/dates/calendar-date';
 
 const APPROVER_ROLES = ['Contador', 'M-BOS'];
 
@@ -42,7 +43,7 @@ export class ReceiptVoidRequestsList {
   protected readonly initialFilterValues: FilterValues = { status: 'pending' };
   private currentFilters: ReceiptVoidRequestFilters = { status: 'pending' };
   private readonly voidReasons = signal<VoidReasonItem[]>([]);
-  private readonly todayIso = new Date().toISOString().slice(0, 10);
+  private readonly todayIso = localDateIso();
 
   protected readonly canReview = computed(() => APPROVER_ROLES.includes(this.authService.activeRole() ?? ''));
 
@@ -91,7 +92,7 @@ export class ReceiptVoidRequestsList {
     {
       key: 'receiptDate',
       header: this.languageService.t('receiptVoidRequests.columns.receiptDate'),
-      format: (value) => new Date(value as string).toLocaleDateString(),
+      format: (value) => formatCalendarDate(value),
     },
     {
       key: 'supplierName',

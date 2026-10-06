@@ -6,11 +6,16 @@ import { environment } from '../../../environments/environment';
 export interface StockInfo {
   quantity: number;
   averageCost: number;
+  /** Unidades apartadas por entradas con anulación pendiente. */
+  reservedQuantity: number;
+  /** Lo que se puede sacar en Salidas/Transferencias: quantity menos lo apartado. */
+  availableQuantity: number;
 }
 
 interface StockItem {
   quantity: number;
   averageCost: number;
+  reservedQuantity?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,6 +29,13 @@ export class StockService {
       })
     );
     const item = response.data.items[0];
-    return { quantity: item?.quantity ?? 0, averageCost: item?.averageCost ?? 0 };
+    const quantity = item?.quantity ?? 0;
+    const reservedQuantity = item?.reservedQuantity ?? 0;
+    return {
+      quantity,
+      averageCost: item?.averageCost ?? 0,
+      reservedQuantity,
+      availableQuantity: Math.max(quantity - reservedQuantity, 0),
+    };
   }
 }

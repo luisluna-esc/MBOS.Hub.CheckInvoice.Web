@@ -66,6 +66,7 @@
   },
   "productPicker": {
     "title": "Seleccionar producto",
+    "alreadyAdded": "ya agregado",
     "filters": {
       "name": "Nombre",
       "code": "Código"
@@ -628,6 +629,11 @@
       "rowNumber": "Nro.",
       "available": "Disponible",
       "exceedsStock": "La cantidad supera el stock disponible.",
+      "exceedsNotice": "No hay stock suficiente para guardar. Revisa la cantidad de:",
+      "exceedsNoticeItem": "{{name}} (pides {{requested}}, hay {{available}})",
+      "reservedStock": "{{count}} unidades están apartadas por una anulación de entrada pendiente. No se pueden sacar hasta que el Contador la apruebe o la rechace. El número que ves ya las descuenta.",
+      "reservedStockTitle": "Stock apartado",
+      "reservedNotice": "Algunos productos tienen unidades apartadas por anulaciones de entrada pendientes. El stock que ves ya las descuenta y no se pueden sacar hasta que el Contador las resuelva:",
       "sector": "Departamento",
       "stock": "Stock",
       "code": "Código",
@@ -1059,6 +1065,11 @@
       "product": "Producto",
       "quantity": "Cantidad",
       "exceedsStock": "La cantidad supera el stock disponible.",
+      "exceedsNotice": "No hay stock suficiente para guardar. Revisa la cantidad de:",
+      "exceedsNoticeItem": "{{name}} (pides {{requested}}, hay {{available}})",
+      "reservedStock": "{{count}} unidades están apartadas por una anulación de entrada pendiente. No se pueden sacar hasta que el Contador la apruebe o la rechace. El número que ves ya las descuenta.",
+      "reservedStockTitle": "Stock apartado",
+      "reservedNotice": "Algunos productos tienen unidades apartadas por anulaciones de entrada pendientes. El stock que ves ya las descuenta y no se pueden sacar hasta que el Contador las resuelva:",
       "unitPrice": "Precio Unit. (Bs.)",
       "total": "Total (Bs.)",
       "success": "Transferencia registrada correctamente.",

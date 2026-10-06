@@ -12,6 +12,8 @@ export class InfoHint {
   readonly title = input<string | null>(null);
   /** Texto accesible del botón para lectores de pantalla (no se muestra). */
   readonly label = input('Más información');
+  /** 'danger' pinta el botón en rojo con un signo de exclamación, para explicar un error de validación. */
+  readonly tone = input<'info' | 'danger'>('info');
 
   protected readonly open = signal(false);
 

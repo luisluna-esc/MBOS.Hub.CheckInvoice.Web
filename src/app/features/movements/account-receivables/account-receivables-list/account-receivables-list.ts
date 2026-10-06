@@ -14,6 +14,7 @@ import { ReportService } from '../../../reports/report.service';
 import { AccountReceivable, AccountReceivableFilters } from '../account-receivable.models';
 import { AccountReceivableService } from '../account-receivable.service';
 import { RegisterPaymentDialog, RegisterPaymentDialogData } from '../register-payment-dialog/register-payment-dialog';
+import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 
 const MANAGE_CAPABLE_ROLES = ['Contador', 'Auxiliar Contador', 'M-BOS'];
 
@@ -74,7 +75,7 @@ export class AccountReceivablesList {
       {
         key: 'issueDate',
         header: this.languageService.t('accountReceivables.columns.issueDate'),
-        format: (value) => (value ? new Date(value as string).toLocaleDateString() : '—'),
+        format: (value) => formatCalendarDate(value),
       },
       {
         key: 'clientId',
@@ -97,7 +98,7 @@ export class AccountReceivablesList {
       {
         key: 'dueDate',
         header: this.languageService.t('accountReceivables.columns.dueDate'),
-        format: (value) => (value ? new Date(value as string).toLocaleDateString() : '—'),
+        format: (value) => formatCalendarDate(value),
       },
       {
         key: 'totalAmount',

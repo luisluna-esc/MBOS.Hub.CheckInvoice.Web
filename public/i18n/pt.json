@@ -66,6 +66,7 @@
   },
   "productPicker": {
     "title": "Selecionar produto",
+    "alreadyAdded": "já adicionado",
     "filters": {
       "name": "Nome",
       "code": "Código"
@@ -628,6 +629,11 @@
       "rowNumber": "N°",
       "available": "Disponível",
       "exceedsStock": "A quantidade excede o estoque disponível.",
+      "exceedsNotice": "Não há estoque suficiente para salvar. Revise a quantidade de:",
+      "exceedsNoticeItem": "{{name}} (pede {{requested}}, há {{available}})",
+      "reservedStock": "{{count}} unidades estão reservadas por uma anulação de entrada pendente. Não podem ser retiradas até que o Contador a aprove ou rejeite. O número exibido já as desconta.",
+      "reservedStockTitle": "Estoque reservado",
+      "reservedNotice": "Alguns produtos têm unidades reservadas por anulações de entrada pendentes. O estoque exibido já as desconta e não podem ser retiradas até que o Contador as resolva:",
       "sector": "Departamento",
       "stock": "Estoque",
       "code": "Código",
@@ -1059,6 +1065,11 @@
       "product": "Produto",
       "quantity": "Quantidade",
       "exceedsStock": "A quantidade excede o estoque disponível.",
+      "exceedsNotice": "Não há estoque suficiente para salvar. Revise a quantidade de:",
+      "exceedsNoticeItem": "{{name}} (pede {{requested}}, há {{available}})",
+      "reservedStock": "{{count}} unidades estão reservadas por uma anulação de entrada pendente. Não podem ser retiradas até que o Contador a aprove ou rejeite. O número exibido já as desconta.",
+      "reservedStockTitle": "Estoque reservado",
+      "reservedNotice": "Alguns produtos têm unidades reservadas por anulações de entrada pendentes. O estoque exibido já as desconta e não podem ser retiradas até que o Contador as resolva:",
       "unitPrice": "Preço Unit. (Bs.)",
       "total": "Total (Bs.)",
       "success": "Transferência registrada com sucesso.",

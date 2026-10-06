@@ -4,12 +4,21 @@
   type="button"
   [attr.aria-label]="label()"
   [attr.aria-expanded]="open()"
-  class="inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary"
+  class="inline-flex size-5 shrink-0 items-center justify-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+  [class.text-muted-foreground]="tone() === 'info'"
+  [class.hover:text-primary]="tone() === 'info'"
+  [class.text-danger]="tone() === 'danger'"
+  [class.hover:opacity-80]="tone() === 'danger'"
   (click)="toggle()"
 >
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-3.5">
-    <path d="M12 11.5V16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-    <circle cx="12" cy="8" r="1" fill="currentColor" />
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+    @if (tone() === 'danger') {
+      <path d="M12 7.5V12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      <circle cx="12" cy="16" r="1" fill="currentColor" />
+    } @else {
+      <path d="M12 11.5V16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      <circle cx="12" cy="8" r="1" fill="currentColor" />
+    }
     <path
       d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
       stroke="currentColor"

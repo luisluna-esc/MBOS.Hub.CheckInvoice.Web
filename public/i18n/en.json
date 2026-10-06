@@ -66,6 +66,7 @@
   },
   "productPicker": {
     "title": "Select product",
+    "alreadyAdded": "already added",
     "filters": {
       "name": "Name",
       "code": "Code"
@@ -628,6 +629,11 @@
       "rowNumber": "No.",
       "available": "Available",
       "exceedsStock": "The quantity exceeds the available stock.",
+      "exceedsNotice": "There is not enough stock to save. Check the quantity of:",
+      "exceedsNoticeItem": "{{name}} (requested {{requested}}, available {{available}})",
+      "reservedStock": "{{count}} units are reserved by a pending receipt void. They cannot be taken out until the Accountant approves or rejects it. The number shown already excludes them.",
+      "reservedStockTitle": "Reserved stock",
+      "reservedNotice": "Some products have units reserved by pending receipt voids. The stock shown already excludes them, and they cannot be taken out until the Accountant resolves them:",
       "sector": "Department",
       "stock": "Stock",
       "code": "Code",
@@ -1059,6 +1065,11 @@
       "product": "Product",
       "quantity": "Quantity",
       "exceedsStock": "The quantity exceeds the available stock.",
+      "exceedsNotice": "There is not enough stock to save. Check the quantity of:",
+      "exceedsNoticeItem": "{{name}} (requested {{requested}}, available {{available}})",
+      "reservedStock": "{{count}} units are reserved by a pending receipt void. They cannot be taken out until the Accountant approves or rejects it. The number shown already excludes them.",
+      "reservedStockTitle": "Reserved stock",
+      "reservedNotice": "Some products have units reserved by pending receipt voids. The stock shown already excludes them, and they cannot be taken out until the Accountant resolves them:",
       "unitPrice": "Unit Price (Bs.)",
       "total": "Total (Bs.)",
       "success": "Transfer created successfully.",

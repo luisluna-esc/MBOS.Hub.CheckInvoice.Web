@@ -23,6 +23,8 @@
         [pageSize]="pageSize()"
         [emptyMessage]="'table.empty' | translate"
         [loading]="loading()"
+        [rowDisabled]="isExcluded"
+        [rowDisabledReason]="excludedReason"
         (rowSelected)="onRowSelected($event)"
         (pageChange)="onPageChange($event)"
         (pageSizeChange)="onPageSizeChange($event)"

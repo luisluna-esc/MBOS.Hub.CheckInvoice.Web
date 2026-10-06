@@ -81,8 +81,8 @@
             <tbody class="divide-y divide-border">
               @for (line of detailsArray.controls; track line; let i = $index) {
                 <tr [formGroup]="line">
-                  <td class="px-3 py-2 align-top text-foreground">{{ i + 1 }}</td>
-                  <td class="px-3 py-2 align-top">
+                  <td class="px-3 py-2 align-middle text-foreground">{{ i + 1 }}</td>
+                  <td class="px-3 py-2 align-middle">
                     <button
                       type="button"
                       class="w-full rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background"
@@ -95,16 +95,16 @@
                       }
                     </button>
                   </td>
-                  <td class="w-32 px-3 py-2 align-top">
-                    <app-input formControlName="quantity" type="number" [required]="true" [min]="1" [decimals]="0" />
+                  <td class="w-32 px-3 py-2 align-middle">
+                    <app-input formControlName="quantity" errorDisplay="icon" type="number" [required]="true" [min]="1" [decimals]="0" />
                   </td>
-                  <td class="w-32 px-3 py-2 align-top">
-                    <app-input formControlName="unitPrice" type="number" [min]="0" [decimals]="2" />
+                  <td class="w-32 px-3 py-2 align-middle">
+                    <app-input formControlName="unitPrice" errorDisplay="icon" type="number" [min]="0" [decimals]="2" />
                   </td>
-                  <td class="whitespace-nowrap px-3 py-2 text-right align-top text-foreground">
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
                     {{ lineTotal(i) | number: '1.2-2' }}
                   </td>
-                  <td class="px-3 py-2 text-center align-top">
+                  <td class="px-3 py-2 text-center align-middle">
                     <button
                       type="button"
                       class="rounded p-1.5 text-danger transition-colors hover:bg-danger/10"

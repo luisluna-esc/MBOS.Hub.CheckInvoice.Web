@@ -16,6 +16,7 @@ import { ReportService } from '../../../reports/report.service';
 import { TransferDetailsDialog, TransferDetailsDialogData } from '../transfer-details-dialog/transfer-details-dialog';
 import { Transfer, TransferFilters } from '../transfer.models';
 import { TransferService } from '../transfer.service';
+import { localDateIso } from '../../../../core/dates/calendar-date';
 
 @Component({
   selector: 'app-transfers-sent-list',
@@ -43,7 +44,7 @@ export class TransfersSentList {
   protected readonly clients = signal<CatalogItem[]>([]);
 
   private currentFilters: TransferFilters = {};
-  private readonly todayIso = new Date().toISOString().slice(0, 10);
+  private readonly todayIso = localDateIso();
 
   // Ninguna transferencia tiene el mismo almacén de origen y destino: en vez de dejar elegir
   // el mismo y luego avisar, se excluye directamente del otro select — así nunca se puede

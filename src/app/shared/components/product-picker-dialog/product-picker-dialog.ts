@@ -21,6 +21,8 @@ export interface ProductPickerResult {
 
 export interface ProductPickerData {
   warehouseId?: number | null;
+  /** Productos que ya están en otra línea del documento: se muestran pero no se pueden elegir. */
+  excludedProductIds?: number[];
 }
 
 @Component({
@@ -35,6 +37,11 @@ export class ProductPickerDialog {
   private readonly languageService = inject(LanguageService);
 
   private readonly warehouseId = this.data?.warehouseId ?? undefined;
+  private readonly excludedProductIds = new Set(this.data?.excludedProductIds ?? []);
+  private readonly alreadyAddedLabel = this.languageService.t('productPicker.alreadyAdded');
+
+  protected readonly isExcluded = (row: Product): boolean => this.excludedProductIds.has(row.productId);
+  protected readonly excludedReason = (row: Product): string | null => (this.isExcluded(row) ? this.alreadyAddedLabel : null);
 
   protected readonly rows = signal<Product[]>([]);
   protected readonly totalRecords = signal(0);
@@ -60,7 +67,12 @@ export class ProductPickerDialog {
 
   protected readonly columns = computed<TableColumn<Product>[]>(() => [
     { key: 'code', header: this.languageService.t('productPicker.columns.code'), format: (value) => (value as string) || '—' },
-    { key: 'name', header: this.languageService.t('productPicker.columns.name') },
+    {
+      key: 'name',
+      header: this.languageService.t('productPicker.columns.name'),
+      // El motivo va también en el texto (no solo en el title): en el celular no hay hover.
+      format: (value, row) => (this.isExcluded(row) ? `${value} (${this.alreadyAddedLabel})` : String(value)),
+    },
   ]);
 
   constructor() {
@@ -109,6 +121,9 @@ export class ProductPickerDialog {
   }
 
   protected onRowSelected(row: Product): void {
+    if (this.isExcluded(row)) {
+      return;
+    }
     this.dialogRef.close({
       productId: row.productId,
       name: row.name,

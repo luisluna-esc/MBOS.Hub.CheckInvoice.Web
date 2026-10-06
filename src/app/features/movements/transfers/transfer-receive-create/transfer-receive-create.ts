@@ -12,7 +12,7 @@ import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { Input as AppInput } from '../../../../shared/components/input/input';
-import { ProductPickerDialog, ProductPickerResult } from '../../../../shared/components/product-picker-dialog/product-picker-dialog';
+import { ProductPickerData, ProductPickerDialog, ProductPickerResult } from '../../../../shared/components/product-picker-dialog/product-picker-dialog';
 import { Select, SelectOption } from '../../../../shared/components/select/select';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TransferRequest } from '../transfer.models';
@@ -137,7 +137,9 @@ export class TransferReceiveCreate {
   }
 
   protected async pickProduct(index: number): Promise<void> {
-    const ref = this.dialogService.open<ProductPickerResult | null, unknown, ProductPickerDialog>(ProductPickerDialog);
+    const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(ProductPickerDialog, {
+      data: { excludedProductIds: this.lineProducts().flatMap((product, i) => (product && i !== index ? [product.productId] : [])) },
+    });
     ref.closed.subscribe((result) => {
       if (result) {
         this.detailsArray.at(index).controls.productId.setValue(String(result.productId));

@@ -36,6 +36,8 @@ import { ClientService } from '../../../catalogs/clients/client.service';
 import { ReportService } from '../../../reports/report.service';
 import { IssueRequest } from '../issue.models';
 import { IssueService } from '../issue.service';
+import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
+import { localDateIso } from '../../../../core/dates/calendar-date';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -46,7 +48,7 @@ const PAYMENT_TYPE_CODES = ['cash', 'credit', 'installments'] as const;
 
 @Component({
   selector: 'app-issue-create',
-  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, Checkbox, DatePicker, TranslatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, Checkbox, DatePicker, TranslatePipe, DecimalPipe, InfoHint],
   templateUrl: './issue-create.html',
 })
 export class IssueCreate {
@@ -60,7 +62,7 @@ export class IssueCreate {
   private readonly languageService = inject(LanguageService);
   private readonly reportService = inject(ReportService);
 
-  protected readonly todayIso = new Date().toISOString().slice(0, 10);
+  protected readonly todayIso = localDateIso();
 
   protected readonly saving = signal(false);
   protected readonly clientLocked = signal(false);
@@ -184,6 +186,34 @@ export class IssueCreate {
   protected readonly detailsValues = toSignal(
     this.detailsArray.valueChanges.pipe(startWith(this.detailsArray.value), takeUntilDestroyed())
   );
+
+  /** Productos de las líneas con unidades apartadas por una anulación de entrada pendiente (sin repetir). */
+  protected readonly reservedProducts = computed(() => {
+    const products = this.lineProducts();
+    const reserved = new Map<number, { name: string; quantity: number }>();
+    this.lineStock().forEach((stock, index) => {
+      const product = products[index];
+      if (product && stock?.reservedQuantity) {
+        reserved.set(product.productId, { name: product.name, quantity: stock.reservedQuantity });
+      }
+    });
+    return [...reserved.values()];
+  });
+
+  /** Productos cuya cantidad pedida supera el stock disponible (sin repetir), para el aviso arriba de la tabla. */
+  protected readonly exceedingProducts = computed(() => {
+    const values = this.detailsValues() ?? [];
+    const products = this.lineProducts();
+    const exceeding = new Map<number, { name: string; requested: number; available: number }>();
+    this.lineStock().forEach((stock, index) => {
+      const product = products[index];
+      const requested = Number(values[index]?.quantity) || 0;
+      if (product && stock && requested > stock.availableQuantity) {
+        exceeding.set(product.productId, { name: product.name, requested, available: stock.availableQuantity });
+      }
+    });
+    return [...exceeding.values()];
+  });
 
   protected readonly anyLineExceedsStock = computed(() => {
     const values = this.detailsValues() ?? [];
@@ -337,7 +367,7 @@ export class IssueCreate {
       return false;
     }
     const quantity = Number(line.quantity) || 0;
-    return quantity > stock.quantity;
+    return quantity > stock.availableQuantity;
   }
 
   protected lineTotalCost(index: number): number {
@@ -358,7 +388,7 @@ export class IssueCreate {
     const warehouseId = Number(this.headerForm.getRawValue().warehouseId) || null;
     const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(
       ProductPickerDialog,
-      { data: { warehouseId } }
+      { data: { warehouseId, excludedProductIds: this.lineProducts().flatMap((product, i) => (product && i !== index ? [product.productId] : [])) } }
     );
     ref.closed.subscribe((result) => {
       if (result) {

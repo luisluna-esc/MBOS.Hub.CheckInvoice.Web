@@ -1,5 +1,6 @@
 import { Component, Injector, computed, effect, inject, input, signal } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NgControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { InfoHint } from '../info-hint/info-hint';
 
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel';
 
@@ -7,7 +8,7 @@ let nextId = 0;
 
 @Component({
   selector: 'app-input',
-  imports: [],
+  imports: [InfoHint],
   templateUrl: './input.html',
 })
 export class Input implements ControlValueAccessor {
@@ -27,6 +28,13 @@ export class Input implements ControlValueAccessor {
   readonly decimals = input<number | null>(null);
   /** Permite sobrescribir/agregar mensajes por clave de error (ej. { pattern: 'Formato inválido.' }) */
   readonly errorMessages = input<Record<string, string>>({});
+  /** Error que vive fuera del control (ej. cantidad mayor al stock). Se muestra igual que los errores del control. */
+  readonly externalError = input<string | null>(null);
+  /**
+   * 'text' muestra el error debajo del input (formularios). 'icon' lo muestra como un ícono rojo a la derecha
+   * que se abre al tocarlo: para tablas, así una fila con error no queda más alta que las demás.
+   */
+  readonly errorDisplay = input<'text' | 'icon'>('text');
   // Nombre "patternRule" (no "pattern"): Angular tiene un PatternValidator nativo que se
   // auto-adjunta a cualquier elemento con [pattern] + formControlName/ngModel, sin importar si
   // es un componente propio — coincide por nombre de atributo, no por selector de componente.
@@ -151,15 +159,19 @@ export class Input implements ControlValueAccessor {
     };
   }
 
-  protected get showError(): boolean {
+  private get showControlError(): boolean {
     const control = this.ngControl?.control;
     return !!control && control.invalid && (control.touched || control.dirty);
   }
 
+  protected get showError(): boolean {
+    return this.showControlError || !!this.externalError();
+  }
+
   protected get errorMessage(): string | null {
     const control = this.ngControl?.control;
-    if (!control?.errors) {
-      return null;
+    if (!this.showControlError || !control?.errors) {
+      return this.externalError();
     }
 
     const customMessages = this.errorMessages();

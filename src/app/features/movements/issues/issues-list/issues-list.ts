@@ -20,6 +20,7 @@ import { IssueDetailsDialog, IssueDetailsDialogData } from '../issue-details-dia
 import { IssuePrintDialog, IssuePrintDialogResult } from '../issue-print-dialog/issue-print-dialog';
 import { Issue, IssueFilters } from '../issue.models';
 import { IssueService } from '../issue.service';
+import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 
 @Component({
   selector: 'app-issues-list',
@@ -115,7 +116,7 @@ export class IssuesList {
       {
         key: 'issueDate',
         header: this.languageService.t('issues.columns.issueDate'),
-        format: (value) => new Date(value as string).toLocaleDateString(),
+        format: (value) => formatCalendarDate(value),
       },
       {
         key: 'createdAt',

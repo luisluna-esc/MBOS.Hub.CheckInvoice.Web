@@ -17,6 +17,7 @@ import { Issue, IssueFilters } from '../../issues/issue.models';
 import { IssueService } from '../../issues/issue.service';
 import { ReturnableIssueLine } from '../../receipts/receipt.models';
 import { ReceiptService } from '../../receipts/receipt.service';
+import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 
 interface ReturnLineRow {
   productId: number;
@@ -50,7 +51,7 @@ export class IssueReturnCreate {
       return '';
     }
     const clientName = issue.clientId ? (this.nameMap(this.clients())[issue.clientId] ?? null) : null;
-    const date = new Date(issue.issueDate).toLocaleDateString();
+    const date = formatCalendarDate(issue.issueDate);
     return clientName ? `${clientName} · ${date}` : date;
   });
 
@@ -110,7 +111,7 @@ export class IssueReturnCreate {
       {
         key: 'issueDate',
         header: this.languageService.t('issues.columns.issueDate'),
-        format: (value) => new Date(value as string).toLocaleDateString(),
+        format: (value) => formatCalendarDate(value),
       },
       {
         key: 'total',

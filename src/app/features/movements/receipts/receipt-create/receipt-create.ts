@@ -22,13 +22,14 @@ import {
   PartySearchInput,
   PartySearchResult,
 } from '../../../../shared/components/party-search-input/party-search-input';
-import { ProductPickerDialog, ProductPickerResult } from '../../../../shared/components/product-picker-dialog/product-picker-dialog';
+import { ProductPickerData, ProductPickerDialog, ProductPickerResult } from '../../../../shared/components/product-picker-dialog/product-picker-dialog';
 import { Select, SelectOption } from '../../../../shared/components/select/select';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ReportService } from '../../../reports/report.service';
 import { SupplierService } from '../../../catalogs/suppliers/supplier.service';
 import { ReceiptRequest } from '../receipt.models';
 import { ReceiptService } from '../receipt.service';
+import { localDateIso } from '../../../../core/dates/calendar-date';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -64,7 +65,7 @@ export class ReceiptCreate {
   protected readonly selectedSupplier = signal<PartySearchResult | null>(null);
   protected readonly headerConfirmed = signal(false);
   protected readonly lineProducts = signal<(ProductPickerResult | null)[]>([]);
-  protected readonly todayIso = new Date().toISOString().slice(0, 10);
+  protected readonly todayIso = localDateIso();
 
   protected readonly warehouses = signal<CatalogItem[]>([]);
   protected readonly receiptTypes = signal<CatalogItem[]>([]);
@@ -275,7 +276,9 @@ export class ReceiptCreate {
   }
 
   protected async pickProduct(index: number): Promise<void> {
-    const ref = this.dialogService.open<ProductPickerResult | null, unknown, ProductPickerDialog>(ProductPickerDialog);
+    const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(ProductPickerDialog, {
+      data: { excludedProductIds: this.lineProducts().flatMap((product, i) => (product && i !== index ? [product.productId] : [])) },
+    });
     ref.closed.subscribe((result) => {
       if (result) {
         this.detailsArray.at(index).controls.productId.setValue(String(result.productId));

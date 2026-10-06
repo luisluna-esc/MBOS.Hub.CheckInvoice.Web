@@ -5,7 +5,8 @@
     </label>
   }
 
-  <div class="relative w-full">
+  <div class="flex w-full items-center gap-1.5">
+  <div class="relative w-full min-w-0 flex-1">
     <input
       [id]="inputId"
       [type]="effectiveType()"
@@ -17,7 +18,7 @@
       [value]="value()"
       [disabled]="disabled()"
       [attr.aria-invalid]="showError"
-      [attr.aria-describedby]="showError ? inputId + '-error' : hint() ? inputId + '-hint' : null"
+      [attr.aria-describedby]="errorDisplay() === 'icon' ? null : showError ? inputId + '-error' : hint() ? inputId + '-hint' : null"
       class="w-full rounded-md border bg-surface px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
       [class.border-border]="!showError"
       [class.border-danger]="showError"
@@ -59,11 +60,23 @@
     }
   </div>
 
-  @if (showError) {
-    <p [id]="inputId + '-error'" class="min-h-4 text-xs text-danger">{{ errorMessage }}</p>
-  } @else if (hint()) {
-    <p [id]="inputId + '-hint'" class="min-h-4 text-xs text-muted-foreground">{{ hint() }}</p>
-  } @else {
-    <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
+  @if (errorDisplay() === 'icon') {
+    <!-- Espacio fijo aunque no haya error: así todos los inputs de la tabla tienen el mismo ancho. -->
+    <div class="flex w-5 shrink-0 justify-center">
+      @if (showError) {
+        <app-info-hint tone="danger" label="Ver error">{{ errorMessage }}</app-info-hint>
+      }
+    </div>
+  }
+  </div>
+
+  @if (errorDisplay() === 'text') {
+    @if (showError) {
+      <p [id]="inputId + '-error'" class="min-h-4 text-xs text-danger">{{ errorMessage }}</p>
+    } @else if (hint()) {
+      <p [id]="inputId + '-hint'" class="min-h-4 text-xs text-muted-foreground">{{ hint() }}</p>
+    } @else {
+      <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
+    }
   }
 </div>

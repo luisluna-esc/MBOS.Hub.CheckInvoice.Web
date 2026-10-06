@@ -16,6 +16,7 @@ import {
   IssueVoidRequestReviewDialog,
   IssueVoidRequestReviewDialogData,
 } from '../issue-void-request-review-dialog/issue-void-request-review-dialog';
+import { formatCalendarDate, localDateIso } from '../../../../core/dates/calendar-date';
 
 const APPROVER_ROLES = ['Contador', 'M-BOS'];
 
@@ -42,7 +43,7 @@ export class IssueVoidRequestsList {
   protected readonly initialFilterValues: FilterValues = { status: 'pending' };
   private currentFilters: IssueVoidRequestFilters = { status: 'pending' };
   private readonly voidReasons = signal<VoidReasonItem[]>([]);
-  private readonly todayIso = new Date().toISOString().slice(0, 10);
+  private readonly todayIso = localDateIso();
 
   protected readonly canReview = computed(() => APPROVER_ROLES.includes(this.authService.activeRole() ?? ''));
 
@@ -91,7 +92,7 @@ export class IssueVoidRequestsList {
     {
       key: 'issueDate',
       header: this.languageService.t('issueVoidRequests.columns.issueDate'),
-      format: (value) => new Date(value as string).toLocaleDateString(),
+      format: (value) => formatCalendarDate(value),
     },
     {
       key: 'clientName',

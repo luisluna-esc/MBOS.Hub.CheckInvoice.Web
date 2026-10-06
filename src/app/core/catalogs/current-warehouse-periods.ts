@@ -1,3 +1,4 @@
+import { localDateIso } from '../dates/calendar-date';
 import { CatalogItem } from './catalog.models';
 
 function monthKey(date: Date): string {
@@ -29,7 +30,7 @@ export const WAREHOUSE_PERIOD_NAME_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 export function minIssueDateIso(): string {
   const now = new Date();
   const previousMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  return previousMonthStart.toISOString().slice(0, 10);
+  return localDateIso(previousMonthStart);
 }
 
 /** Rango válido de Fecha de Emisión según el Periodo de Almacén elegido: debe caer dentro del
@@ -37,7 +38,7 @@ export function minIssueDateIso(): string {
  * anterior, el mes completo (ya cerrado). Sin período reconocible (nombre no "YYYY-MM"), se usa
  * la ventana amplia por defecto (mes actual o el anterior) como respaldo. */
 export function issueDateRangeForPeriod(periodName: string | null | undefined): { min: string; max: string } {
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayIso = localDateIso();
 
   const match = periodName?.match(/^(\d{4})-(\d{2})$/);
   if (!match) {
@@ -47,7 +48,7 @@ export function issueDateRangeForPeriod(periodName: string | null | undefined): 
   const year = Number(match[1]);
   const month = Number(match[2]);
   const min = `${match[1]}-${match[2]}-01`;
-  const lastDayOfMonth = new Date(year, month, 0).toISOString().slice(0, 10);
+  const lastDayOfMonth = localDateIso(new Date(year, month, 0));
   const max = lastDayOfMonth < todayIso ? lastDayOfMonth : todayIso;
 
   return { min, max };

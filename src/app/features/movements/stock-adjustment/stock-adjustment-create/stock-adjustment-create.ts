@@ -13,6 +13,7 @@ import { StockService } from '../../../../core/warehouses/stock.service';
 import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
 import { Input as AppInput } from '../../../../shared/components/input/input';
 import {
+  ProductPickerData,
   ProductPickerDialog,
   ProductPickerResult,
 } from '../../../../shared/components/product-picker-dialog/product-picker-dialog';
@@ -107,9 +108,9 @@ export class StockAdjustmentCreate {
       return;
     }
 
-    const ref = this.dialogService.open<ProductPickerResult | null, unknown, ProductPickerDialog>(
+    const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(
       ProductPickerDialog,
-      { data: { warehouseId } }
+      { data: { warehouseId, excludedProductIds: this.lineInfos().flatMap((info, i) => (info.product && i !== index ? [info.product.productId] : [])) } }
     );
     ref.closed.subscribe((result) => {
       if (result) {

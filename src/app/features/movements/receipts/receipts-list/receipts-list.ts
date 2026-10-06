@@ -23,6 +23,7 @@ import {
   IssueDetailsDialog,
   IssueDetailsDialogData,
 } from '../../issues/issue-details-dialog/issue-details-dialog';
+import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 
 @Component({
   selector: 'app-receipts-list',
@@ -127,7 +128,7 @@ export class ReceiptsList {
       {
         key: 'issueDate',
         header: this.languageService.t('receipts.columns.issueDate'),
-        format: (value) => new Date(value as string).toLocaleDateString(),
+        format: (value) => formatCalendarDate(value),
       },
       {
         key: 'createdAt',

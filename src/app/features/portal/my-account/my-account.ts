@@ -9,6 +9,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { IssueDetailsDialog, IssueDetailsDialogData } from '../../movements/issues/issue-details-dialog/issue-details-dialog';
 import { PortalAccountReceivable, PortalDateRangeFilters, PortalIssue, PortalPayment } from '../portal.models';
 import { PortalService } from '../portal.service';
+import { formatCalendarDate } from '../../../core/dates/calendar-date';
 
 function paginate<T>(items: T[], pageNumber: number, pageSize: number): T[] {
   const start = (pageNumber - 1) * pageSize;
@@ -144,12 +145,12 @@ export class MyAccount {
     {
       key: 'issueDate',
       header: this.languageService.t('portal.myAccount.columns.issueDate'),
-      format: (value) => (value ? new Date(value as string).toLocaleDateString() : '—'),
+      format: (value) => formatCalendarDate(value),
     },
     {
       key: 'dueDate',
       header: this.languageService.t('portal.myAccount.columns.dueDate'),
-      format: (value) => (value ? new Date(value as string).toLocaleDateString() : '—'),
+      format: (value) => formatCalendarDate(value),
     },
     {
       key: 'outstandingBalance',
@@ -204,7 +205,7 @@ export class MyAccount {
     {
       key: 'issueDate',
       header: this.languageService.t('portal.myAccount.columns.issueDate'),
-      format: (value) => new Date(value as string).toLocaleDateString(),
+      format: (value) => formatCalendarDate(value),
     },
     {
       key: 'total',
