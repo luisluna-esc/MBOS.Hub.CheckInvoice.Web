@@ -135,13 +135,17 @@ export class AccountReceivablesList {
     },
     {
       label: this.languageService.t('accountReceivables.actions.registerPayment'),
-      disabled: (row) => row.status === 'paid' || !this.canManage(),
+      // Con pago retrasado ya no se cobra por Caja: se descuenta del sueldo.
+      disabled: (row) => row.status === 'paid' || row.status === 'late' || !this.canManage(),
       disabledReason: (row) => {
         if (!this.canManage()) {
           return this.languageService.t('accountReceivables.actions.readOnlyRole');
         }
         if (row.status === 'paid') {
           return this.languageService.t('accountReceivables.actions.alreadyPaid');
+        }
+        if (row.status === 'late') {
+          return this.languageService.t('accountReceivables.actions.latePayment');
         }
         return null;
       },

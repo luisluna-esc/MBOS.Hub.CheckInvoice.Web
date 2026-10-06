@@ -1,129 +1,161 @@
 <div class="flex flex-col gap-6">
-  <h1 class="text-xl font-semibold text-foreground">{{ 'portal.myAccount.title' | translate }}</h1>
+  <div class="flex flex-col gap-1">
+    <h1 class="text-xl font-semibold text-foreground">{{ 'portal.myAccount.title' | translate }}</h1>
+    <p class="text-sm text-muted-foreground">{{ 'portal.myAccount.intro' | translate }}</p>
+  </div>
 
   @if (errorCode()) {
     <div class="rounded-lg border border-border">
       <app-error-state [code]="errorCode()!" />
     </div>
+  } @else if (loading()) {
+    <p class="text-sm text-muted-foreground">{{ 'portal.myAccount.loading' | translate }}</p>
   } @else {
-    <div class="flex gap-1 border-b border-border" role="tablist">
-      <button
-        type="button"
-        role="tab"
-        class="border-b-2 px-3 py-2 text-sm font-medium transition-colors"
-        [class.border-primary]="activeTab() === 'receivables'"
-        [class.text-primary]="activeTab() === 'receivables'"
-        [class.border-transparent]="activeTab() !== 'receivables'"
-        [class.text-muted-foreground]="activeTab() !== 'receivables'"
-        (click)="setActiveTab('receivables')"
-      >
-        {{ 'portal.myAccount.section1' | translate }}
-      </button>
-      <button
-        type="button"
-        role="tab"
-        class="border-b-2 px-3 py-2 text-sm font-medium transition-colors"
-        [class.border-primary]="activeTab() === 'payments'"
-        [class.text-primary]="activeTab() === 'payments'"
-        [class.border-transparent]="activeTab() !== 'payments'"
-        [class.text-muted-foreground]="activeTab() !== 'payments'"
-        (click)="setActiveTab('payments')"
-      >
-        {{ 'portal.myAccount.payments' | translate }}
-      </button>
-      <button
-        type="button"
-        role="tab"
-        class="border-b-2 px-3 py-2 text-sm font-medium transition-colors"
-        [class.border-primary]="activeTab() === 'issues'"
-        [class.text-primary]="activeTab() === 'issues'"
-        [class.border-transparent]="activeTab() !== 'issues'"
-        [class.text-muted-foreground]="activeTab() !== 'issues'"
-        (click)="setActiveTab('issues')"
-      >
-        {{ 'portal.myAccount.deliveries' | translate }}
-      </button>
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div class="rounded-md border border-border bg-surface p-4">
+        <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.totalOwed' | translate }}</span>
+        <p class="text-2xl font-semibold tabular-nums text-foreground">{{ totalOwed() | number: '1.2-2' }} Bs.</p>
+      </div>
+      <div class="rounded-md border border-border bg-surface p-4">
+        <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.totalPaid' | translate }}</span>
+        <p class="text-2xl font-semibold tabular-nums text-foreground">{{ totalPaid() | number: '1.2-2' }} Bs.</p>
+      </div>
+      <div class="rounded-md border border-border bg-surface p-4">
+        <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.openAccounts' | translate }}</span>
+        <p class="text-2xl font-semibold tabular-nums text-foreground">{{ openAccounts().length }}</p>
+      </div>
     </div>
 
-    @switch (activeTab()) {
-      @case ('receivables') {
-        <section class="flex flex-col gap-3">
-          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div class="rounded-md border border-border p-4">
-              <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.totalOutstanding' | translate }}</span>
-              <p class="text-2xl font-semibold text-foreground">{{ totalOutstanding().toFixed(2) }}</p>
-            </div>
-            <div class="rounded-md border border-border p-4">
-              <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.pendingCount' | translate }}</span>
-              <p class="text-2xl font-semibold text-foreground">{{ pendingCount() }}</p>
-            </div>
+    @if (lateCount() > 0) {
+      <div class="rounded-md border border-danger bg-background p-3 text-sm text-danger">
+        {{ 'portal.myAccount.lateNotice' | translate: { count: lateCount() } }}
+      </div>
+    }
+
+    <div class="flex flex-wrap gap-2" role="group">
+      @for (option of filters; track option) {
+        <button
+          type="button"
+          class="rounded-full border px-3 py-1.5 text-sm font-medium transition-colors"
+          [class.border-primary]="filter() === option"
+          [class.bg-primary]="filter() === option"
+          [class.text-primary-foreground]="filter() === option"
+          [class.border-border]="filter() !== option"
+          [class.text-foreground]="filter() !== option"
+          [attr.aria-pressed]="filter() === option"
+          (click)="filter.set(option)"
+        >
+          {{ 'portal.myAccount.filter.' + option | translate }}
+        </button>
+      }
+    </div>
+
+    @if (visibleAccounts().length === 0) {
+      <p class="rounded-md border border-border p-4 text-sm text-muted-foreground">
+        {{ 'portal.myAccount.empty.' + filter() | translate }}
+      </p>
+    }
+
+    @for (account of visibleAccounts(); track account.accountReceivableId) {
+      <section
+        class="flex flex-col gap-3 rounded-lg border bg-surface p-4"
+        [class.border-danger]="account.status === 'late'"
+        [class.border-border]="account.status !== 'late'"
+      >
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div class="flex flex-col gap-0.5">
+            <h2 class="text-base font-semibold text-foreground">
+              {{ 'portal.myAccount.account.title' | translate: { number: issueNumber(account) } }}
+            </h2>
+            <p class="text-xs text-muted-foreground">
+              {{ 'portal.myAccount.account.issueDate' | translate: { date: calendarDate(account.issueDate) } }}
+              ·
+              @if (account.dueDate) {
+                {{ 'portal.myAccount.account.dueDate' | translate: { date: calendarDate(account.dueDate) } }}
+              } @else {
+                {{ 'portal.myAccount.account.noDueDate' | translate }}
+              }
+            </p>
           </div>
+          <span
+            class="rounded-full border px-2.5 py-0.5 text-xs font-semibold"
+            [class.border-danger]="account.status === 'late'"
+            [class.text-danger]="account.status === 'late'"
+            [class.border-primary]="account.status === 'pending'"
+            [class.text-primary]="account.status === 'pending'"
+            [class.border-border]="account.status === 'paid'"
+            [class.text-muted-foreground]="account.status === 'paid'"
+          >
+            {{ 'accountReceivables.status.' + account.status | translate }}
+          </span>
+        </div>
 
-          <app-filters
-            [fields]="receivablesFilterFields()"
-            (search)="onReceivablesFilterSearch($event)"
-            (clear)="onReceivablesFilterClear()"
-          />
-
-          <app-table
-            [columns]="receivableColumns()"
-            [rows]="pagedReceivables()"
-            [actions]="receivableActions()"
-            [emptyMessage]="'table.empty' | translate"
-            [loading]="loading()"
-            [totalRecords]="filteredReceivables().length"
-            [pageNumber]="receivablesPageNumber()"
-            [pageSize]="receivablesPageSize()"
-            (pageChange)="onReceivablesPageChange($event)"
-            (pageSizeChange)="onReceivablesPageSizeChange($event)"
-          />
-        </section>
-      }
-      @case ('payments') {
-        <section class="flex flex-col gap-3">
-          <app-filters
-            [fields]="paymentsFilterFields()"
-            (search)="onPaymentsFilterSearch($event)"
-            (clear)="onPaymentsFilterClear()"
-          />
-
-          <app-table
-            [columns]="paymentColumns()"
-            [rows]="pagedPayments()"
-            [actions]="paymentActions()"
-            [emptyMessage]="'table.empty' | translate"
-            [loading]="loading()"
-            [totalRecords]="filteredPayments().length"
-            [pageNumber]="paymentsPageNumber()"
-            [pageSize]="paymentsPageSize()"
-            (pageChange)="onPaymentsPageChange($event)"
-            (pageSizeChange)="onPaymentsPageSizeChange($event)"
-          />
-        </section>
-      }
-      @case ('issues') {
-        <section class="flex flex-col gap-3">
-          <div class="rounded-md border border-border p-4 sm:w-fit">
-            <span class="text-sm text-muted-foreground">{{ 'portal.myAccount.summary.deliveryCount' | translate }}</span>
-            <p class="text-2xl font-semibold text-foreground">{{ deliveryCount() }}</p>
+        @if (account.lines.length > 0) {
+          <div class="w-full overflow-x-auto rounded-md border border-border">
+            <table class="w-full min-w-full divide-y divide-border text-sm">
+              <thead class="bg-background">
+                <tr>
+                  <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'portal.myAccount.columns.product' | translate }}</th>
+                  <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'portal.myAccount.columns.quantity' | translate }}</th>
+                  <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'portal.myAccount.columns.value' | translate }}</th>
+                  <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'portal.myAccount.columns.paid' | translate }}</th>
+                  <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'portal.myAccount.columns.owed' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border">
+                @for (line of account.lines; track line.issueDetailId) {
+                  <tr>
+                    <td class="px-3 py-2 align-middle text-foreground">{{ line.name }}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-right align-middle tabular-nums text-muted-foreground">{{ line.quantity | number: '1.0-2' }}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-right align-middle tabular-nums text-foreground">{{ line.totalAmount | number: '1.2-2' }}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-right align-middle tabular-nums text-foreground">{{ line.paidAmount | number: '1.2-2' }}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-right align-middle font-semibold tabular-nums" [class.text-foreground]="line.remainingAmount > 0" [class.text-muted-foreground]="line.remainingAmount <= 0">
+                      {{ line.remainingAmount | number: '1.2-2' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+              <tfoot class="bg-background">
+                <tr>
+                  <td class="px-3 py-2 font-semibold text-foreground">{{ 'portal.myAccount.account.total' | translate }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums text-foreground">{{ totalQuantity(account) | number: '1.0-2' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums text-foreground">{{ account.totalAmount | number: '1.2-2' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums text-foreground">{{ account.paidAmount | number: '1.2-2' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums text-foreground">{{ account.outstandingBalance | number: '1.2-2' }}</td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
+        } @else {
+          <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-foreground">
+            <span>{{ 'portal.myAccount.columns.value' | translate }}: <strong class="tabular-nums">{{ account.totalAmount | number: '1.2-2' }}</strong></span>
+            <span>{{ 'portal.myAccount.columns.paid' | translate }}: <strong class="tabular-nums">{{ account.paidAmount | number: '1.2-2' }}</strong></span>
+            <span>{{ 'portal.myAccount.columns.owed' | translate }}: <strong class="tabular-nums">{{ account.outstandingBalance | number: '1.2-2' }}</strong></span>
+          </div>
+        }
 
-          <app-filters [fields]="dateRangeFields()" (search)="onDateRangeSearch($event)" (clear)="onDateRangeClear()" />
-
-          <app-table
-            [columns]="issueColumns()"
-            [rows]="pagedIssues()"
-            [actions]="issueActions()"
-            [emptyMessage]="'table.empty' | translate"
-            [loading]="loading()"
-            [totalRecords]="issues().length"
-            [pageNumber]="issuesPageNumber()"
-            [pageSize]="issuesPageSize()"
-            (pageChange)="onIssuesPageChange($event)"
-            (pageSizeChange)="onIssuesPageSizeChange($event)"
-          />
-        </section>
-      }
+        <div class="flex flex-col gap-1">
+          <h3 class="text-sm font-semibold text-foreground">{{ 'portal.myAccount.payments.title' | translate }}</h3>
+          @if (account.payments.length === 0) {
+            <p class="text-xs text-muted-foreground">{{ 'portal.myAccount.payments.none' | translate }}</p>
+          } @else {
+            <ul class="flex flex-col gap-0.5 text-sm text-foreground">
+              @for (payment of account.payments; track payment.paymentId) {
+                <li class="flex flex-wrap gap-x-2 tabular-nums">
+                  <span>{{ paymentDate(payment.paymentDate) }}</span>
+                  <span class="text-muted-foreground">·</span>
+                  <span>{{ paymentMethodLabel(payment.paymentMethod) }}</span>
+                  <span class="text-muted-foreground">·</span>
+                  <strong>{{ payment.amount | number: '1.2-2' }} Bs.</strong>
+                  @if (payment.notes) {
+                    <span class="text-muted-foreground">({{ payment.notes }})</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </section>
     }
   }
 </div>

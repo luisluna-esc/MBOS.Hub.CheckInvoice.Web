@@ -10,14 +10,21 @@ import {
 } from '../../../shared/components/party-search-input/party-search-input';
 import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
+import { Switch } from '../../../shared/components/switch/switch';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { AccountReceivablesReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 
+/** Opción "Todos los estados": no es un estado real, significa no filtrar. */
+const ALL_VALUE = 'all';
+
+/** "Por cobrar": pendientes y con pago retrasado juntas (el backend lo entiende como "open"). */
+const OPEN_STATUS_VALUE = 'open';
+
 @Component({
   selector: 'app-account-receivables-report',
-  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, TranslatePipe, ExcelDownloadButton],
+  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, Switch, TranslatePipe, ExcelDownloadButton],
   templateUrl: './account-receivables-report.html',
 })
 export class AccountReceivablesReport {
@@ -27,16 +34,25 @@ export class AccountReceivablesReport {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
 
+  /** Encendido: reporte de todos los clientes y el select de Cliente queda desactivado. */
+  protected readonly general = signal(false);
   protected readonly selectedClient = signal<PartySearchResult | null>(null);
   protected readonly clientId = signal<string | null>(null);
-  protected readonly status = signal<string | null>(null);
+  // Por defecto solo lo que falta cobrar (pendientes y retrasadas): con muchos pastores, el
+  // historial completo de cuentas pagadas haría pesado el reporte.
+  protected readonly status = signal<string>(OPEN_STATUS_VALUE);
   protected readonly dateFrom = signal<string | null>(null);
   protected readonly dateTo = signal<string | null>(null);
 
+  /** Hay algo que mostrar: el reporte general o el de un cliente elegido. */
+  protected readonly canGenerate = computed(() => this.general() || !!this.clientId());
+
   protected readonly statusOptions = computed<SelectOption[]>(() => [
+    { value: OPEN_STATUS_VALUE, label: this.languageService.t('reports.accountReceivables.openStatuses') },
     { value: 'pending', label: this.languageService.t('accountReceivables.status.pending') },
     { value: 'late', label: this.languageService.t('accountReceivables.status.late') },
     { value: 'paid', label: this.languageService.t('accountReceivables.status.paid') },
+    { value: ALL_VALUE, label: this.languageService.t('reports.accountReceivables.allStatuses') },
   ]);
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
@@ -54,20 +70,18 @@ export class AccountReceivablesReport {
       }
     });
 
-    // No genera nada al entrar a la pantalla, solo cuando el usuario cambia un filtro.
-    // El efecto igual debe leer las señales en esta primera ejecución para registrar las
-    // dependencias, si no nunca reaccionaría a cambios posteriores.
-    let isFirstRun = true;
+    // Se genera cuando hay qué mostrar (general o un cliente) y se actualiza al cambiar filtros.
     effect(() => {
+      this.general();
       this.clientId();
       this.status();
       this.dateFrom();
       this.dateTo();
-      if (isFirstRun) {
-        isFirstRun = false;
-        return;
+      if (this.canGenerate()) {
+        this.scheduleGenerate();
+      } else {
+        this.clearPreview();
       }
-      this.scheduleGenerate();
     });
   }
 
@@ -88,10 +102,23 @@ export class AccountReceivablesReport {
     this.debounceTimer = setTimeout(() => void this.onGenerate(), 400);
   }
 
+  private clearPreview(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+    this.revokeObjectUrl();
+    this.previewUrl.set(null);
+  }
+
   private async onGenerate(): Promise<void> {
     this.loading.set(true);
     try {
       const blob = await this.reportService.getAccountReceivablesReportPdfBlob(this.currentFilters());
+      // Si mientras se generaba ya no hay qué mostrar, no se muestra.
+      if (!this.canGenerate()) {
+        return;
+      }
       this.revokeObjectUrl();
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
@@ -104,8 +131,8 @@ export class AccountReceivablesReport {
 
   private currentFilters(): AccountReceivablesReportFilters {
     return {
-      clientId: this.clientId() ? Number(this.clientId()) : undefined,
-      status: this.status() ?? undefined,
+      clientId: !this.general() && this.clientId() ? Number(this.clientId()) : undefined,
+      status: this.status() !== ALL_VALUE ? this.status() : undefined,
       dateFrom: this.dateFrom() ?? undefined,
       dateTo: this.dateTo() ?? undefined
     };

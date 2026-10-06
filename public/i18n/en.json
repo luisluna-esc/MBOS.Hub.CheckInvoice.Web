@@ -843,6 +843,7 @@
       "viewDetails": "View details",
       "registerPayment": "Register payment",
       "alreadyPaid": "This account is already paid",
+      "latePayment": "Late payment: deposits can no longer be recorded, it will be deducted from salary",
       "readOnlyRole": "Your role is read-only, you cannot register payments"
     },
     "payment": {
@@ -877,32 +878,41 @@
   "portal": {
     "myAccount": {
       "title": "My Account",
-      "section1": "Accounts Receivable",
+      "intro": "Here you see what you received on credit, how much you paid for each product and how much you still owe.",
+      "loading": "Loading your account...",
       "summary": {
-        "totalOutstanding": "Total outstanding",
-        "pendingCount": "Pending debts",
-        "deliveryCount": "Deliveries recorded"
+        "totalOwed": "Total you owe",
+        "totalPaid": "Total you paid",
+        "openAccounts": "Accounts to pay"
       },
-      "filters": {
-        "issue": "Issue no.",
-        "dateFrom": "From",
-        "dateTo": "To"
+      "lateNotice": "You have {{count}} account(s) with late payment. Deposits are no longer accepted for them: the balance will be deducted from your salary.",
+      "filter": {
+        "open": "To pay",
+        "paid": "Paid",
+        "all": "All"
       },
-      "deliveries": "Delivery history",
-      "payments": "Payment history",
+      "empty": {
+        "open": "You have no accounts to pay. You are up to date.",
+        "paid": "You have no paid accounts yet.",
+        "all": "You have no registered accounts."
+      },
+      "account": {
+        "title": "Issue No. {{number}}",
+        "issueDate": "Received on {{date}}",
+        "dueDate": "pay by {{date}}",
+        "noDueDate": "no due date",
+        "total": "Total"
+      },
       "columns": {
-        "issue": "Issue",
-        "issueDate": "Date",
-        "dueDate": "Due date",
-        "outstandingBalance": "Outstanding balance",
-        "status": "Status",
-        "total": "Total",
-        "paymentDate": "Payment date",
-        "paymentAmount": "Amount paid",
-        "paymentMethod": "Payment method"
+        "product": "Product",
+        "quantity": "Qty",
+        "value": "Value (Bs.)",
+        "paid": "You paid (Bs.)",
+        "owed": "You owe (Bs.)"
       },
-      "actions": {
-        "viewProducts": "View products"
+      "payments": {
+        "title": "Recorded payments",
+        "none": "There are no payments recorded for this account yet."
       }
     }
   },
@@ -1008,11 +1018,14 @@
     },
     "accountReceivables": {
       "title": "Accounts Receivable Portfolio",
+      "general": "General report",
+      "generatePrompt": "Pick a client or turn on \"General report\" to see everyone.",
       "description": "Full accounts receivable portfolio across all clients, with client, status, and due date filters.",
       "client": "Client",
       "allClients": "All clients",
       "changeClient": "Change",
       "status": "Status",
+      "openStatuses": "To collect (pending and late)",
       "allStatuses": "All statuses",
       "dateFrom": "Due date from",
       "dateTo": "Due date to",

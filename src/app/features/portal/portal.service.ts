@@ -3,13 +3,26 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PagedResult } from '../../core/http/paged-result';
-import { PortalAccountReceivable, PortalDateRangeFilters, PortalIssue, PortalPayment } from './portal.models';
+import {
+  PortalAccountReceivable,
+  PortalDateRangeFilters,
+  PortalIssue,
+  PortalPayment,
+  PortalStatementAccount,
+} from './portal.models';
 
 const LOOKUP_PAGE_SIZE = 200;
 
 @Injectable({ providedIn: 'root' })
 export class PortalService {
   private readonly http = inject(HttpClient);
+
+  async getMyStatement(): Promise<PortalStatementAccount[]> {
+    const response = await firstValueFrom(
+      this.http.get<{ data: PortalStatementAccount[] }>(`${environment.apiUrl}/portal/statement`)
+    );
+    return response.data;
+  }
 
   async getMyAccountReceivables(): Promise<PortalAccountReceivable[]> {
     const response = await firstValueFrom(

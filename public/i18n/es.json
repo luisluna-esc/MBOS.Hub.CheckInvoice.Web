@@ -843,6 +843,7 @@
       "viewDetails": "Ver detalle",
       "registerPayment": "Registrar pago",
       "alreadyPaid": "Esta cuenta ya está pagada",
+      "latePayment": "Pago retrasado: ya no se registran depósitos, se descontará del sueldo",
       "readOnlyRole": "Tu rol es de solo lectura, no puede registrar pagos"
     },
     "payment": {
@@ -877,32 +878,41 @@
   "portal": {
     "myAccount": {
       "title": "Mi Cuenta",
-      "section1": "Cuentas por Cobrar",
+      "intro": "Aquí ves lo que recibiste a crédito, cuánto pagaste de cada producto y cuánto te falta pagar.",
+      "loading": "Cargando tu cuenta...",
       "summary": {
-        "totalOutstanding": "Total pendiente",
-        "pendingCount": "Deudas pendientes",
-        "deliveryCount": "Entregas registradas"
+        "totalOwed": "Total que debes",
+        "totalPaid": "Total que pagaste",
+        "openAccounts": "Cuentas por pagar"
       },
-      "filters": {
-        "issue": "N° de Salida",
-        "dateFrom": "Desde",
-        "dateTo": "Hasta"
+      "lateNotice": "Tienes {{count}} cuenta(s) con pago retrasado. Ya no se reciben depósitos para ellas: el saldo se descontará de tu sueldo.",
+      "filter": {
+        "open": "Por pagar",
+        "paid": "Pagadas",
+        "all": "Todas"
       },
-      "deliveries": "Historial de entregas",
-      "payments": "Historial de pagos",
+      "empty": {
+        "open": "No tienes cuentas por pagar. Estás al día.",
+        "paid": "Todavía no tienes cuentas pagadas.",
+        "all": "No tienes cuentas registradas."
+      },
+      "account": {
+        "title": "Salida N° {{number}}",
+        "issueDate": "Recibida el {{date}}",
+        "dueDate": "pagar hasta el {{date}}",
+        "noDueDate": "sin fecha límite",
+        "total": "Total"
+      },
       "columns": {
-        "issue": "Salida",
-        "issueDate": "Fecha",
-        "dueDate": "Fecha límite",
-        "outstandingBalance": "Saldo pendiente",
-        "status": "Estado",
-        "total": "Total",
-        "paymentDate": "Fecha de pago",
-        "paymentAmount": "Monto pagado",
-        "paymentMethod": "Método de pago"
+        "product": "Producto",
+        "quantity": "Cant.",
+        "value": "Valor (Bs.)",
+        "paid": "Pagaste (Bs.)",
+        "owed": "Debes (Bs.)"
       },
-      "actions": {
-        "viewProducts": "Ver productos"
+      "payments": {
+        "title": "Pagos registrados",
+        "none": "Todavía no hay pagos registrados en esta cuenta."
       }
     }
   },
@@ -1008,11 +1018,14 @@
     },
     "accountReceivables": {
       "title": "Cartera de Cuentas por Cobrar",
+      "general": "Reporte general",
+      "generatePrompt": "Elige un cliente o enciende \"Reporte general\" para ver a todos.",
       "description": "Cartera completa de cuentas por cobrar de todos los clientes, con filtros de cliente, estado y fecha límite.",
       "client": "Cliente",
       "allClients": "Todos los clientes",
       "changeClient": "Cambiar",
       "status": "Estado",
+      "openStatuses": "Por cobrar (pendientes y retrasadas)",
       "allStatuses": "Todos los estados",
       "dateFrom": "Fecha límite desde",
       "dateTo": "Fecha límite hasta",
