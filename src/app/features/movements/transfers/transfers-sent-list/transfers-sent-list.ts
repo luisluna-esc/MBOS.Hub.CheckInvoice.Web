@@ -17,6 +17,7 @@ import { TransferDetailsDialog, TransferDetailsDialogData } from '../transfer-de
 import { Transfer, TransferFilters } from '../transfer.models';
 import { TransferService } from '../transfer.service';
 import { localDateIso } from '../../../../core/dates/calendar-date';
+import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 @Component({
   selector: 'app-transfers-sent-list',
@@ -220,15 +221,10 @@ export class TransfersSentList {
   // Se abre la pestaña en blanco de forma síncrona al hacer clic, antes del fetch async del
   // PDF — así el navegador no la trata como un popup no solicitado y la bloquea.
   protected async printVoucher(row: Transfer): Promise<void> {
-    const newTab = window.open('', '_blank');
+    const newTab = openPdfTab();
     try {
       const blob = await this.reportService.getTransferVoucherPdfBlob(row.transferId);
-      const url = URL.createObjectURL(blob);
-      if (newTab) {
-        newTab.location.href = url;
-      } else {
-        window.open(url, '_blank');
-      }
+      showPdf(blob, `transferencia-${String(row.transferId).padStart(5, '0')}.pdf`, newTab);
     } catch {
       newTab?.close();
       this.toastService.show(this.languageService.t('transfers.printError'));

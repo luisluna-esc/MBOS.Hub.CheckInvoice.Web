@@ -11,13 +11,14 @@ import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
 import { ALL_WAREHOUSES_VALUE, warehouseIdFilter, warehouseOptionsWithGeneral } from '../report-warehouse.util';
-import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { ExcelDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { IssuesReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
+import { canPreviewPdf } from '../../../core/files/pdf';
 
 @Component({
   selector: 'app-issues-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton],
+  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, PdfDownloadButton],
   templateUrl: './issues-report.html',
 })
 export class IssuesReport {
@@ -38,6 +39,10 @@ export class IssuesReport {
   protected readonly exporting = signal(false);
 
   private objectUrl: string | null = null;
+  private pdfBlob: Blob | null = null;
+
+  /** En celulares el PDF no se puede mostrar dentro de la página: se ofrece descargarlo. */
+  protected readonly canPreviewPdf = canPreviewPdf();
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
@@ -87,6 +92,7 @@ export class IssuesReport {
     try {
       const blob = await this.reportService.getIssuesReportPdfBlob(this.currentFilters());
       this.revokeObjectUrl();
+      this.pdfBlob = blob;
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
     } catch {
@@ -112,6 +118,12 @@ export class IssuesReport {
       this.toastService.show(this.languageService.t('reports.excel.error'));
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  protected onDownloadPdf(): void {
+    if (this.pdfBlob) {
+      downloadBlob(this.pdfBlob, 'salidas-de-almacen.pdf');
     }
   }
 

@@ -5,6 +5,12 @@
     "en": "English",
     "pt": "Portuguese"
   },
+  "shell": {
+    "collapseMenu": "Collapse menu",
+    "expandMenu": "Expand menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
   "nav": {
     "home": "Home",
     "receipts": "Receipts",
@@ -522,6 +528,9 @@
       "totalCost": "Total Cost (Bs.)",
       "detail": "Detail",
       "totalMismatch": "The sum of the lines must equal the Invoice total.",
+      "totalMismatchOver": "The lines add up to {{lines}} Bs. and the invoice total is {{invoice}} Bs.: {{difference}} Bs. over. Fix the quantities or costs, or the invoice total.",
+      "totalMismatchUnder": "The lines add up to {{lines}} Bs. and the invoice total is {{invoice}} Bs.: {{difference}} Bs. short. Fix the quantities or costs, or the invoice total.",
+      "linesTotal": "Lines total",
       "product": "Product",
       "quantity": "Quantity",
       "unitCost": "Unit Cost (Bs.)",
@@ -917,6 +926,9 @@
     }
   },
   "reports": {
+    "pdf": {
+      "download": "Download PDF"
+    },
     "excel": {
       "download": "Download Excel",
       "downloading": "Generating Excel...",

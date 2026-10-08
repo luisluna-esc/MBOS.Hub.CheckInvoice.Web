@@ -5,6 +5,12 @@
     "en": "Inglés",
     "pt": "Portugués"
   },
+  "shell": {
+    "collapseMenu": "Contraer menú",
+    "expandMenu": "Expandir menú",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú"
+  },
   "nav": {
     "home": "Inicio",
     "receipts": "Entradas",
@@ -522,6 +528,9 @@
       "totalCost": "Costo Total (Bs.)",
       "detail": "Detalle",
       "totalMismatch": "La suma de las líneas debe ser igual al Total de factura.",
+      "totalMismatchOver": "Las líneas suman {{lines}} Bs. y el Total de factura es {{invoice}} Bs.: sobran {{difference}} Bs. Corrige las cantidades o costos, o el Total de factura.",
+      "totalMismatchUnder": "Las líneas suman {{lines}} Bs. y el Total de factura es {{invoice}} Bs.: faltan {{difference}} Bs. Corrige las cantidades o costos, o el Total de factura.",
+      "linesTotal": "Suma de las líneas",
       "product": "Producto",
       "quantity": "Cantidad",
       "unitCost": "Costo Unitario (Bs.)",
@@ -917,6 +926,9 @@
     }
   },
   "reports": {
+    "pdf": {
+      "download": "Descargar PDF"
+    },
     "excel": {
       "download": "Descargar Excel",
       "downloading": "Generando Excel...",

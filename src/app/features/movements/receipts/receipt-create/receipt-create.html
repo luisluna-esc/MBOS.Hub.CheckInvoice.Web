@@ -184,11 +184,23 @@
                 </tr>
               }
             </tbody>
+            <tfoot class="bg-background">
+              <tr>
+                <td colspan="4" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.linesTotal' | translate }}</td>
+                <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums" [class.text-danger]="totalMismatch()" [class.text-foreground]="!totalMismatch()">
+                  {{ linesTotalSum() | number: '1.2-2' }}
+                </td>
+                <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums" [class.text-danger]="totalMismatch()" [class.text-foreground]="!totalMismatch()">
+                  {{ linesTotalPercentage() !== null ? (linesTotalPercentage()! | number: '1.0-1') + '%' : '—' }}
+                </td>
+                <td colspan="3"></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
 
         @if (totalMismatch()) {
-          <p class="text-xs text-danger">{{ 'receipts.form.totalMismatch' | translate }}</p>
+          <p class="text-xs text-danger">{{ totalMismatchMessage() }}</p>
         }
       }
     </div>

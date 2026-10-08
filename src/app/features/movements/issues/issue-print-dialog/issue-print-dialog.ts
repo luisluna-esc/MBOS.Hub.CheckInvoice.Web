@@ -7,6 +7,7 @@ import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { Select, SelectOption } from '../../../../shared/components/select/select';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { openPdfTab } from '../../../../core/files/pdf';
 
 const NO_PRINT_TYPE_NAME = 'sin impresión';
 
@@ -65,7 +66,7 @@ export class IssuePrintDialog {
     // La pestaña se abre aquí, de forma síncrona dentro del clic real en "Confirmar" — si se
     // abriera después (ej. al recibir el cierre del diálogo desde afuera) el navegador ya no
     // lo reconoce como gesto del usuario y bloquea el popup en silencio.
-    const newTab = window.open('', '_blank');
+    const newTab = openPdfTab();
     this.dialogRef.close({ printTypeId: Number(this.form.controls.printTypeId.value), newTab });
   }
 

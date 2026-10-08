@@ -21,6 +21,7 @@ import { IssuePrintDialog, IssuePrintDialogResult } from '../issue-print-dialog/
 import { Issue, IssueFilters } from '../issue.models';
 import { IssueService } from '../issue.service';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
+import { showPdf } from '../../../../core/files/pdf';
 
 @Component({
   selector: 'app-issues-list',
@@ -253,12 +254,7 @@ export class IssuesList {
   private async generateVoucher(row: Issue, printTypeId: number, newTab: Window | null): Promise<void> {
     try {
       const blob = await this.reportService.getIssueVoucherPdfBlob(row.issueId, printTypeId);
-      const url = URL.createObjectURL(blob);
-      if (newTab) {
-        newTab.location.href = url;
-      } else {
-        window.open(url, '_blank');
-      }
+      showPdf(blob, `salida-${String(row.issueId).padStart(5, '0')}.pdf`, newTab);
     } catch {
       newTab?.close();
       this.toastService.show(this.languageService.t('issues.printError'));

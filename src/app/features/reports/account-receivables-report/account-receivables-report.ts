@@ -12,9 +12,10 @@ import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Switch } from '../../../shared/components/switch/switch';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
-import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { ExcelDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { AccountReceivablesReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
+import { canPreviewPdf } from '../../../core/files/pdf';
 
 /** Opción "Todos los estados": no es un estado real, significa no filtrar. */
 const ALL_VALUE = 'all';
@@ -24,7 +25,7 @@ const OPEN_STATUS_VALUE = 'open';
 
 @Component({
   selector: 'app-account-receivables-report',
-  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, Switch, TranslatePipe, ExcelDownloadButton],
+  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, Switch, TranslatePipe, ExcelDownloadButton, PdfDownloadButton],
   templateUrl: './account-receivables-report.html',
 })
 export class AccountReceivablesReport {
@@ -60,6 +61,10 @@ export class AccountReceivablesReport {
   protected readonly exporting = signal(false);
 
   private objectUrl: string | null = null;
+  private pdfBlob: Blob | null = null;
+
+  /** En celulares el PDF no se puede mostrar dentro de la página: se ofrece descargarlo. */
+  protected readonly canPreviewPdf = canPreviewPdf();
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
@@ -120,6 +125,7 @@ export class AccountReceivablesReport {
         return;
       }
       this.revokeObjectUrl();
+      this.pdfBlob = blob;
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
     } catch {
@@ -146,6 +152,12 @@ export class AccountReceivablesReport {
       this.toastService.show(this.languageService.t('reports.excel.error'));
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  protected onDownloadPdf(): void {
+    if (this.pdfBlob) {
+      downloadBlob(this.pdfBlob, 'cuentas-por-cobrar.pdf');
     }
   }
 

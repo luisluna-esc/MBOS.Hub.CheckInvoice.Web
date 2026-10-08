@@ -38,6 +38,7 @@ import { IssueRequest } from '../issue.models';
 import { IssueService } from '../issue.service';
 import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
 import { localDateIso } from '../../../../core/dates/calendar-date';
+import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -457,7 +458,7 @@ export class IssueCreate {
     // Se abre la pestaña en blanco de forma síncrona, antes de cualquier await, para que el
     // navegador no la trate como un popup no solicitado y la bloquee — el comprobante se
     // genera con datos ya guardados en el servidor, así que solo se completa si corresponde.
-    const newTab = print ? window.open('', '_blank') : null;
+    const newTab = print ? openPdfTab() : null;
 
     try {
       const response = await this.issueService.create(request);
@@ -465,12 +466,7 @@ export class IssueCreate {
       if (print) {
         try {
           const blob = await this.reportService.getIssueVoucherPdfBlob(response.id);
-          const url = URL.createObjectURL(blob);
-          if (newTab) {
-            newTab.location.href = url;
-          } else {
-            window.open(url, '_blank');
-          }
+          showPdf(blob, `salida-${String(response.id).padStart(5, '0')}.pdf`, newTab);
         } catch {
           newTab?.close();
         }

@@ -12,13 +12,14 @@ import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
-import { ExcelDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { ExcelDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { PastorFieldReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
+import { canPreviewPdf } from '../../../core/files/pdf';
 
 @Component({
   selector: 'app-pastor-field-report',
-  imports: [FormsModule, PartySearchInput, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton],
+  imports: [FormsModule, PartySearchInput, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, PdfDownloadButton],
   templateUrl: './pastor-field-report.html',
 })
 export class PastorFieldReport {
@@ -38,6 +39,10 @@ export class PastorFieldReport {
   protected readonly exporting = signal(false);
 
   private objectUrl: string | null = null;
+  private pdfBlob: Blob | null = null;
+
+  /** En celulares el PDF no se puede mostrar dentro de la página: se ofrece descargarlo. */
+  protected readonly canPreviewPdf = canPreviewPdf();
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
@@ -83,6 +88,7 @@ export class PastorFieldReport {
     try {
       const blob = await this.reportService.getPastorFieldReportPdfBlob(this.currentFilters());
       this.revokeObjectUrl();
+      this.pdfBlob = blob;
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
     } catch {
@@ -108,6 +114,12 @@ export class PastorFieldReport {
       this.toastService.show(this.languageService.t('reports.excel.error'));
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  protected onDownloadPdf(): void {
+    if (this.pdfBlob) {
+      downloadBlob(this.pdfBlob, 'campo-pastor.pdf');
     }
   }
 

@@ -7,6 +7,7 @@ import { LanguageService } from '../../core/i18n/language.service';
 import { MenuTreeItem } from '../../core/menu/menu.models';
 import { MenuService } from '../../core/menu/menu.service';
 import { ThemeService } from '../../core/theme/theme.service';
+import { Icon } from '../../shared/components/icon/icon';
 import { LanguageSwitcher } from '../../shared/components/language-switcher/language-switcher';
 import { Select, SelectOption } from '../../shared/components/select/select';
 import { ThemeToggle } from '../../shared/components/theme-toggle/theme-toggle';
@@ -23,6 +24,7 @@ const SIDEBAR_STORAGE_KEY = 'sidebarCollapsed';
     RouterOutlet,
     NgTemplateOutlet,
     FormsModule,
+    Icon,
     LanguageSwitcher,
     Select,
     ThemeToggle,
@@ -71,6 +73,11 @@ export class Shell {
 
   protected readonly logoSrc = computed(() =>
     this.themeService.theme() === 'dark' ? 'img/inven-track-blanco.png' : 'img/inven-track-negro.png'
+  );
+
+  /** Solo el ícono del logo (sin el texto), para el menú reducido. */
+  protected readonly iconSrc = computed(() =>
+    this.themeService.theme() === 'dark' ? 'img/inven-track-icono-blanco.png' : 'img/inven-track-icono-negro.png'
   );
 
   constructor() {

@@ -30,6 +30,7 @@ import { ReportService } from '../../../reports/report.service';
 import { TransferRequest } from '../transfer.models';
 import { TransferService } from '../transfer.service';
 import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
+import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -334,7 +335,7 @@ export class TransferCreate {
 
     // Se abre la pestaña en blanco de forma síncrona, antes de cualquier await, para que el
     // navegador no la trate como un popup no solicitado y la bloquee.
-    const newTab = print ? window.open('', '_blank') : null;
+    const newTab = print ? openPdfTab() : null;
 
     try {
       const response = await this.transferService.create(request);
@@ -342,12 +343,7 @@ export class TransferCreate {
       if (print) {
         try {
           const blob = await this.reportService.getTransferVoucherPdfBlob(response.id);
-          const url = URL.createObjectURL(blob);
-          if (newTab) {
-            newTab.location.href = url;
-          } else {
-            window.open(url, '_blank');
-          }
+          showPdf(blob, `transferencia-${String(response.id).padStart(5, '0')}.pdf`, newTab);
         } catch {
           newTab?.close();
         }

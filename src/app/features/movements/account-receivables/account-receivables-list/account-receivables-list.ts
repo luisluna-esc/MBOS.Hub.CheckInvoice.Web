@@ -15,6 +15,7 @@ import { AccountReceivable, AccountReceivableFilters } from '../account-receivab
 import { AccountReceivableService } from '../account-receivable.service';
 import { RegisterPaymentDialog, RegisterPaymentDialogData } from '../register-payment-dialog/register-payment-dialog';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
+import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 @Component({
   selector: 'app-account-receivables-list',
@@ -209,15 +210,10 @@ export class AccountReceivablesList {
   // Se abre la pestaña en blanco de forma síncrona al hacer clic, antes del fetch async del
   // PDF — así el navegador no la trata como un popup no solicitado y la bloquea.
   protected async openDetails(row: AccountReceivable): Promise<void> {
-    const newTab = window.open('', '_blank');
+    const newTab = openPdfTab();
     try {
       const blob = await this.reportService.getAccountReceivableVoucherPdfBlob(row.accountReceivableId);
-      const url = URL.createObjectURL(blob);
-      if (newTab) {
-        newTab.location.href = url;
-      } else {
-        window.open(url, '_blank');
-      }
+      showPdf(blob, `cuenta-por-cobrar-${String(row.accountReceivableId).padStart(5, '0')}.pdf`, newTab);
     } catch {
       newTab?.close();
       this.toastService.show(this.languageService.t('accountReceivables.detailError'));

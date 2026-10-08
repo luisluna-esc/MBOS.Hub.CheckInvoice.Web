@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { DecimalPipe, formatNumber } from '@angular/common';
+import { Component, computed, inject, signal, LOCALE_ID } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -30,6 +30,7 @@ import { SupplierService } from '../../../catalogs/suppliers/supplier.service';
 import { ReceiptRequest } from '../receipt.models';
 import { ReceiptService } from '../receipt.service';
 import { localDateIso } from '../../../../core/dates/calendar-date';
+import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -58,6 +59,7 @@ export class ReceiptCreate {
   private readonly dialogService = inject(DialogService);
   private readonly toastService = inject(ToastService);
   private readonly languageService = inject(LanguageService);
+  private readonly locale = inject(LOCALE_ID);
 
   protected readonly saving = signal(false);
   protected readonly supplierLocked = signal(false);
@@ -160,6 +162,29 @@ export class ReceiptCreate {
       return false;
     }
     return Math.abs(this.linesTotalSum() - total) > 0.01;
+  });
+
+  /** Porcentaje que representa la suma de las líneas sobre el Total de factura (100% = cuadra). */
+  protected readonly linesTotalPercentage = computed(() => {
+    const total = Number(this.invoiceTotalValue());
+    return total ? (this.linesTotalSum() / total) * 100 : null;
+  });
+
+  /** Lo que sobra (positivo) o falta (negativo) en las líneas respecto del Total de factura. */
+  protected readonly totalDifference = computed(() => this.linesTotalSum() - (Number(this.invoiceTotalValue()) || 0));
+
+  /** Dice cuánto suman las líneas, cuánto la factura y cuánto sobra o falta, en vez de solo "no cuadra". */
+  protected readonly totalMismatchMessage = computed(() => {
+    const difference = this.totalDifference();
+    const format = (value: number) => formatNumber(value, this.locale, '1.2-2');
+    return this.languageService.t(
+      difference > 0 ? 'receipts.form.totalMismatchOver' : 'receipts.form.totalMismatchUnder',
+      {
+        lines: format(this.linesTotalSum()),
+        invoice: format(Number(this.invoiceTotalValue()) || 0),
+        difference: format(Math.abs(difference)),
+      }
+    );
   });
 
   protected readonly saveDisabled = computed(
@@ -330,7 +355,7 @@ export class ReceiptCreate {
     // Se abre la pestaña en blanco de forma síncrona, antes de cualquier await, para que el
     // navegador no la trate como un popup no solicitado y la bloquee — el comprobante se
     // genera con datos ya guardados en el servidor, así que solo se completa si corresponde.
-    const newTab = print ? window.open('', '_blank') : null;
+    const newTab = print ? openPdfTab() : null;
 
     try {
       const response = await this.receiptService.create(request);
@@ -338,12 +363,7 @@ export class ReceiptCreate {
       if (print) {
         try {
           const blob = await this.reportService.getReceiptVoucherPdfBlob(response.id);
-          const url = URL.createObjectURL(blob);
-          if (newTab) {
-            newTab.location.href = url;
-          } else {
-            window.open(url, '_blank');
-          }
+          showPdf(blob, `ingreso-${String(response.id).padStart(5, '0')}.pdf`, newTab);
         } catch {
           newTab?.close();
         }

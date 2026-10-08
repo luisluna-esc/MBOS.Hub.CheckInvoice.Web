@@ -24,6 +24,7 @@ import {
   IssueDetailsDialogData,
 } from '../../issues/issue-details-dialog/issue-details-dialog';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
+import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 @Component({
   selector: 'app-receipts-list',
@@ -260,15 +261,10 @@ export class ReceiptsList {
   // Se abre la pestaña en blanco de forma síncrona al hacer clic, antes del fetch async del
   // PDF — así el navegador no la trata como un popup no solicitado y la bloquea.
   protected async printVoucher(row: Receipt): Promise<void> {
-    const newTab = window.open('', '_blank');
+    const newTab = openPdfTab();
     try {
       const blob = await this.reportService.getReceiptVoucherPdfBlob(row.receiptId);
-      const url = URL.createObjectURL(blob);
-      if (newTab) {
-        newTab.location.href = url;
-      } else {
-        window.open(url, '_blank');
-      }
+      showPdf(blob, `ingreso-${String(row.receiptId).padStart(5, '0')}.pdf`, newTab);
     } catch {
       newTab?.close();
       this.toastService.show(this.languageService.t('receipts.printError'));

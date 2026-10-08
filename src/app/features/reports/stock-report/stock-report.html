@@ -45,10 +45,13 @@
       }
     </div>
   } @else if (previewUrl(); as url) {
-    <div class="flex justify-end">
+    <div class="flex flex-wrap justify-end gap-2">
+      <app-pdf-download-button (download)="onDownloadPdf()" />
       <app-excel-download-button [loading]="exporting()" (download)="onExportExcel()" />
     </div>
-    <iframe [src]="url" class="w-full rounded-md border border-border" style="height: 80vh"></iframe>
+    @if (canPreviewPdf) {
+      <iframe [src]="url" class="w-full rounded-md border border-border" style="height: 80vh"></iframe>
+    }
   } @else {
     <p class="text-sm text-muted-foreground">{{ 'reports.stock.selectPrompt' | translate }}</p>
   }
