@@ -8,6 +8,7 @@
   (cancel)="close()"
 >
   <div class="flex flex-col gap-4">
+    <p class="text-xs text-muted-foreground">{{ 'productPicker.keyboardHint' | translate }}</p>
     <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
 
     @if (errorCode()) {
@@ -24,6 +25,7 @@
         [emptyMessage]="'table.empty' | translate"
         [loading]="loading()"
         [rowDisabled]="isExcluded"
+        [activeIndex]="activeIndex()"
         [rowDisabledReason]="excludedReason"
         (rowSelected)="onRowSelected($event)"
         (pageChange)="onPageChange($event)"

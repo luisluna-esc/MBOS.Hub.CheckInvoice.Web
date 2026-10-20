@@ -117,12 +117,12 @@ export class ChurchFormDialog {
       } else {
         await this.churchService.create(request);
       }
-      this.toastService.show(this.languageService.t('churches.form.success'));
+      this.toastService.success(this.languageService.t('churches.form.success'));
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('churches.form.error'), message);
+      this.toastService.error(this.languageService.t('churches.form.error'), message);
     } finally {
       this.saving.set(false);
     }

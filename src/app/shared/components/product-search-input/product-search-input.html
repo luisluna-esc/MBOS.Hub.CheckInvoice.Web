@@ -1,0 +1,61 @@
+<input
+  #field
+  #origin="cdkOverlayOrigin"
+  cdkOverlayOrigin
+  [id]="inputId"
+  type="text"
+  autocomplete="off"
+  role="combobox"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="inputId + '-list'"
+  [placeholder]="'productSearch.placeholder' | translate"
+  [value]="query()"
+  (input)="onInput($event)"
+  (keydown)="onKeydown($event)"
+  (focus)="$any($event.target).select()"
+  (blur)="onBlur()"
+  class="w-full min-w-56 rounded-md border bg-surface px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+  [class.border-border]="!invalid()"
+  [class.border-danger]="invalid()"
+/>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="open() && query().trim().length > 0"
+  [cdkConnectedOverlayPositions]="overlayPositions"
+  [cdkConnectedOverlayWidth]="origin.elementRef.nativeElement.offsetWidth"
+  (detach)="close()"
+>
+  <div class="min-w-[18rem] overflow-hidden rounded-md border border-border bg-surface shadow-lg">
+    <ul [id]="inputId + '-list'" role="listbox" class="max-h-72 overflow-auto py-1">
+      @if (loading()) {
+        <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'productSearch.loading' | translate }}</li>
+      } @else {
+        @for (product of results(); track product.productId; let i = $index) {
+          <!-- mousedown con preventDefault: el clic elige sin que el campo pierda el foco antes. -->
+          <li
+            role="option"
+            [attr.aria-selected]="i === activeIndex()"
+            [attr.aria-disabled]="isExcluded(product)"
+            class="px-3 py-2 text-sm transition-colors"
+            [class.bg-brand-300]="i === activeIndex() && !isExcluded(product)"
+            [class.cursor-pointer]="!isExcluded(product)"
+            [class.text-foreground]="!isExcluded(product)"
+            [class.cursor-not-allowed]="isExcluded(product)"
+            [class.text-muted-foreground]="isExcluded(product)"
+            (mousedown)="$event.preventDefault(); select(product)"
+            (mouseenter)="activeIndex.set(i)"
+          >
+            <span class="font-medium">{{ product.code || '—' }}</span> — {{ product.name }}
+            @if (isExcluded(product)) {
+              <span class="text-xs">({{ 'productPicker.alreadyAdded' | translate }})</span>
+            }
+          </li>
+        } @empty {
+          <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'productSearch.noResults' | translate }}</li>
+        }
+      }
+    </ul>
+  </div>
+</ng-template>

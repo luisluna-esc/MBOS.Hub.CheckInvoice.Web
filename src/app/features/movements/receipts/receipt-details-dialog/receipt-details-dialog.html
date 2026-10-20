@@ -21,6 +21,9 @@
               <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.details.rowNumber' | translate }}</th>
               <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.details.product' | translate }}</th>
               <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.details.quantity' | translate }}</th>
+              @if (hasPrices()) {
+                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.details.unitPrice' | translate }}</th>
+              }
               <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.details.unitCost' | translate }}</th>
               <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.details.subtotal' | translate }}</th>
               @if (hasWorkOrders()) {
@@ -37,6 +40,9 @@
                 <td class="px-3 py-2 text-muted-foreground">{{ i + 1 }}</td>
                 <td class="px-3 py-2 font-medium text-foreground">{{ productName(line.productId) }}</td>
                 <td class="whitespace-nowrap px-3 py-2 text-right text-foreground">{{ line.quantity }}</td>
+                @if (hasPrices()) {
+                  <td class="whitespace-nowrap px-3 py-2 text-right text-foreground">{{ line.unitPrice | number: '1.2-2' }}</td>
+                }
                 <td class="whitespace-nowrap px-3 py-2 text-right text-foreground">{{ line.unitCost | number: '1.2-2' }}</td>
                 <td class="whitespace-nowrap px-3 py-2 text-right text-foreground">{{ line.totalCost | number: '1.2-2' }}</td>
                 @if (hasWorkOrders()) {
@@ -52,7 +58,7 @@
             <tr>
               <td colspan="2" class="px-3 py-2 font-semibold text-foreground">{{ 'receipts.details.grandTotal' | translate }}</td>
               <td class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ totalQuantity() }}</td>
-              <td></td>
+              <td [attr.colspan]="hasPrices() ? 2 : 1"></td>
               <td class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ grandTotal() | number: '1.2-2' }}</td>
               @if (hasWorkOrders()) {
                 <td></td>

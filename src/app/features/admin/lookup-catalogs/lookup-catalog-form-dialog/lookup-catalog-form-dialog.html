@@ -3,8 +3,9 @@
     @if (config.hasCode) {
       <app-input
         formControlName="code"
-        [label]="'lookupCatalogs.form.code' | translate"
-        [required]="true"
+        [label]="(config.codeLabelKey ?? 'lookupCatalogs.form.code') | translate"
+        [hint]="config.codeHintKey ? (config.codeHintKey | translate) : null"
+        [required]="config.codeRequired ?? true"
         [maxLength]="config.codeMaxLength ?? 20"
       />
     }

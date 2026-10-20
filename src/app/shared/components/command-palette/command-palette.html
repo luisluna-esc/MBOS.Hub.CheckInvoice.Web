@@ -1,0 +1,53 @@
+<div class="flex max-h-[70vh] w-[min(96vw,36rem)] flex-col self-start rounded-lg border border-border bg-surface shadow-xl">
+  <div class="flex items-center gap-2 border-b border-border px-3 py-2">
+    <svg viewBox="0 0 24 24" fill="none" class="size-5 shrink-0 text-muted-foreground" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.5" />
+      <path d="M20 20L16.5 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+    </svg>
+    <input
+      #search
+      type="text"
+      class="flex-1 bg-transparent py-1.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+      [placeholder]="'shortcuts.paletteSearch' | translate"
+      [attr.aria-label]="'shortcuts.palette' | translate"
+      [value]="query()"
+      (input)="onInput(search.value)"
+      (keydown)="onKeydown($event)"
+    />
+    <button
+      type="button"
+      appShortcut="cancel"
+      class="rounded border border-border border-b-2 px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+      (click)="close()"
+    >
+      Esc
+    </button>
+  </div>
+
+  <ul #list class="flex-1 overflow-auto bg-background p-1" role="listbox">
+    @for (entry of results(); track entry.route; let i = $index) {
+      <li
+        role="option"
+        [attr.data-index]="i"
+        [attr.aria-selected]="i === active()"
+        class="flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 text-sm"
+        [class.bg-primary]="i === active()"
+        [class.text-primary-foreground]="i === active()"
+        [class.text-foreground]="i !== active()"
+        (mouseenter)="active.set(i)"
+        (click)="open(entry)"
+      >
+        <span>{{ entry.label }}</span>
+        @if (entry.group) {
+          <span class="text-xs" [class.opacity-80]="i === active()" [class.text-muted-foreground]="i !== active()">
+            {{ entry.group }}
+          </span>
+        }
+      </li>
+    } @empty {
+      <li class="px-3 py-6 text-center text-sm text-muted-foreground">{{ 'shortcuts.paletteEmpty' | translate }}</li>
+    }
+  </ul>
+
+  <p class="border-t border-border px-3 py-1.5 text-xs text-muted-foreground">{{ 'shortcuts.paletteHint' | translate }}</p>
+</div>

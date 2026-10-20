@@ -176,10 +176,10 @@ export class ClientsList {
   private async deleteClient(row: Client): Promise<void> {
     try {
       await this.clientService.delete(row.clientId);
-      this.toastService.show(this.languageService.t('clients.delete.success'));
+      this.toastService.success(this.languageService.t('clients.delete.success'));
       void this.load();
     } catch {
-      this.toastService.show(this.languageService.t('clients.delete.error'));
+      this.toastService.error(this.languageService.t('clients.delete.error'));
     }
   }
 }

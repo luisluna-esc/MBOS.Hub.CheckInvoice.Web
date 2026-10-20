@@ -97,7 +97,7 @@ export class RolePermissionsDialog {
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('roles.permissions.error'), message);
+      this.toastService.error(this.languageService.t('roles.permissions.error'), message);
     } finally {
       this.pendingIds.update((current) => {
         const next = new Set(current);

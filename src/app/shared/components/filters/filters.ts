@@ -1,5 +1,6 @@
-import { Component, OnInit, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ShortcutDirective } from '../../directives/shortcut.directive';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePicker } from '../date-picker/date-picker';
 import { Input as AppInput } from '../input/input';
@@ -26,8 +27,9 @@ const TEXT_DEBOUNCE_MS = 400;
 
 @Component({
   selector: 'app-filters',
-  imports: [FormsModule, AppInput, Select, DatePicker, TranslatePipe],
+  imports: [FormsModule, AppInput, Select, DatePicker, TranslatePipe, ShortcutDirective],
   templateUrl: './filters.html',
+  host: { '(keydown.enter)': 'onEnter($event)' },
 })
 export class Filters implements OnInit {
   readonly fields = input.required<FilterField[]>();
@@ -46,6 +48,9 @@ export class Filters implements OnInit {
     this.values.set({ ...this.initialValues() });
   }
 
+  /** Clave del primer campo de texto: la tecla "/" pone el cursor ahí. */
+  protected readonly firstTextKey = computed(() => this.fields().find((field) => field.type === 'text')?.key ?? null);
+
   protected getValue(key: string): string | null {
     return this.values()[key] ?? null;
   }
@@ -62,6 +67,16 @@ export class Filters implements OnInit {
 
   private emitSearch(): void {
     this.search.emit(this.values());
+  }
+
+  /** Enter en la barra de filtros busca al instante, sin esperar la pausa al escribir. */
+  protected onEnter(event: Event): void {
+    if (event.defaultPrevented) {
+      return;
+    }
+    event.preventDefault();
+    clearTimeout(this.debounceTimer);
+    this.emitSearch();
   }
 
   protected onClear(): void {

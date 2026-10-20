@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { Product, ProductFilters } from '../../../features/catalogs/products/product.models';
 import { ProductService } from '../../../features/catalogs/products/product.service';
@@ -17,6 +17,8 @@ export interface ProductPickerResult {
   code: string | null;
   departmentId: number | null;
   mediaTypeId: number | null;
+  /** Versión de la foto del producto (sin foto: null). */
+  imageVersion?: number | null;
 }
 
 export interface ProductPickerData {
@@ -49,6 +51,9 @@ export class ProductPickerDialog {
   protected readonly pageSize = signal(5);
   protected readonly errorCode = signal<number | null>(null);
   protected readonly loading = signal(false);
+  /** Fila resaltada con las flechas; Enter la elige. */
+  protected readonly activeIndex = signal(0);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   private currentFilters: ProductFilters = { warehouseId: this.warehouseId };
 
@@ -66,6 +71,12 @@ export class ProductPickerDialog {
   ]);
 
   protected readonly columns = computed<TableColumn<Product>[]>(() => [
+    {
+      key: 'imageVersion',
+      header: this.languageService.t('products.columns.photo'),
+      align: 'center',
+      photo: (row) => ({ productId: row.productId, version: row.imageVersion, name: row.name }),
+    },
     { key: 'code', header: this.languageService.t('productPicker.columns.code'), format: (value) => (value as string) || '—' },
     {
       key: 'name',
@@ -77,6 +88,35 @@ export class ProductPickerDialog {
 
   constructor() {
     void this.load();
+    // Teclado: el cursor arranca en el buscador; ↑ ↓ recorren la lista y Enter elige. Se escucha
+    // en captura para que Enter elija el producto en vez de solo volver a buscar.
+    // La ventana pone el foco en su primer botón al abrirse; se espera un instante para ganarle.
+    afterNextRender(() => setTimeout(() => this.host.querySelector<HTMLInputElement>('app-filters input')?.focus(), 80));
+    this.host.addEventListener('keydown', (event) => this.onKeydown(event), true);
+  }
+
+  private onKeydown(event: KeyboardEvent): void {
+    const rows = this.rows();
+    if (this.loading() || rows.length === 0) {
+      return;
+    }
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      if ((event.target as HTMLElement).closest('app-select, .cdk-overlay-pane')) {
+        return;
+      }
+      event.preventDefault();
+      const step = event.key === 'ArrowDown' ? 1 : -1;
+      const next = Math.min(Math.max(this.activeIndex() + step, 0), rows.length - 1);
+      this.activeIndex.set(next);
+      this.host.querySelector(`tr[data-row="${next}"]`)?.scrollIntoView({ block: 'nearest' });
+    } else if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey) {
+      const row = rows[this.activeIndex()];
+      if (row && !this.isExcluded(row)) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onRowSelected(row);
+      }
+    }
   }
 
   private async load(): Promise<void> {
@@ -86,6 +126,8 @@ export class ProductPickerDialog {
       const result = await this.productService.list(this.pageNumber(), this.pageSize(), this.currentFilters);
       this.rows.set(result.items);
       this.totalRecords.set(result.totalRecords);
+      // Resalta el primer producto que se puede elegir.
+      this.activeIndex.set(Math.max(result.items.findIndex((row) => !this.isExcluded(row)), 0));
     } catch (error) {
       this.errorCode.set(error instanceof HttpErrorResponse ? error.status : 500);
     } finally {
@@ -130,6 +172,7 @@ export class ProductPickerDialog {
       code: row.code,
       departmentId: row.departmentId,
       mediaTypeId: row.mediaTypeId,
+      imageVersion: row.imageVersion ?? null,
     });
   }
 

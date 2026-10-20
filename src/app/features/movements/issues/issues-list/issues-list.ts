@@ -9,6 +9,10 @@ import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
+import {
+  DocumentReviewDialog,
+  DocumentReviewDialogData,
+} from '../../../../shared/components/document-review-dialog/document-review-dialog';
 import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ReportService } from '../../../reports/report.service';
@@ -52,6 +56,12 @@ export class IssuesList {
 
   protected readonly filterFields = computed<FilterField[]>(() => [
     {
+      key: 'noteNumber',
+      label: this.languageService.t('issues.filters.noteNumber'),
+      type: 'text',
+      placeholder: 'S 15-10-26',
+    },
+    {
       key: 'warehouseId',
       label: this.languageService.t('issues.filters.warehouse'),
       type: 'select',
@@ -81,9 +91,9 @@ export class IssuesList {
         format: (_value, _row, index) => String((this.pageNumber() - 1) * this.pageSize() + index + 1),
       },
       {
-        key: 'issueId',
+        key: 'noteNumber',
         header: this.languageService.t('issues.columns.voucherNumber'),
-        format: (value) => String(value).padStart(5, '0'),
+        format: (value, row) => (value as string) || String((row as Issue).issueId).padStart(5, '0'),
       },
       {
         key: 'clientId',
@@ -100,6 +110,9 @@ export class IssuesList {
           }
           if ((row as Issue).hasPendingVoidRequest) {
             return this.languageService.t('issues.columns.statusVoidPending');
+          }
+          if ((row as Issue).hasPendingChangeRequest) {
+            return this.languageService.t('issues.columns.statusCorrectionPending');
           }
           return this.languageService.t('issues.columns.statusNormal');
         },
@@ -131,6 +144,12 @@ export class IssuesList {
         format: (value) => (value != null ? Number(value).toFixed(2) : '—'),
       },
       {
+        key: 'reviewStatus',
+        header: this.languageService.t('review.column'),
+        align: 'center',
+        format: (value) => this.languageService.t(`review.status.${(value as string) || 'digitado'}`),
+      },
+      {
         key: 'createdByFullName',
         header: this.languageService.t('issues.columns.createdBy'),
         format: (value) => (value as string) || '—',
@@ -145,9 +164,37 @@ export class IssuesList {
       onClick: (row) => this.openDetails(row),
     },
     {
+      label: this.languageService.t('issues.actions.viewWithPhotos'),
+      icon: 'photo',
+      onClick: (row) => void this.router.navigate(['/issues/view', row.issueId]),
+    },
+    {
+      label: this.languageService.t('review.open'),
+      icon: 'verified',
+      onClick: (row) => this.openReview(row),
+    },
+    {
       label: this.languageService.t('issues.actions.print'),
       icon: 'print',
       onClick: (row) => void this.printVoucher(row),
+    },
+    {
+      label: this.languageService.t('issues.actions.requestCorrection'),
+      icon: 'edit',
+      disabled: (row) => row.isVoided || row.hasPendingVoidRequest || row.hasPendingChangeRequest,
+      disabledReason: (row) => {
+        if (row.isVoided) {
+          return this.languageService.t('issues.actions.requestVoidDisabledVoided');
+        }
+        if (row.hasPendingVoidRequest) {
+          return this.languageService.t('issues.actions.requestVoidDisabledPending');
+        }
+        if (row.hasPendingChangeRequest) {
+          return this.languageService.t('issues.actions.correctionPending');
+        }
+        return null;
+      },
+      onClick: (row) => void this.router.navigate(['/issues', row.issueId, 'correct']),
     },
     {
       label: this.languageService.t('issues.actions.requestVoid'),
@@ -170,6 +217,17 @@ export class IssuesList {
   constructor() {
     void this.loadCatalogs();
     void this.load();
+  }
+
+  protected openReview(row: Issue): void {
+    const ref = this.dialogService.open<boolean, DocumentReviewDialogData, DocumentReviewDialog>(DocumentReviewDialog, {
+      data: { type: 'issue', id: row.issueId, title: `${this.languageService.t('issues.columns.voucherNumber')} ${row.noteNumber ?? row.issueId}` },
+    });
+    ref.closed.subscribe((changed) => {
+      if (changed) {
+        void this.load();
+      }
+    });
   }
 
   private nameMap(items: CatalogItem[]): Record<number, string> {
@@ -203,6 +261,7 @@ export class IssuesList {
 
   protected onSearch(values: FilterValues): void {
     this.currentFilters = {
+      noteNumber: values['noteNumber'] || undefined,
       warehouseId: values['warehouseId'] ? Number(values['warehouseId']) : undefined,
       clientName: values['clientName'] || undefined,
       issueTypeId: values['issueTypeId'] ? Number(values['issueTypeId']) : undefined,
@@ -228,10 +287,6 @@ export class IssuesList {
     void this.load();
   }
 
-  protected openCreate(): void {
-    void this.router.navigate(['/issues/new']);
-  }
-
   protected openDetails(row: Issue): void {
     this.dialogService.open<void, IssueDetailsDialogData, IssueDetailsDialog>(IssueDetailsDialog, {
       data: { issueId: row.issueId },
@@ -254,10 +309,10 @@ export class IssuesList {
   private async generateVoucher(row: Issue, printTypeId: number, newTab: Window | null): Promise<void> {
     try {
       const blob = await this.reportService.getIssueVoucherPdfBlob(row.issueId, printTypeId);
-      showPdf(blob, `salida-${String(row.issueId).padStart(5, '0')}.pdf`, newTab);
+      showPdf(blob, `salida-${(row.noteNumber ?? String(row.issueId)).replace(/[^0-9A-Za-z-]/g, '-')}.pdf`, newTab);
     } catch {
       newTab?.close();
-      this.toastService.show(this.languageService.t('issues.printError'));
+      this.toastService.error(this.languageService.t('issues.printError'));
     }
   }
 

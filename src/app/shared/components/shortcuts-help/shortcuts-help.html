@@ -1,0 +1,57 @@
+<div class="flex max-h-[90vh] w-[min(96vw,52rem)] flex-col rounded-lg border border-border bg-surface shadow-xl">
+  <div class="flex items-center gap-3 border-b border-border px-4 py-3">
+    <h2 class="text-base font-semibold text-foreground">{{ 'shortcuts.title' | translate }}</h2>
+    <span class="rounded bg-background px-2 py-0.5 text-xs text-muted-foreground">
+      {{ (shortcuts.isMac ? 'shortcuts.onMac' : 'shortcuts.onWindows') | translate }}
+    </span>
+    <button
+      type="button"
+      appShortcut="cancel"
+      class="ml-auto rounded-md border border-border px-3 py-1 text-sm text-foreground transition-colors hover:bg-brand-300/20"
+      (click)="close()"
+    >
+      {{ 'dialog.close' | translate }}
+    </button>
+  </div>
+
+  <div class="grid flex-1 gap-x-8 gap-y-5 overflow-auto bg-background px-4 py-4 md:grid-cols-2">
+    @for (group of groups; track group.titleKey) {
+      @if (group.rows.length > 0) {
+        <section>
+          <h3 class="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            {{ group.titleKey | translate }}
+          </h3>
+          <ul class="flex flex-col divide-y divide-border/60">
+            @for (row of group.rows; track $index) {
+              <li class="flex items-center justify-between gap-4 py-1.5 text-sm text-foreground">
+                <span>{{ row.labelKey | translate }}</span>
+                <span class="flex shrink-0 items-center gap-1">
+                  @for (key of row.keys; track $index) {
+                    @if ($index > 0 && group.titleKey === 'shortcuts.groupGoTo') {
+                      <span class="text-xs text-muted-foreground">{{ 'shortcuts.then' | translate }}</span>
+                    }
+                    <kbd
+                      class="min-w-6 rounded border border-border border-b-2 bg-surface px-1.5 py-0.5 text-center font-sans text-xs text-foreground"
+                      >{{ key === '␣' ? ('shortcuts.keySpace' | translate) : key }}</kbd
+                    >
+                  }
+                  @if (row.altKeys) {
+                    <span class="text-xs text-muted-foreground">{{ 'shortcuts.or' | translate }}</span>
+                    @for (key of row.altKeys; track $index) {
+                      <kbd
+                        class="min-w-6 rounded border border-border border-b-2 bg-surface px-1.5 py-0.5 text-center font-sans text-xs text-foreground"
+                        >{{ key === '␣' ? ('shortcuts.keySpace' | translate) : key }}</kbd
+                      >
+                    }
+                  }
+                </span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    }
+  </div>
+
+  <p class="border-t border-border px-4 py-2 text-xs text-muted-foreground">{{ 'shortcuts.footer' | translate }}</p>
+</div>

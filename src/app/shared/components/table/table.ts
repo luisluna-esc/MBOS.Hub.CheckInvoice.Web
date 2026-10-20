@@ -1,13 +1,27 @@
-import { Component, computed, input, output } from '@angular/core';
+import { ConnectionPositionPair, OverlayModule } from '@angular/cdk/overlay';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Input as AppInput } from '../input/input';
+import { ProductPhoto } from '../product-photo/product-photo';
 import { Select, SelectOption } from '../select/select';
 import { Skeleton } from '../skeleton/skeleton';
 import { Tooltip } from '../tooltip/tooltip';
 
 export type TableColumnType = 'text' | 'number' | 'select';
-export type TableActionIcon = 'view' | 'edit' | 'delete' | 'create' | 'verified' | 'menu' | 'print' | 'void' | 'return';
+export type TableActionIcon =
+  | 'view'
+  | 'edit'
+  | 'delete'
+  | 'create'
+  | 'verified'
+  | 'menu'
+  | 'print'
+  | 'void'
+  | 'return'
+  | 'download'
+  | 'photo';
 
 export interface TableColumn<T> {
   key: keyof T & string;
@@ -18,6 +32,8 @@ export interface TableColumn<T> {
   align?: 'left' | 'center' | 'right';
   format?: (value: unknown, row: T, index: number) => string;
   tooltip?: (value: unknown, row: T, index: number) => string | null;
+  /** Columna de foto de producto: miniatura chica que se amplía con un clic. */
+  photo?: (row: T) => { productId: number; version: number | null | undefined; name: string };
 }
 
 export interface TableAction<T> {
@@ -37,7 +53,7 @@ export interface TableCellChange<T> {
 
 @Component({
   selector: 'app-table',
-  imports: [FormsModule, AppInput, Select, TranslatePipe, Tooltip, Skeleton],
+  imports: [FormsModule, AppInput, Select, TranslatePipe, Tooltip, Skeleton, ProductPhoto, OverlayModule, NgTemplateOutlet],
   templateUrl: './table.html',
 })
 export class Table<T extends Record<string, unknown>> {
@@ -72,6 +88,33 @@ export class Table<T extends Record<string, unknown>> {
 
   protected getCellTooltip(row: T, column: TableColumn<T>, index: number): string {
     return column.tooltip ? (column.tooltip(row[column.key], row, index) ?? '') : '';
+  }
+
+  /** Hasta 2 opciones se ven como íconos; con más de 2, todas van al menú de opciones. */
+  protected readonly visibleActions = computed(() => (this.actions().length > 2 ? [] : this.actions()));
+  protected readonly menuActions = computed(() => (this.actions().length > 2 ? this.actions() : []));
+  /** Fila con el menú de tres puntos abierto (-1 = ninguno). */
+  protected readonly openMenuRow = signal(-1);
+
+  protected readonly menuPositions: ConnectionPositionPair[] = [
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 4 },
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -4 },
+  ];
+
+  protected toggleMenu(rowIndex: number): void {
+    this.openMenuRow.set(this.openMenuRow() === rowIndex ? -1 : rowIndex);
+  }
+
+  protected closeMenu(): void {
+    this.openMenuRow.set(-1);
+  }
+
+  protected onMenuKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.closeMenu();
+    }
   }
 
   protected getActionTooltip(action: TableAction<T>, row: T): string {

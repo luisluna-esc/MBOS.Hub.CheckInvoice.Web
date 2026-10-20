@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
-import { operationalWarehouseOnly } from '../../../../core/catalogs/operational-warehouse';
+import { minIssueDateIso } from '../../../../core/catalogs/current-warehouse-periods';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
@@ -17,7 +17,9 @@ import { Issue, IssueFilters } from '../../issues/issue.models';
 import { IssueService } from '../../issues/issue.service';
 import { ReturnableIssueLine } from '../../receipts/receipt.models';
 import { ReceiptService } from '../../receipts/receipt.service';
-import { formatCalendarDate } from '../../../../core/dates/calendar-date';
+import { formatCalendarDate, localDateIso } from '../../../../core/dates/calendar-date';
+import { DatePicker } from '../../../../shared/components/date-picker/date-picker';
+import { ShortcutDirective } from '../../../../shared/directives/shortcut.directive';
 
 interface ReturnLineRow {
   productId: number;
@@ -30,7 +32,7 @@ interface ReturnLineRow {
 
 @Component({
   selector: 'app-issue-return-create',
-  imports: [Filters, Table, ErrorState, ReactiveFormsModule, AppInput, TranslatePipe, InfoHint],
+  imports: [ShortcutDirective, Filters, Table, ErrorState, ReactiveFormsModule, AppInput, DatePicker, TranslatePipe, InfoHint],
   templateUrl: './issue-return-create.html',
 })
 export class IssueReturnCreate {
@@ -53,6 +55,15 @@ export class IssueReturnCreate {
     const clientName = issue.clientId ? (this.nameMap(this.clients())[issue.clientId] ?? null) : null;
     const date = formatCalendarDate(issue.issueDate);
     return clientName ? `${clientName} · ${date}` : date;
+  });
+
+  protected readonly todayIso = localDateIso();
+  /** Fecha de la devolución: mes anterior o actual, hasta hoy, y nunca antes de la salida devuelta. */
+  protected readonly returnDateControl = new FormControl(this.todayIso, { nonNullable: true, validators: [Validators.required] });
+  protected readonly minReturnDateIso = computed(() => {
+    const windowStart = minIssueDateIso();
+    const issueDate = this.selectedIssue()?.issueDate?.slice(0, 10) ?? null;
+    return issueDate && issueDate > windowStart ? issueDate : windowStart;
   });
 
   protected readonly rows = signal<Issue[]>([]);
@@ -85,7 +96,7 @@ export class IssueReturnCreate {
       key: 'warehouseId',
       label: this.languageService.t('issues.filters.warehouse'),
       type: 'select',
-      options: operationalWarehouseOnly(this.warehouses()).map((item) => ({ value: String(item.id), label: item.name })),
+      options: this.warehouses().map((item) => ({ value: String(item.id), label: item.name })),
     },
     {
       key: 'clientName',
@@ -143,7 +154,7 @@ export class IssueReturnCreate {
 
   private async loadCatalogs(): Promise<void> {
     const [warehouses, clients] = await settleCatalogs([
-      this.catalogService.getWarehouses(),
+      this.catalogService.getActiveWarehouses(),
       this.catalogService.getClients(),
     ]);
     this.warehouses.set(warehouses);
@@ -239,7 +250,7 @@ export class IssueReturnCreate {
     }
 
     if (this.returnReceiptTypeId === null) {
-      this.toastService.show(this.languageService.t('issueReturns.error'));
+      this.toastService.error(this.languageService.t('issueReturns.error'));
       return;
     }
 
@@ -250,14 +261,14 @@ export class IssueReturnCreate {
         continue;
       }
       if (quantity > row.quantityReturnable) {
-        this.toastService.show(this.languageService.t('issueReturns.exceedsReturnable', { product: row.productName }));
+        this.toastService.warning(this.languageService.t('issueReturns.exceedsReturnable', { product: row.productName }));
         return;
       }
       lines.push({ productId: row.productId, quantity });
     }
 
     if (lines.length === 0) {
-      this.toastService.show(this.languageService.t('issueReturns.noLines'));
+      this.toastService.warning(this.languageService.t('issueReturns.noLines'));
       return;
     }
 
@@ -266,14 +277,15 @@ export class IssueReturnCreate {
       await this.receiptService.createReturn({
         issueId: issue.issueId,
         receiptTypeId: this.returnReceiptTypeId,
+        returnDate: this.returnDateControl.value || null,
         lines,
       });
-      this.toastService.show(this.languageService.t('issueReturns.success'));
+      this.toastService.success(this.languageService.t('issueReturns.success'));
       this.changeIssue();
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('issueReturns.error'), message);
+      this.toastService.error(this.languageService.t('issueReturns.error'), message);
     } finally {
       this.saving.set(false);
     }

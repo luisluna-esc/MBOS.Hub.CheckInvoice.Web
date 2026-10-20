@@ -27,28 +27,6 @@
         [options]="destinationWarehouseOptions()"
         [required]="true"
       />
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-foreground">{{ 'transfers.form.receiver' | translate }}</label>
-        @if (receiverLocked()) {
-          <div class="truncate rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
-            {{ lockedReceiver()?.name ?? '—' }}
-          </div>
-          <p class="min-h-4 text-xs text-muted-foreground">{{ 'transfers.form.receiverLocked' | translate }}</p>
-        } @else if (receiverParty(); as receiver) {
-          <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
-            <span class="min-w-0 truncate text-foreground">{{ receiver.name }}</span>
-            @if (!headerConfirmed()) {
-              <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="clearReceiver()">
-                {{ 'transfers.form.changeReceiver' | translate }}
-              </button>
-            }
-          </div>
-          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
-        } @else {
-          <app-party-search-input mode="client" (picked)="onReceiverPicked($event)" />
-          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
-        }
-      </div>
     </div>
 
     <div class="text-sm text-muted-foreground">
@@ -59,6 +37,7 @@
 
     @if (!headerConfirmed()) {
       <button
+        appShortcut="save"
         type="button"
         class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         [disabled]="continueDisabled()"
@@ -141,7 +120,7 @@
                 <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'transfers.form.available' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'transfers.form.product' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'transfers.form.quantity' | translate }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'transfers.form.unitPrice' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'transfers.form.unitCost' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'transfers.form.total' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-center font-semibold text-foreground">{{ 'table.actions' | translate }}</th>
               </tr>
@@ -187,8 +166,8 @@
                       [externalError]="lineExceedsStock(i) ? ('transfers.form.exceedsStock' | translate) : null"
                     />
                   </td>
-                  <td class="w-32 px-3 py-2 align-middle">
-                    <app-input formControlName="unitPrice" type="number" errorDisplay="icon" [min]="0" [decimals]="2" />
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
+                    {{ lineUnitCost(i) !== null ? (lineUnitCost(i)! | number: '1.2-2') : '—' }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
                     {{ lineTotal(i) | number: '1.2-2' }}
@@ -221,6 +200,13 @@
                 </tr>
               }
             </tbody>
+            <tfoot class="bg-background">
+              <tr>
+                <td colspan="5" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'transfers.form.total' | translate }}</td>
+                <td class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground tabular-nums">{{ linesTotalSum() | number: '1.2-2' }}</td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       }
@@ -236,6 +222,7 @@
       {{ 'dialog.cancel' | translate }}
     </button>
     <button
+      appShortcut="save"
       type="button"
       class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:bg-brand-300/20"
       [disabled]="saveDisabled()"

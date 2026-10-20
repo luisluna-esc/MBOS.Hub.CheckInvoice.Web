@@ -14,12 +14,6 @@ import { ToastService } from '../../../../core/toast/toast.service';
 import { StockInfo, StockService } from '../../../../core/warehouses/stock.service';
 import { Input as AppInput } from '../../../../shared/components/input/input';
 import {
-  PartySearchInput,
-  PartySearchResult,
-} from '../../../../shared/components/party-search-input/party-search-input';
-import { Client } from '../../../catalogs/clients/client.models';
-import { ClientService } from '../../../catalogs/clients/client.service';
-import {
   ProductPickerData,
   ProductPickerDialog,
   ProductPickerResult,
@@ -31,16 +25,16 @@ import { TransferRequest } from '../transfer.models';
 import { TransferService } from '../transfer.service';
 import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
+import { ShortcutDirective } from '../../../../shared/directives/shortcut.directive';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
   quantity: FormControl<string>;
-  unitPrice: FormControl<string>;
 }>;
 
 @Component({
   selector: 'app-transfer-create',
-  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, TranslatePipe, DecimalPipe, InfoHint],
+  imports: [ShortcutDirective, ReactiveFormsModule, AppInput, Select, TranslatePipe, DecimalPipe, InfoHint],
   templateUrl: './transfer-create.html',
 })
 export class TransferCreate {
@@ -53,7 +47,6 @@ export class TransferCreate {
   private readonly toastService = inject(ToastService);
   private readonly languageService = inject(LanguageService);
   private readonly reportService = inject(ReportService);
-  private readonly clientService = inject(ClientService);
 
   protected readonly saving = signal(false);
   protected readonly headerConfirmed = signal(false);
@@ -62,9 +55,6 @@ export class TransferCreate {
 
   protected readonly warehouses = signal<CatalogItem[]>([]);
   protected readonly users = signal<CatalogItem[]>([]);
-  protected readonly receiverParty = signal<PartySearchResult | null>(null);
-  protected readonly receiverLocked = signal(false);
-  protected readonly lockedReceiver = signal<Client | null>(null);
 
   protected readonly senderName = computed(() => {
     const appUserId = this.authService.session()?.appUserId;
@@ -74,7 +64,6 @@ export class TransferCreate {
   protected readonly headerForm = new FormGroup({
     sourceWarehouseId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     destinationWarehouseId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    receiverClientId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     notes: new FormControl('', { nonNullable: true }),
   });
 
@@ -169,43 +158,15 @@ export class TransferCreate {
 
   constructor() {
     void this.loadCatalogs();
-
-    const state = history.state as { clientId?: number };
-    if (state.clientId) {
-      void this.lockReceiver(state.clientId);
-    }
   }
 
   private async loadCatalogs(): Promise<void> {
     const [warehouses, users] = await settleCatalogs([
-      this.catalogService.getWarehouses(),
+      this.catalogService.getActiveWarehouses(),
       this.catalogService.getUsers(),
     ]);
     this.warehouses.set(warehouses);
     this.users.set(users);
-  }
-
-  private async lockReceiver(clientId: number): Promise<void> {
-    const result = await this.clientService.list(1, 1, { clientId });
-    const client = result.items[0];
-    if (!client) {
-      return;
-    }
-
-    this.headerForm.controls.receiverClientId.setValue(String(clientId));
-    this.headerForm.controls.receiverClientId.disable();
-    this.lockedReceiver.set(client);
-    this.receiverLocked.set(true);
-  }
-
-  protected onReceiverPicked(result: PartySearchResult): void {
-    this.receiverParty.set(result);
-    this.headerForm.controls.receiverClientId.setValue(String(result.id));
-  }
-
-  protected clearReceiver(): void {
-    this.receiverParty.set(null);
-    this.headerForm.controls.receiverClientId.setValue('');
   }
 
   protected onContinue(): void {
@@ -227,9 +188,6 @@ export class TransferCreate {
 
   protected onEditHeader(): void {
     this.headerForm.enable();
-    if (this.receiverLocked()) {
-      this.headerForm.controls.receiverClientId.disable();
-    }
     this.headerConfirmed.set(false);
   }
 
@@ -238,7 +196,6 @@ export class TransferCreate {
       new FormGroup({
         productId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
         quantity: new FormControl('', { nonNullable: true }),
-        unitPrice: new FormControl('', { nonNullable: true }),
       })
     );
     this.lineProducts.update((current) => [...current, null]);
@@ -261,13 +218,24 @@ export class TransferCreate {
     return quantity > stock.availableQuantity;
   }
 
+  /** Transferencia interna: los productos salen con el costo promedio del almacén de origen. */
+  protected lineUnitCost(index: number): number | null {
+    const cost = this.lineStock()[index]?.averageCost;
+    // Redondeado igual que en el comprobante, para que cantidad x costo cuadre.
+    return cost == null ? null : Math.round(cost * 100) / 100;
+  }
+
   protected lineTotal(index: number): number {
     const line = (this.detailsValues() ?? [])[index];
     if (!line) {
       return 0;
     }
-    return (Number(line.quantity) || 0) * (Number(line.unitPrice) || 0);
+    return (Number(line.quantity) || 0) * (this.lineUnitCost(index) ?? 0);
   }
+
+  protected readonly linesTotalSum = computed(() =>
+    (this.detailsValues() ?? []).reduce((sum, _line, index) => sum + this.lineTotal(index), 0)
+  );
 
   protected async pickProduct(index: number): Promise<void> {
     const warehouseId = Number(this.headerForm.getRawValue().sourceWarehouseId) || null;
@@ -324,12 +292,10 @@ export class TransferCreate {
       sourceWarehouseId: Number(raw.sourceWarehouseId),
       destinationWarehouseId: Number(raw.destinationWarehouseId),
       senderUserId: this.authService.session()?.appUserId ?? null,
-      receiverClientId: raw.receiverClientId ? Number(raw.receiverClientId) : null,
       notes: raw.notes || null,
       details: details.map((line) => ({
         productId: Number(line.productId),
         quantity: Number(line.quantity),
-        unitPrice: line.unitPrice ? Number(line.unitPrice) : null,
       })),
     };
 
@@ -339,7 +305,7 @@ export class TransferCreate {
 
     try {
       const response = await this.transferService.create(request);
-      this.toastService.show(this.languageService.t('transfers.form.success'));
+      this.toastService.success(this.languageService.t('transfers.form.success'));
       if (print) {
         try {
           const blob = await this.reportService.getTransferVoucherPdfBlob(response.id);
@@ -353,7 +319,7 @@ export class TransferCreate {
       newTab?.close();
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('transfers.form.error'), message);
+      this.toastService.error(this.languageService.t('transfers.form.error'), message);
     } finally {
       this.saving.set(false);
     }

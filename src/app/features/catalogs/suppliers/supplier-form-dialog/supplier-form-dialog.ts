@@ -60,14 +60,24 @@ export class SupplierFormDialog {
   /** Solo al crear: identidad de un Cliente ya existente elegida para compartir Nombre/NIT/Correo/Teléfono. */
   protected readonly linkedParty = signal<LinkedIdentity | null>(null);
 
-  /** Registrar además como Cliente nuevo (comparte esta misma identidad). */
-  protected readonly alsoRegisterAsClient = new FormControl(false, { nonNullable: true });
-  protected readonly alsoRegisterAsClientValue = toSignal(
-    this.alsoRegisterAsClient.valueChanges.pipe(startWith(this.alsoRegisterAsClient.value), takeUntilDestroyed()),
-    { initialValue: false }
+  // Dos preguntas separadas: "¿Es adventista?" guarda distrito e iglesia en el proveedor;
+  // "¿También es cliente?" además lo registra como Cliente (misma identidad y misma iglesia).
+  protected readonly isAdventist = signal(!!this.data.supplier?.districtId);
+  protected readonly alsoClient = signal(false);
+  /** Ya es Cliente: lo vinculó al crearlo ("Copiar datos de un Cliente") o ya estaba registrado. */
+  protected readonly alreadyClient = computed(() => this.linkedClient() ?? (this.linkedParty() ? { id: 0, name: this.linkedParty()!.name } : null));
+  protected readonly districtId = new FormControl(
+    this.data.supplier?.districtId ? String(this.data.supplier.districtId) : '',
+    { nonNullable: true }
   );
-  protected readonly clientDistrictId = new FormControl('', { nonNullable: true });
-  protected readonly clientChurchId = new FormControl('', { nonNullable: true });
+  protected readonly churchId = new FormControl(
+    this.data.supplier?.churchId ? String(this.data.supplier.churchId) : '',
+    { nonNullable: true }
+  );
+  private readonly districtIdValue = toSignal(
+    this.districtId.valueChanges.pipe(startWith(this.districtId.value), takeUntilDestroyed()),
+    { initialValue: '' }
+  );
   protected readonly districts = signal<CatalogItem[]>([]);
   protected readonly churches = signal<CatalogItem[]>([]);
   protected readonly districtOptions = computed<SelectOption[]>(() =>
@@ -134,15 +144,18 @@ export class SupplierFormDialog {
    *  para que la elección misma sea la explicación. */
   protected readonly preStage = signal<'choose' | 'link'>('choose');
 
+  /** Adventista sin distrito: falta un dato. */
+  protected readonly churchMissing = computed(() => this.isAdventist() && !this.districtIdValue());
+
   protected readonly saveDisabled = computed(
-    () => !this.decisionsConfirmed() || this.formInvalid() || this.saving()
+    () => !this.decisionsConfirmed() || this.formInvalid() || this.churchMissing() || this.saving()
   );
 
   constructor() {
     void this.loadCatalogs();
 
-    this.clientDistrictId.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
-      this.clientChurchId.setValue('');
+    this.districtId.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      this.churchId.setValue('');
       void this.loadChurches(value ? Number(value) : null);
     });
   }
@@ -180,13 +193,17 @@ export class SupplierFormDialog {
     this.form.controls.taxId.disable({ emitEvent: false });
     this.form.controls.email.disable({ emitEvent: false });
     this.form.controls.mobilePhone.disable({ emitEvent: false });
-    this.alsoRegisterAsClient.setValue(false);
+    this.alsoClient.set(false);
     this.decisionsConfirmed.set(true);
   }
 
   private async loadCatalogs(): Promise<void> {
     this.countries.set(await this.catalogService.getCountries());
     this.districts.set(await this.catalogService.getDistricts());
+    // Al editar un proveedor adventista, las iglesias de su distrito para ver la elegida.
+    if (this.districtId.value) {
+      await this.loadChurches(Number(this.districtId.value));
+    }
   }
 
   private async loadChurches(districtId: number | null): Promise<void> {
@@ -229,6 +246,8 @@ export class SupplierFormDialog {
       email: raw.email || null,
       notes: raw.notes || null,
       isActive: raw.isActive,
+      districtId: this.isAdventist() && this.districtId.value ? Number(this.districtId.value) : null,
+      churchId: this.isAdventist() && this.churchId.value ? Number(this.churchId.value) : null,
     };
 
     try {
@@ -242,7 +261,7 @@ export class SupplierFormDialog {
       }
 
       let successKey = 'suppliers.form.success';
-      if (this.alsoRegisterAsClient.value) {
+      if (this.alsoClient() && !this.alreadyClient()) {
         if (supplierPartyId === null) {
           const created = await this.supplierService.list(1, 1, { supplierId });
           supplierPartyId = created.items[0]?.partyId ?? null;
@@ -255,8 +274,8 @@ export class SupplierFormDialog {
             taxId: raw.taxId || null,
             email: raw.email || null,
             mobilePhone: raw.mobilePhone || null,
-            districtId: this.clientDistrictId.value ? Number(this.clientDistrictId.value) : null,
-            churchId: this.clientChurchId.value ? Number(this.clientChurchId.value) : null,
+            districtId: request.districtId ?? null,
+            churchId: request.churchId ?? null,
             isActive: true,
             isPastor: false,
           };
@@ -265,12 +284,12 @@ export class SupplierFormDialog {
         }
       }
 
-      this.toastService.show(this.languageService.t(successKey));
+      this.toastService.success(this.languageService.t(successKey));
       this.dialogRef.close(supplierId);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('suppliers.form.error'), message);
+      this.toastService.error(this.languageService.t('suppliers.form.error'), message);
     } finally {
       this.saving.set(false);
     }

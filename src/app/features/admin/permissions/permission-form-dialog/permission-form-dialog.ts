@@ -83,12 +83,12 @@ export class PermissionFormDialog {
       } else {
         await this.permissionService.create(request);
       }
-      this.toastService.show(this.languageService.t('permissions.form.success'));
+      this.toastService.success(this.languageService.t('permissions.form.success'));
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('permissions.form.error'), message);
+      this.toastService.error(this.languageService.t('permissions.form.error'), message);
     } finally {
       this.saving.set(false);
     }

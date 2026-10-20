@@ -3,6 +3,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { TableColumn } from '../table/table';
 import { Select, SelectOption } from '../select/select';
 import { Skeleton } from '../skeleton/skeleton';
+import { ProductPhoto } from '../product-photo/product-photo';
 import { FormsModule } from '@angular/forms';
 
 /**
@@ -14,7 +15,7 @@ import { FormsModule } from '@angular/forms';
  */
 @Component({
   selector: 'app-selectable-table',
-  imports: [FormsModule, Select, TranslatePipe, Skeleton],
+  imports: [FormsModule, Select, TranslatePipe, Skeleton, ProductPhoto],
   templateUrl: './selectable-table.html',
 })
 export class SelectableTable<T extends Record<string, unknown>> {
@@ -24,6 +25,8 @@ export class SelectableTable<T extends Record<string, unknown>> {
   readonly loading = input(false);
   readonly rowDisabled = input<((row: T) => boolean) | null>(null);
   readonly rowDisabledReason = input<((row: T) => string | null) | null>(null);
+  /** Fila resaltada con el teclado (↑ ↓); -1 = ninguna. */
+  readonly activeIndex = input(-1);
 
   readonly totalRecords = input(0);
   readonly pageNumber = input(1);

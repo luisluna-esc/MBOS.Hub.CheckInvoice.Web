@@ -4,6 +4,7 @@
       <h2 class="text-base font-semibold text-foreground">{{ title() }}</h2>
     }
     <button
+      appShortcut="cancel"
       type="button"
       class="ml-auto rounded text-muted-foreground transition-colors hover:text-foreground"
       [attr.aria-label]="'dialog.close' | translate"
@@ -26,7 +27,9 @@
     </button>
   </div>
 
-  <div class="flex-1 overflow-auto bg-background px-4 py-4">
+  <!-- El evento nativo "cancel" (ej. cerrar sin elegir la ventana de archivos de un input file)
+       sube hasta <app-dialog> y se confundiría con la salida (cancel): se corta aquí. -->
+  <div class="flex-1 overflow-auto bg-background px-4 py-4" (cancel)="$event.stopPropagation()">
     <ng-content />
   </div>
 
@@ -41,6 +44,7 @@
       </button>
     }
     <button
+      appShortcut="save"
       type="button"
       class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
       [class.cursor-not-allowed]="saveDisabled()"

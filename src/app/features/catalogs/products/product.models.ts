@@ -6,6 +6,9 @@ export interface Product extends Record<string, unknown> {
   subDepartmentId: number | null;
   mediaTypeId: number | null;
   isActive: boolean;
+  hasImage?: boolean;
+  /** Versión de la foto, para la URL de la imagen (sin foto: null). */
+  imageVersion?: number | null;
 }
 
 export interface ProductRequest {

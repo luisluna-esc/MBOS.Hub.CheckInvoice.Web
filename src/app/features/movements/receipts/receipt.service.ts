@@ -7,9 +7,12 @@ import { PagedResult } from '../../../core/http/paged-result';
 import {
   Receipt,
   ReceiptDetail,
+  ReceiptEdit,
+  ReceiptEditRequest,
   ReceiptFilters,
   ReceiptRequest,
   ReceiptReturnRequest,
+  ReceiptSummary,
   ReturnableIssueLine,
 } from './receipt.models';
 
@@ -36,6 +39,32 @@ export class ReceiptService {
       this.http.get<{ data: ReceiptDetail[] }>(`${environment.apiUrl}/Receipts/${receiptId}/details`)
     );
     return response.data;
+  }
+
+  async getSummary(receiptId: number): Promise<ReceiptSummary> {
+    const response = await firstValueFrom(
+      this.http.get<{ data: ReceiptSummary }>(`${environment.apiUrl}/Receipts/${receiptId}/summary`)
+    );
+    return response.data;
+  }
+
+  /** Solicita la corrección de una entrada (la aprueba o rechaza el Contador). */
+  requestEdit(request: ReceiptEditRequest): Promise<CreateResponse> {
+    return firstValueFrom(this.http.post<CreateResponse>(`${environment.apiUrl}/ReceiptEdits`, request));
+  }
+
+  async listEdits(status?: string): Promise<ReceiptEdit[]> {
+    const params: Record<string, string> = status ? { status } : {};
+    const response = await firstValueFrom(
+      this.http.get<{ data: ReceiptEdit[] }>(`${environment.apiUrl}/ReceiptEdits`, { params })
+    );
+    return response.data;
+  }
+
+  reviewEdit(changeRequestId: number, decision: 'approve' | 'reject', reviewNotes: string | null): Promise<unknown> {
+    return firstValueFrom(
+      this.http.put(`${environment.apiUrl}/ReceiptEdits/${changeRequestId}/${decision}`, { reviewNotes })
+    );
   }
 
   create(request: ReceiptRequest): Promise<CreateResponse> {

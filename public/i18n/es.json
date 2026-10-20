@@ -1,4 +1,320 @@
 {
+  "issueEdits": {
+    "title": "Correcciones de Salidas",
+    "description": "Corregir una salida ya registrada pasa por aquí: quien la pide explica el motivo y el Contador la aprueba o la rechaza.",
+    "statusFilter": "Estado",
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "loading": "Cargando...",
+    "empty": "No hay correcciones con este estado.",
+    "note": "Salida {{note}}",
+    "requestedBy": "Pedida por {{name}} el {{date}}",
+    "reviewedBy": "Revisada por {{name}} el {{date}}",
+    "reason": "Motivo",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "price": "Costo unit. (Bs.)",
+    "added": "nuevo",
+    "removed": "se quita",
+    "notes": "Observación (obligatoria para rechazar)",
+    "approve": "Aprobar corrección",
+    "reject": "Rechazar",
+    "waiting": "Esperando la revisión del Contador.",
+    "notesRequired": "Escribe por qué la rechazas.",
+    "approved": "Corrección aprobada. La salida queda como una versión nueva y hay que volver a firmarla.",
+    "rejected": "Corrección rechazada.",
+    "error": "No se pudo revisar la corrección.",
+    "fields": {
+      "issueDate": "Fecha de salida",
+      "issueType": "Tipo de salida",
+      "client": "Cliente",
+      "description": "Observación"
+    }
+  },
+  "shortcuts": {
+    "keySpace": "Espacio",
+    "filterEnter": "En los filtros: buscar al instante",
+    "switchToggle": "Interruptor (Sí / No): cambiarlo",
+    "dateOpen": "Fecha: abrir el calendario (se recorre con flechas)",
+    "dateMonth": "Calendario abierto: mes anterior o siguiente",
+    "dateDay": "Fecha: un día más o menos",
+    "dateToday": "Fecha: hoy",
+    "dateType": "Fecha: escribirla (13102026, 13/10/26 o 13/10)",
+    "selectPick": "Lista abierta: elegir (con Tab, además pasa al siguiente campo)",
+    "selectMove": "Lista abierta: moverse entre opciones",
+    "selectType": "Lista de opciones: escribir las primeras letras para elegir",
+    "selectOpen": "Lista de opciones: abrirla",
+    "prevField": "Volver al campo anterior",
+    "nextField": "Pasar al siguiente campo",
+    "groupFields": "Campos y filtros",
+    "or": "o",
+    "title": "Atajos de teclado",
+    "onMac": "Teclas de Mac",
+    "onWindows": "Teclas de Windows",
+    "then": "y luego",
+    "footer": "Los atajos de letras no funcionan mientras escribes en un campo; Guardar, Esc y los de Ctrl/⌘ sí.",
+    "groupGeneral": "General",
+    "groupForms": "Formularios",
+    "groupLists": "Listas",
+    "groupGoTo": "Ir a",
+    "palette": "Buscar una pantalla e ir a ella",
+    "help": "Ver esta lista de atajos",
+    "sidebar": "Mostrar u ocultar el menú lateral",
+    "cancel": "Cerrar la ventana abierta",
+    "save": "Guardar (o Continuar, en el encabezado)",
+    "new": "Nuevo registro (producto, salida, transferencia...)",
+    "addLine": "Agregar una línea de producto",
+    "enterPrice": "En el precio: agregar otra línea",
+    "productArrows": "En el producto: elegir de la lista",
+    "productTab": "En el producto: confirmar y pasar al siguiente campo",
+    "search": "Ir al buscador de la lista",
+    "nextPage": "Página siguiente",
+    "prevPage": "Página anterior",
+    "goHome": "Inicio",
+    "goInbox": "Buzón",
+    "goReceipts": "Entradas",
+    "goIssues": "Salidas",
+    "goTransfers": "Transferencias",
+    "goProducts": "Productos",
+    "paletteSearch": "Escribe el nombre de una pantalla...",
+    "paletteEmpty": "No hay pantallas con ese nombre.",
+    "paletteHint": "↑ ↓ para elegir, Enter para abrir, Esc para cerrar"
+  },
+  "transferVoids": {
+    "title": "Anulaciones de Transferencias",
+    "description": "Anular una transferencia devuelve sus productos del almacén de destino al de origen, con el mismo costo. Si en el destino ya se usaron, no se puede anular.",
+    "empty": "No hay solicitudes con este estado.",
+    "approve": "Aprobar anulación",
+    "approved": "Transferencia anulada. Los productos volvieron al almacén de origen.",
+    "rejected": "Solicitud rechazada.",
+    "error": "No se pudo completar la anulación.",
+    "dialog": {
+      "title": "Solicitar anulación de transferencia",
+      "hint": "El Contador debe aprobarla. Al aprobarse, los productos vuelven al almacén de origen.",
+      "success": "Solicitud enviada. El Contador debe aprobarla."
+    }
+  },
+  "receiptEdits": {
+    "title": "Correcciones de Entradas",
+    "description": "Corregir una entrada ya registrada pasa por aquí: quien la pide explica el motivo y el Contador la aprueba o la rechaza. Si de la entrada ya salieron productos, la cantidad no puede bajar de lo que ya salió.",
+    "statusFilter": "Estado",
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "loading": "Cargando...",
+    "empty": "No hay correcciones con este estado.",
+    "note": "Nota {{note}}",
+    "requestedBy": "Pedida por {{name}} el {{date}}",
+    "reviewedBy": "Revisada por {{name}} el {{date}}",
+    "reason": "Motivo",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "price": "Precio unit. (Bs.)",
+    "added": "nuevo",
+    "removed": "se quita",
+    "notes": "Observación (obligatoria para rechazar)",
+    "approve": "Aprobar corrección",
+    "reject": "Rechazar",
+    "waiting": "Esperando la revisión del Contador.",
+    "notesRequired": "Escribe por qué la rechazas.",
+    "approved": "Corrección aprobada. La nota queda como una versión nueva y hay que volver a firmarla.",
+    "rejected": "Corrección rechazada.",
+    "error": "No se pudo revisar la corrección.",
+    "fields": {
+      "issueDate": "Fecha de ingreso",
+      "purchaseDate": "Fecha de compra",
+      "invoiceNumber": "N° de factura o documento",
+      "taxId": "NIT / CI",
+      "invoiceTotal": "Valor total de la compra",
+      "description": "Observación"
+    }
+  },
+  "inbox": {
+    "toast": {
+      "unread": "Tienes {{count}} respuesta(s) sin leer en tu Buzón",
+      "new": "Llegaron {{count}} respuesta(s) nuevas a tu Buzón",
+      "hint": "Revísalas en Buzón, pestaña Respuestas."
+    },
+    "alreadySeen": "Ya la viste",
+    "newMark": "Nueva",
+    "emptyTabs": {
+      "signed": "Todavía no firmaste ni autorizaste nada.",
+      "answers": "Todavía no hay respuestas a tus solicitudes.",
+      "pending": "No tienes nada pendiente.",
+      "unread": "No tienes respuestas nuevas.",
+      "seen": "Todavía no hay respuestas vistas."
+    },
+    "actions": {
+      "open": "Abrir",
+      "markSeen": "Marcar como visto",
+      "markAllSeen": "Marcar todo como visto"
+    },
+    "columns": {
+      "kind": "Tipo",
+      "document": "Documento",
+      "detail": "Detalle",
+      "date": "Fecha",
+      "result": "Resultado"
+    },
+    "documentTypes": {
+      "receipt": "Entrada",
+      "issue": "Salida",
+      "transfer": "Transferencia"
+    },
+    "filters": {
+      "search": "N° o detalle",
+      "kind": "Tipo",
+      "document": "Documento",
+      "dateFrom": "Desde",
+      "dateTo": "Hasta"
+    },
+    "tabHints": {
+      "signed": "Lo que verificaste, aprobaste o rechazaste",
+      "answers": "Cómo terminó lo que pediste o digitaste",
+      "pending": "Por firmar o autorizar",
+      "unread": "Respuestas nuevas a tus solicitudes",
+      "seen": "Respuestas que ya revisaste"
+    },
+    "tabs": {
+      "signed": "Lo que firmé",
+      "answers": "Respuestas",
+      "pending": "Pendientes",
+      "unread": "Sin leer",
+      "seen": "Vistos"
+    },
+    "title": "Buzón",
+    "description": "Lo que tienes por firmar o autorizar, y las respuestas a tus solicitudes.",
+    "loading": "Cargando...",
+    "allDone": "No tienes nada pendiente.",
+    "empty": "Nada por aquí.",
+    "more": "Y {{count}} más.",
+    "sections": {
+      "toVerify": "Por verificar y firmar",
+      "toApprove": "Por aprobar y firmar",
+      "voidRequests": "Anulaciones por autorizar",
+      "receiptEdits": "Correcciones por autorizar",
+      "myResults": "Mis solicitudes (últimos 15 días)"
+    },
+    "kinds": {
+      "issueEdit": "Corrección de salida",
+      "reviewSigned": "Firma",
+      "reviewApproved": "Documento aprobado",
+      "toVerify": "Digitado, falta verificar",
+      "toApprove": "Verificado, falta aprobar",
+      "voidRequest": "Anulación",
+      "receiptEdit": "Corrección de entrada",
+      "reviewRejected": "Documento rechazado"
+    },
+    "results": {
+      "reabierto": "Reabriste",
+      "rechazado": "Rechazaste",
+      "aprobado": "Aprobaste",
+      "verificado": "Verificaste",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "documents": {
+      "receipt": "Nota {{number}}",
+      "issue": "Salida {{number}}",
+      "transfer": "Transferencia {{number}}"
+    }
+  },
+  "initialInventory": {
+    "title": "Inventario Inicial",
+    "description": "Se carga una sola vez por almacén, desde un Excel. Entra como una nota de ingreso de tipo \"Inventario Inicial\".",
+    "step1": "Descarga la plantilla: trae todos los productos activos. Llena CANTIDAD y COSTO_UNITARIO de lo que hay en el almacén.",
+    "step2": "Elige el almacén, sube el Excel y revísalo antes de cargarlo.",
+    "downloadTemplate": "Descargar plantilla",
+    "warehouse": "Almacén",
+    "file": "Archivo Excel",
+    "chooseFile": "Elegir archivo (.xlsx)",
+    "review": "Revisar archivo",
+    "confirm": "Cargar inventario inicial",
+    "errorsTitle": "Hay {{count}} problema(s) en el archivo. Corrígelos y vuelve a revisar:",
+    "summary": "{{count}} productos",
+    "done": "Inventario inicial cargado. Nota de ingreso {{note}}.",
+    "missing": "Elige el almacén y el archivo.",
+    "templateError": "No se pudo descargar la plantilla.",
+    "error": "No se pudo revisar el archivo.",
+    "code": "Código",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "unitCost": "Costo unit. (Bs.)",
+    "total": "Total (Bs.)"
+  },
+  "review": {
+    "signatureInvalid": "Firma no válida: el documento cambió después de firmado",
+    "signatureValid": "Firma válida",
+    "signConfirm": "Firmar",
+    "notesOptional": "Observación (opcional)",
+    "passwordRequired": "Escribe tu contraseña para firmar.",
+    "password": "Tu contraseña (firma digital)",
+    "done": {
+      "verify": "Documento verificado y firmado.",
+      "approve": "Documento aprobado y firmado.",
+      "reject": "Documento rechazado.",
+      "reopen": "Documento reabierto."
+    },
+    "signHint": {
+      "verify": "Firmas como quien revisó que el documento está bien cargado. Después lo aprueba el Contador.",
+      "approve": "Tu firma digital aprueba el documento y reemplaza a la firma en papel.",
+      "reject": "El documento vuelve a quien lo digitó para corregirlo, como una versión nueva. El motivo queda en el historial.",
+      "reopen": "El documento aprobado vuelve a digitado como una versión nueva. Las firmas anteriores quedan en el historial."
+    },
+    "sign": {
+      "verify": "Verificar y firmar",
+      "approve": "Aprobar y firmar",
+      "reject": "Rechazar",
+      "reopen": "Reabrir"
+    },
+    "title": "Revisión",
+    "column": "Revisión",
+    "open": "Revisión",
+    "actions": {
+      "corregido": "Corregido",
+      "rechazado": "Rechazado",
+      "digitado": "Digitado",
+      "verificado": "Verificado",
+      "aprobado": "Aprobado",
+      "reabierto": "Reabierto"
+    },
+    "loading": "Cargando...",
+    "currentStatus": "Estado actual",
+    "voided": "Anulado",
+    "status": {
+      "anterior": "Anterior a la firma digital",
+      "digitado": "Digitado",
+      "verificado": "Verificado",
+      "aprobado": "Aprobado"
+    },
+    "verify": "Verificar",
+    "approve": "Aprobar",
+    "reopen": "Reabrir",
+    "reopenHint": "Reabrir deja el documento otra vez como digitado y empieza una versión nueva. El motivo queda en el historial.",
+    "reason": "Motivo",
+    "confirmReopen": "Reabrir con este motivo",
+    "reasonRequired": "Escribe el motivo para reabrir.",
+    "history": "Historial de revisiones",
+    "empty": "Sin registros.",
+    "verified": "Documento verificado.",
+    "approved": "Documento aprobado.",
+    "reopened": "Documento reabierto.",
+    "error": "No se pudo completar la revisión."
+  },
+  "productPhoto": {
+    "enlarge": "Ver foto",
+    "none": "Sin foto"
+  },
+  "productSearch": {
+    "placeholder": "Nombre o código",
+    "loading": "Buscando...",
+    "noResults": "No hay productos con ese nombre o código."
+  },
   "language": {
     "select": "Idioma",
     "es": "Español",
@@ -12,6 +328,16 @@
     "closeMenu": "Cerrar menú"
   },
   "nav": {
+    "reportsIssueHistory": "Historial de Salidas",
+    "issueEditRequests": "Correcciones de Salidas",
+    "reportsReceiptsAccounting": "Ingresos para Contabilidad",
+    "reportsIssuesAccounting": "Salidas para Contabilidad",
+    "transferVoidRequests": "Anulaciones de Transferencias",
+    "receiptEditRequests": "Correcciones de Entradas",
+    "settingsInitialInventory": "Inventario Inicial",
+    "reportsTransfers": "Transferencias de Almacén",
+    "authorizations": "Autorizaciones",
+    "reportsReceiptHistory": "Historial de Entradas",
     "home": "Inicio",
     "receipts": "Entradas",
     "issues": "Salidas",
@@ -71,6 +397,7 @@
     "minChars": "Escribe al menos {{count}} caracteres para buscar."
   },
   "productPicker": {
+    "keyboardHint": "Escribe el nombre o el código, muévete con ↑ ↓ y elige con Enter. Los que ya están en otra línea aparecen marcados.",
     "title": "Seleccionar producto",
     "alreadyAdded": "ya agregado",
     "filters": {
@@ -93,6 +420,7 @@
       "inactive": "Inactivo"
     },
     "columns": {
+      "photo": "Foto",
       "code": "Código",
       "name": "Nombre",
       "department": "Departamento",
@@ -103,6 +431,15 @@
       "delete": "Eliminar"
     },
     "form": {
+      "photoError": "El producto se guardó, pero la foto no.",
+      "photoTooLarge": "La foto pesa más de 5 MB.",
+      "photoInvalid": "El archivo no es una imagen.",
+      "photoHint": "JPG, PNG o WEBP de hasta 5 MB.",
+      "removePhoto": "Quitar foto",
+      "changePhoto": "Cambiar foto",
+      "choosePhoto": "Elegir foto",
+      "noPhoto": "Sin foto",
+      "photo": "Foto del producto",
       "newTitle": "Nuevo producto",
       "editTitle": "Editar producto",
       "code": "Código",
@@ -245,7 +582,11 @@
     "issueTypes": { "title": "Tipos de Salida" },
     "receiptTypes": { "title": "Tipos de Entrada" },
     "mediaTypes": { "title": "Tipos de Medio" },
-    "departments": { "title": "Departamentos" },
+    "departments": {
+      "title": "Departamentos",
+      "code": "Código contable",
+      "codeHint": "SubAccountCode del archivo para contabilidad (ej. 106)."
+    },
     "subDepartments": { "title": "Subdepartamentos" },
     "missions": { "title": "Misiones" },
     "provinces": { "title": "Provincias" },
@@ -419,6 +760,7 @@
     "confirm": "Confirmar"
   },
   "table": {
+    "moreActions": "Más opciones",
     "empty": "No hay datos para mostrar.",
     "previous": "Anterior",
     "next": "Siguiente",
@@ -460,34 +802,87 @@
     }
   },
   "receipts": {
+    "correction": {
+      "entryDateHint": "Solo dentro del mes de la nota, hasta hoy.",
+      "notFound": "No se encontró la nota a corregir.",
+      "title": "Corregir nota {{note}}",
+      "hint": "La corrección no se guarda directamente: va al Contador con el motivo. Si de esta entrada ya salieron productos, la cantidad no puede bajar de lo que ya salió.",
+      "reason": "Motivo de la corrección",
+      "send": "Enviar corrección",
+      "sent": "Corrección enviada. El Contador debe aprobarla.",
+      "error": "No se pudo enviar la corrección."
+    },
+    "view": {
+      "pendingSignature": "Pendiente de firma",
+      "signatures": "Firmas digitales",
+      "title": "Nota de ingreso N°",
+      "loading": "Cargando...",
+      "registeredBy": "Digitado por {{name}}",
+      "taxId": "NIT / CI",
+      "document": "N° de factura o documento",
+      "price": "Precio",
+      "cost": "Costo",
+      "total": "Total"
+    },
+    "history": {
+      "title": "Historial de Entradas",
+      "description": "Busca una nota de ingreso por su número, proveedor o factura para verla o reimprimirla."
+    },
+    "motives": {
+      "question": "¿Por qué entra el material al almacén?",
+      "soon": "Próximamente",
+      "purchases": {
+        "title": "Compras",
+        "description": "Material comprado a un proveedor, con factura o con retención."
+      },
+      "transfers": {
+        "title": "Transferencias de almacén",
+        "description": "Material que pasa de un almacén propio a otro."
+      },
+      "returns": {
+        "title": "Devoluciones",
+        "description": "Material que vuelve de una salida ya registrada."
+      },
+      "donations": {
+        "title": "Donaciones",
+        "description": "Material recibido en donación. Se elige quién dona y el valor estimado de cada producto."
+      },
+      "adjustments": {
+        "title": "Otros / Ajustes",
+        "description": "Correcciones de stock, por ejemplo después de un conteo físico."
+      }
+    },
     "title": "Entradas",
     "new": "Nueva entrada",
     "supplierPicker": {
+      "donorDescription": "Busca a quien hace la donación por nombre o NIT. Si no está, créalo como proveedor.",
+      "donorTitle": "¿Quién dona?",
       "title": "Seleccionar proveedor",
       "description": "Busca al proveedor por nombre, razón social o NIT para continuar con el registro de la entrada.",
       "search": "Nombre, razón social o NIT",
-      "taxId": "NIT",
-      "fullName": "Nombre completo",
+      "taxId": "NIT / CI",
+      "fullName": "Razón social / Nombre",
       "createSupplier": "Crear proveedor"
     },
     "filters": {
+      "receiptNumber": "N° de nota (ej. MB 15-10-26)",
       "warehouse": "Almacén",
       "supplier": "Proveedor",
       "receiptType": "Tipo de entrada",
-      "invoiceNumber": "N° de factura"
+      "invoiceNumber": "N° de factura o documento"
     },
     "columns": {
       "rowNumber": "N°",
-      "voucherNumber": "Número de Comprobante",
-      "issueDate": "Fecha Emisión",
+      "voucherNumber": "N° de Nota",
+      "issueDate": "Fecha de Ingreso",
       "createdAt": "Fecha Registro",
-      "invoiceNumber": "Nro. Factura",
+      "invoiceNumber": "N° Factura / Documento",
       "warehouse": "Almacén",
       "supplier": "Proveedor",
-      "invoiceTotal": "Total (Bs.)",
+      "invoiceTotal": "Valor Total de la Compra (Bs.)",
       "createdBy": "Usuario",
       "status": "Estado",
-      "statusPending": "Pendiente de Aprobación",
+      "statusPending": "Corrección pendiente",
       "statusNormal": "Normal",
       "statusVoided": "Anulada",
       "statusVoidPending": "Anulación pendiente",
@@ -495,6 +890,10 @@
       "statusVoidPendingTooltip": "Motivo de la solicitud: {{reason}}"
     },
     "actions": {
+      "correctionReturn": "Una devolución no se corrige: anúlala y regístrala de nuevo",
+      "correctionPending": "Ya hay una corrección pendiente para esta entrada",
+      "requestCorrection": "Solicitar corrección",
+      "viewWithPhotos": "Ver con fotos",
       "viewDetails": "Ver detalle",
       "print": "Imprimir",
       "requestVoid": "Solicitar anulación",
@@ -505,7 +904,26 @@
     },
     "printError": "No se pudo generar el comprobante de impresión.",
     "form": {
-      "title": "Nueva entrada",
+      "taxIdMissing": "El proveedor no tiene NIT ni CI registrado: escríbelo aquí.",
+      "taxIdFromSupplier": "Viene de la ficha del proveedor. Si está mal, corrígelo en Proveedores.",
+      "estimatedValue": "Valor Unit. Estimado (Bs.)",
+      "donor": "Donante",
+      "donationTitle": "Nueva donación",
+      "keyboardHint": "Escribe parte del nombre o del código, elige con las flechas y pasa con Tab. Enter en el precio agrega otra línea.",
+      "retentionNote": "Compra con retención: el costo con el que entra cada producto al inventario es el precio por 0,92.",
+      "lineTotal": "Total (Bs.)",
+      "unitCostRetention": "Costo Unitario x 0,92 (Bs.)",
+      "unitPrice": "Precio Unitario (Bs.)",
+      "entryDateHint": "Del mes anterior o del actual, hasta hoy.",
+      "entryDate": "Fecha de ingreso",
+      "purchaseDate": "Fecha de compra",
+      "purchaseTotal": "Valor total de la compra",
+      "ci": "CI",
+      "documentNumber": "N° de documento (opcional)",
+      "withRetention": "Con retención (sin factura)",
+      "withInvoice": "Con factura",
+      "purchaseType": "Tipo de compra",
+      "title": "Nueva compra",
       "print": "Imprimir",
       "warehouse": "Almacén",
       "warehousePeriod": "Periodo de Almacén",
@@ -514,10 +932,10 @@
       "invoiceNumber": "N° de factura",
       "taxId": "NIT",
       "changeSupplier": "Cambiar",
-      "supplierLocked": "Proveedor seleccionado.",
+      "supplierLocked": "Elegido en el paso anterior.",
       "invoiceTotal": "Total de factura",
       "issueDate": "Fecha de Emisión",
-      "description": "Descripción",
+      "description": "Observación general",
       "continue": "Continuar",
       "lines": "Líneas",
       "addLine": "Agregar línea",
@@ -528,8 +946,8 @@
       "totalCost": "Costo Total (Bs.)",
       "detail": "Detalle",
       "totalMismatch": "La suma de las líneas debe ser igual al Total de factura.",
-      "totalMismatchOver": "Las líneas suman {{lines}} Bs. y el Total de factura es {{invoice}} Bs.: sobran {{difference}} Bs. Corrige las cantidades o costos, o el Total de factura.",
-      "totalMismatchUnder": "Las líneas suman {{lines}} Bs. y el Total de factura es {{invoice}} Bs.: faltan {{difference}} Bs. Corrige las cantidades o costos, o el Total de factura.",
+      "totalMismatchOver": "Las líneas suman {{lines}} Bs. y el valor total de la compra es {{invoice}} Bs.: sobran {{difference}} Bs. Corrige las cantidades o precios, o el valor total.",
+      "totalMismatchUnder": "Las líneas suman {{lines}} Bs. y el valor total de la compra es {{invoice}} Bs.: faltan {{difference}} Bs. Corrige las cantidades o precios, o el valor total.",
       "linesTotal": "Suma de las líneas",
       "product": "Producto",
       "quantity": "Cantidad",
@@ -546,7 +964,7 @@
       "product": "Producto",
       "quantity": "Cantidad",
       "unitCost": "Costo unitario (Bs.)",
-      "unitPrice": "Precio unitario (Bs.)",
+      "unitPrice": "Precio de compra (Bs.)",
       "subtotal": "Subtotal (Bs.)",
       "workOrder": "Orden de trabajo",
       "detail": "Detalle",
@@ -556,6 +974,41 @@
     }
   },
   "issues": {
+    "correction": {
+      "title": "Corregir salida {{note}}",
+      "issueDateHint": "Solo dentro del mes de la salida, hasta hoy.",
+      "notFound": "No se encontró la salida a corregir.",
+      "hint": "La corrección no se guarda directamente: va al Contador con el motivo. Si la salida tiene cuenta por cobrar con pagos o devoluciones, no se puede corregir.",
+      "reason": "Motivo de la corrección",
+      "send": "Enviar corrección",
+      "sent": "Corrección enviada. El Contador debe aprobarla.",
+      "error": "No se pudo enviar la corrección."
+    },
+    "view": {
+      "loading": "Cargando salida...",
+      "title": "Salida",
+      "registeredBy": "Registrada por {{name}}",
+      "cost": "Costo",
+      "total": "Total",
+      "signatures": "Firmas"
+    },
+    "history": {
+      "title": "Historial de Salidas",
+      "description": "Todas las salidas registradas: ver con fotos, imprimir, firmar, pedir corrección o anulación."
+    },
+    "motives": {
+      "question": "¿Por qué sale el material? Elige el motivo para registrar la salida.",
+      "loading": "Cargando...",
+      "typeDescription": "Registrar una salida de tipo {{type}}.",
+      "transfers": {
+        "title": "Transferencia",
+        "description": "Enviar productos a otro almacén."
+      }
+    },
+    "correctHint": {
+      "title": "¿Cómo se corrige una salida?",
+      "body": "Una salida no se edita: se solicita su anulación (la aprueba el Contador y el stock vuelve al almacén) y se registra de nuevo bien. Así no se desordenan las cuentas por cobrar ni los pagos."
+    },
     "title": "Salidas",
     "new": "Nueva salida",
     "clientPicker": {
@@ -568,11 +1021,13 @@
       "createClient": "Crear cliente"
     },
     "filters": {
+      "noteNumber": "N° de salida",
       "warehouse": "Almacén",
       "client": "Cliente",
       "issueType": "Tipo de salida"
     },
     "columns": {
+      "statusCorrectionPending": "Corrección pendiente",
       "rowNumber": "N°",
       "voucherNumber": "Número de Comprobante",
       "issueDate": "Fecha Emisión",
@@ -590,6 +1045,9 @@
       "statusVoidPendingTooltip": "Motivo de la solicitud: {{reason}}"
     },
     "actions": {
+      "correctionPending": "Ya hay una corrección pendiente para esta salida",
+      "requestCorrection": "Solicitar corrección",
+      "viewWithPhotos": "Ver con fotos",
       "viewDetails": "Ver detalle",
       "print": "Imprimir",
       "requestVoid": "Solicitar anulación",
@@ -603,6 +1061,8 @@
       "confirm": "Imprimir"
     },
     "form": {
+      "keyboardHint": "Enter en el botón de producto abre la lista; elegido, pasa a la cantidad. Enter en la cantidad de la última línea agrega otra.",
+      "issueDateHint": "Del mes anterior o del actual, hasta hoy.",
       "title": "Nueva salida",
       "print": "Imprimir",
       "warehouse": "Almacén",
@@ -640,9 +1100,9 @@
       "exceedsStock": "La cantidad supera el stock disponible.",
       "exceedsNotice": "No hay stock suficiente para guardar. Revisa la cantidad de:",
       "exceedsNoticeItem": "{{name}} (pides {{requested}}, hay {{available}})",
-      "reservedStock": "{{count}} unidades están apartadas por una anulación de entrada pendiente. No se pueden sacar hasta que el Contador la apruebe o la rechace. El número que ves ya las descuenta.",
+      "reservedStock": "{{count}} unidades están apartadas por una anulación o corrección de entrada pendiente. No se pueden sacar hasta que el Contador la apruebe o la rechace. El número que ves ya las descuenta.",
       "reservedStockTitle": "Stock apartado",
-      "reservedNotice": "Algunos productos tienen unidades apartadas por anulaciones de entrada pendientes. El stock que ves ya las descuenta y no se pueden sacar hasta que el Contador las resuelva:",
+      "reservedNotice": "Algunos productos tienen unidades apartadas por anulaciones o correcciones de entrada pendientes. El stock que ves ya las descuenta y no se pueden sacar hasta que el Contador las resuelva:",
       "sector": "Departamento",
       "stock": "Stock",
       "code": "Código",
@@ -745,6 +1205,7 @@
     "error": "No se pudo registrar el ajuste."
   },
   "issueReturns": {
+    "returnDate": "Fecha de devolución",
     "title": "Devoluciones",
     "info": {
       "title": "¿Qué es una Devolución?",
@@ -862,7 +1323,7 @@
       "byProductHint": "Escribe cuánto se deposita de cada producto. Deja en blanco los que no se pagan ahora.",
       "product": "Producto",
       "quantity": "Cant.",
-      "lineTotal": "Valor (Bs.)",
+      "lineTotal": "Costo total (Bs.)",
       "linePaid": "Pagado (Bs.)",
       "lineRemaining": "Falta (Bs.)",
       "lineAmount": "Monto a depositar (Bs.)",
@@ -915,7 +1376,7 @@
       "columns": {
         "product": "Producto",
         "quantity": "Cant.",
-        "value": "Valor (Bs.)",
+        "value": "Costo total (Bs.)",
         "paid": "Pagaste (Bs.)",
         "owed": "Debes (Bs.)"
       },
@@ -926,6 +1387,41 @@
     }
   },
   "reports": {
+    "txt": {
+      "download": "Descargar TXT",
+      "downloading": "Descargando...",
+      "error": "No se pudo generar el TXT."
+    },
+    "receiptsAccounting": {
+      "title": "Ingresos para Contabilidad",
+      "description": "Una fila por producto de cada entrada, en el formato que se importa en el sistema contable, con el valor en positivo. Las anuladas no se incluyen.",
+      "infoBody": "AccountCode 4121565, SubAccountCode = código contable del departamento del producto, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = total de la línea en positivo, SendMemo False y Description \"N° de nota - Fact. N° (si tiene) - cantidad Uds. producto\".",
+      "receiptType": "Tipo de entrada",
+      "allTypes": "Todos los tipos",
+      "summary": "{{rows}} filas de {{documents}} notas de ingreso.",
+      "empty": "No hay entradas en ese rango.",
+      "error": "No se pudo cargar el informe."
+    },
+    "issuesAccounting": {
+      "title": "Salidas para Contabilidad",
+      "description": "Una fila por producto de cada salida, en el formato que se importa en el sistema contable. Las anuladas no se incluyen.",
+      "infoTitle": "Cómo se arma cada fila",
+      "infoBody": "AccountCode 4121565, SubAccountCode = código contable del departamento del producto, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = total de la línea en negativo, SendMemo False y Description \"S-N° de salida - cantidad Uds. producto\".",
+      "missingCode": "Hay productos de departamentos sin código contable; en el archivo saldrán sin SubAccountCode. Cárgalo en Configuración del Sistema / Departamentos:",
+      "summary": "{{rows}} filas de {{documents}} salidas.",
+      "total": "Total:",
+      "empty": "No hay salidas en ese rango.",
+      "error": "No se pudo cargar el informe.",
+      "noDepartment": "Productos sin departamento"
+    },
+    "transfers": {
+      "title": "Transferencias de Almacén",
+      "description": "Transferencias entre almacenes propios: cantidad, producto y costo, agrupadas por transferencia.",
+      "source": "Almacén de origen",
+      "destination": "Almacén de destino",
+      "selectPrompt": "Elige los filtros para generar el reporte.",
+      "error": "No se pudo generar el reporte de transferencias."
+    },
     "pdf": {
       "download": "Descargar PDF"
     },
@@ -936,6 +1432,7 @@
     },
     "title": "Reportes",
     "filters": {
+      "warehouse": "Almacén",
       "allWarehouses": "General (todos los almacenes)"
     },
     "stock": {
@@ -1045,6 +1542,10 @@
     }
   },
   "transfers": {
+    "correctHint": {
+      "title": "¿Cómo se corrige una transferencia?",
+      "body": "Una transferencia no se edita: se solicita su anulación (la aprueba el Contador y los productos vuelven al almacén de origen) y se registra de nuevo bien."
+    },
     "titleSent": "Transferencias Realizadas",
     "titleReceived": "Transferencias Recibidas",
     "new": "Nueva transferencia",
@@ -1066,6 +1567,9 @@
       "dateTo": "Hasta"
     },
     "columns": {
+      "statusNormal": "Normal",
+      "statusVoidPending": "Anulación pendiente",
+      "statusVoided": "Anulada",
       "rowNumber": "No.",
       "voucherNumber": "N° Transferencia",
       "sourceWarehouse": "Almacén origen",
@@ -1079,6 +1583,9 @@
       "statusPending": "Pendiente de aprobación"
     },
     "actions": {
+      "requestVoidDisabledPending": "Ya hay una solicitud de anulación pendiente",
+      "requestVoidDisabledVoided": "Esta transferencia ya está anulada",
+      "requestVoid": "Solicitar anulación",
       "viewDetails": "Ver detalle",
       "print": "Imprimir",
       "approve": "Aprobar",
@@ -1089,6 +1596,7 @@
     },
     "printError": "No se pudo generar el comprobante de impresión.",
     "form": {
+      "unitCost": "Costo Unit. (Bs.)",
       "title": "Nueva transferencia",
       "print": "Imprimir",
       "sourceWarehouse": "Almacén origen",
@@ -1112,9 +1620,9 @@
       "exceedsStock": "La cantidad supera el stock disponible.",
       "exceedsNotice": "No hay stock suficiente para guardar. Revisa la cantidad de:",
       "exceedsNoticeItem": "{{name}} (pides {{requested}}, hay {{available}})",
-      "reservedStock": "{{count}} unidades están apartadas por una anulación de entrada pendiente. No se pueden sacar hasta que el Contador la apruebe o la rechace. El número que ves ya las descuenta.",
+      "reservedStock": "{{count}} unidades están apartadas por una anulación o corrección de entrada pendiente. No se pueden sacar hasta que el Contador la apruebe o la rechace. El número que ves ya las descuenta.",
       "reservedStockTitle": "Stock apartado",
-      "reservedNotice": "Algunos productos tienen unidades apartadas por anulaciones de entrada pendientes. El stock que ves ya las descuenta y no se pueden sacar hasta que el Contador las resuelva:",
+      "reservedNotice": "Algunos productos tienen unidades apartadas por anulaciones o correcciones de entrada pendientes. El stock que ves ya las descuenta y no se pueden sacar hasta que el Contador las resuelva:",
       "unitPrice": "Precio Unit. (Bs.)",
       "total": "Total (Bs.)",
       "success": "Transferencia registrada correctamente.",
@@ -1137,7 +1645,7 @@
       "product": "Producto",
       "quantity": "Cantidad",
       "unitCost": "Costo unitario (Bs.)",
-      "unitPrice": "Precio unitario (Bs.)",
+      "unitPrice": "Costo unitario (Bs.)",
       "subtotal": "Subtotal (Bs.)",
       "workOrder": "Orden de trabajo",
       "detail": "Detalle",
@@ -1271,9 +1779,23 @@
       "delete": "Eliminar"
     },
     "form": {
+      "alreadyClientHint": "Ya está registrado en Clientes como \"{{name}}\".",
+      "clientHint": "Si eliges Sí, también queda registrado en Clientes con el mismo nombre, NIT, correo y celular, para poder hacerle salidas. No depende de la pregunta de la iglesia.",
+      "clientQuestion": "¿También le hacemos salidas (es cliente)?",
+      "clientSectionTitle": "Cliente",
+      "churchHint": "Solo indica a qué distrito e iglesia pertenece este proveedor. No lo registra como cliente.",
+      "churchQuestion": "¿Es miembro de la Iglesia Adventista?",
+      "churchSectionTitle": "Iglesia",
+      "alreadyClient": "Ya está registrado como Cliente",
+      "alsoClientHint": "Se registra además como Cliente con el mismo Nombre, NIT, Correo, Teléfono e iglesia.",
+      "alsoClientQuestion": "¿También es cliente?",
+      "isAdventistHint": "Se guarda su distrito e iglesia como proveedor.",
+      "no": "No",
+      "yes": "Sí",
+      "isAdventist": "¿Es adventista?",
       "newTitle": "Nuevo proveedor",
       "editTitle": "Editar proveedor",
-      "name": "Nombre completo",
+      "name": "Nombre del contacto",
       "code": "Código",
       "legalName": "Razón social",
       "taxId": "NIT",
@@ -1291,17 +1813,17 @@
       "continue": "Continuar",
       "editDecisions": "Editar",
       "choiceNew": "Proveedor nuevo",
-      "choiceLink": "Ya existe como Cliente",
+      "choiceLink": "Copiar datos de un Cliente",
       "back": "Atrás",
-      "linkSectionTitle": "¿Es también Cliente?",
-      "linkSectionHint": "Un Cliente y un Proveedor pueden ser la misma persona o empresa. Si los vinculas o registras aquí, comparten el mismo Nombre, NIT, Correo y Teléfono: al editarlos en un lado, se actualizan también en el otro.",
+      "linkSectionTitle": "Iglesia y cliente",
+      "linkSectionHint": "Si es adventista se registra su distrito e iglesia. Queda también como Cliente con el mismo Nombre, NIT, Correo y Teléfono.",
       "linkExistingClient": "¿Ya existe como Cliente? Selecciona para vincular",
       "linkedToClient": "Se vinculará con el Cliente \"{{name}}\": mismo Nombre, NIT, Correo y Teléfono.",
       "unlink": "Quitar vínculo",
       "alsoClient": "También registrado como Cliente: \"{{name}}\"",
       "alsoRegisterAsClient": "También registrar como Cliente",
-      "clientDistrict": "Distrito (Cliente)",
-      "clientChurch": "Iglesia (Cliente)"
+      "clientDistrict": "Distrito",
+      "clientChurch": "Iglesia"
     },
     "delete": {
       "title": "Eliminar proveedor",

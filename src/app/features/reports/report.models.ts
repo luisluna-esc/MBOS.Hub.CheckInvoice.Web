@@ -52,6 +52,44 @@ export interface IssuesReportFilters {
   dateTo?: string;
 }
 
+/** Informe para contabilidad: de salidas o de entradas (ingresos). */
+export type AccountingKind = 'issues' | 'receipts';
+
+export interface AccountingReportFilters {
+  warehouseId?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  /** Solo en entradas. */
+  receiptTypeId?: number;
+}
+
+/** Una fila del archivo para contabilidad (formato "Transaction_Entry"). */
+export type AccountingEntryRow = {
+  accountCode: string;
+  subAccountCode: string;
+  fundCode: string;
+  functionCode: string;
+  restrictionCode: string;
+  entityValue: number;
+  sendMemo: string;
+  description: string;
+  documentId: number;
+  documentDate: string;
+  warehouseName: string | null;
+  departmentName: string | null;
+  productCode: string | null;
+  /** Solo en entradas: N° de nota y tipo de entrada. */
+  documentNumber?: string | null;
+  documentType?: string | null;
+};
+
+export interface TransfersReportFilters {
+  sourceWarehouseId?: number;
+  destinationWarehouseId?: number;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
 export interface ReceiptsReportFilters {
   warehouseId?: number;
   dateFrom?: string;

@@ -32,6 +32,17 @@ export class ProductService {
     return firstValueFrom(this.http.put<WriteResponse>(`${environment.apiUrl}/Products/${productId}`, request));
   }
 
+  /** Sube (o reemplaza) la foto del producto. */
+  setImage(productId: number, image: Blob): Promise<WriteResponse> {
+    const form = new FormData();
+    form.append('file', image, 'foto.jpg');
+    return firstValueFrom(this.http.put<WriteResponse>(`${environment.apiUrl}/Products/${productId}/image`, form));
+  }
+
+  deleteImage(productId: number): Promise<WriteResponse> {
+    return firstValueFrom(this.http.delete<WriteResponse>(`${environment.apiUrl}/Products/${productId}/image`));
+  }
+
   delete(productId: number): Promise<WriteResponse> {
     return firstValueFrom(this.http.delete<WriteResponse>(`${environment.apiUrl}/Products/${productId}`));
   }

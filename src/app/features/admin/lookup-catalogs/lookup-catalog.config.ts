@@ -80,7 +80,12 @@ export const LOOKUP_CATALOG_CONFIGS: Record<string, LookupCatalogConfig> = {
     resource: 'Departments',
     idField: 'departmentId',
     titleKey: 'lookupCatalogs.departments.title',
-    hasCode: false,
+    // Código contable del departamento: es la SubAccountCode del informe para contabilidad.
+    hasCode: true,
+    codeMaxLength: 20,
+    codeLabelKey: 'lookupCatalogs.departments.code',
+    codeHintKey: 'lookupCatalogs.departments.codeHint',
+    codeRequired: false,
     hasIsActive: true,
     hasAddress: false,
     nameMaxLength: 100,

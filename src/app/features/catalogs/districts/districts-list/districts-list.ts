@@ -158,10 +158,10 @@ export class DistrictsList {
   private async deleteDistrict(row: District): Promise<void> {
     try {
       await this.districtService.delete(row.districtId);
-      this.toastService.show(this.languageService.t('districts.delete.success'));
+      this.toastService.success(this.languageService.t('districts.delete.success'));
       void this.load();
     } catch {
-      this.toastService.show(this.languageService.t('districts.delete.error'));
+      this.toastService.error(this.languageService.t('districts.delete.error'));
     }
   }
 }

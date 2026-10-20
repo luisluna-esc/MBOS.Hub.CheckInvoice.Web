@@ -114,40 +114,107 @@
 
       <app-checkbox formControlName="isActive">{{ 'suppliers.form.isActive' | translate }}</app-checkbox>
 
-      @if (!linkedParty() && !linkedClient()) {
+      <!-- Dos preguntas que no dependen una de la otra: cada una en su propio bloque. -->
+      <div class="flex flex-col gap-3">
         <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
-          <div class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-            <span>{{ 'suppliers.form.linkSectionTitle' | translate }}</span>
-            <app-tooltip [text]="'suppliers.form.linkSectionHint' | translate" position="bottom">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4">
-                <path d="M12 17V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="currentColor" />
-                <path
-                  d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </app-tooltip>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex min-w-0 flex-col gap-0.5">
+              <span class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{{ 'suppliers.form.churchSectionTitle' | translate }}</span>
+              <span class="text-sm font-medium text-foreground">{{ 'suppliers.form.churchQuestion' | translate }}</span>
+            </div>
+            <div class="flex shrink-0 overflow-hidden rounded-md border border-border" role="radiogroup" [attr.aria-label]="'suppliers.form.churchQuestion' | translate">
+              <button
+                type="button"
+                role="radio"
+                class="px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                [attr.aria-checked]="isAdventist()"
+                [class.bg-primary]="isAdventist()"
+                [class.text-primary-foreground]="isAdventist()"
+                [class.text-foreground]="!isAdventist()"
+                [class.hover:bg-brand-300/20]="!isAdventist()"
+                (click)="isAdventist.set(true)"
+              >
+                {{ 'suppliers.form.yes' | translate }}
+              </button>
+              <button
+                type="button"
+                role="radio"
+                class="border-l border-border px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                [attr.aria-checked]="!isAdventist()"
+                [class.bg-primary]="!isAdventist()"
+                [class.text-primary-foreground]="!isAdventist()"
+                [class.text-foreground]="isAdventist()"
+                [class.hover:bg-brand-300/20]="isAdventist()"
+                (click)="isAdventist.set(false)"
+              >
+                {{ 'suppliers.form.no' | translate }}
+              </button>
+            </div>
           </div>
-          <app-checkbox [formControl]="alsoRegisterAsClient">{{ 'suppliers.form.alsoRegisterAsClient' | translate }}</app-checkbox>
-          @if (alsoRegisterAsClientValue()) {
+          <p class="text-xs text-muted-foreground">{{ 'suppliers.form.churchHint' | translate }}</p>
+          @if (isAdventist()) {
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <app-select
-                [formControl]="clientDistrictId"
+                [formControl]="districtId"
                 [label]="'suppliers.form.clientDistrict' | translate"
                 [options]="districtOptions()"
+                [required]="true"
               />
               <app-select
-                [formControl]="clientChurchId"
+                [formControl]="churchId"
                 [label]="'suppliers.form.clientChurch' | translate"
                 [options]="churchOptions()"
               />
             </div>
           }
         </div>
-      }
+
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex min-w-0 flex-col gap-0.5">
+              <span class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{{ 'suppliers.form.clientSectionTitle' | translate }}</span>
+              <span class="text-sm font-medium text-foreground">{{ 'suppliers.form.clientQuestion' | translate }}</span>
+            </div>
+            @if (alreadyClient(); as client) {
+              <span class="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground">{{ 'suppliers.form.yes' | translate }}</span>
+            } @else {
+              <div class="flex shrink-0 overflow-hidden rounded-md border border-border" role="radiogroup" [attr.aria-label]="'suppliers.form.clientQuestion' | translate">
+              <button
+                type="button"
+                role="radio"
+                class="px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                [attr.aria-checked]="alsoClient()"
+                [class.bg-primary]="alsoClient()"
+                [class.text-primary-foreground]="alsoClient()"
+                [class.text-foreground]="!alsoClient()"
+                [class.hover:bg-brand-300/20]="!alsoClient()"
+                (click)="alsoClient.set(true)"
+              >
+                {{ 'suppliers.form.yes' | translate }}
+              </button>
+              <button
+                type="button"
+                role="radio"
+                class="border-l border-border px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                [attr.aria-checked]="!alsoClient()"
+                [class.bg-primary]="!alsoClient()"
+                [class.text-primary-foreground]="!alsoClient()"
+                [class.text-foreground]="alsoClient()"
+                [class.hover:bg-brand-300/20]="alsoClient()"
+                (click)="alsoClient.set(false)"
+              >
+                {{ 'suppliers.form.no' | translate }}
+              </button>
+            </div>
+            }
+          </div>
+          @if (alreadyClient(); as client) {
+            <p class="text-xs text-muted-foreground">{{ 'suppliers.form.alreadyClientHint' | translate: { name: client.name } }}</p>
+          } @else {
+            <p class="text-xs text-muted-foreground">{{ 'suppliers.form.clientHint' | translate }}</p>
+          }
+        </div>
+      </div>
     }
   </form>
 </app-dialog>

@@ -15,14 +15,14 @@ import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
-import { ExcelDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { KardexByProductReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 import { canPreviewPdf } from '../../../core/files/pdf';
 
 @Component({
   selector: 'app-kardex-by-product-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, PdfDownloadButton],
+  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton],
   templateUrl: './kardex-by-product-report.html',
 })
 export class KardexByProductReport {
@@ -44,6 +44,7 @@ export class KardexByProductReport {
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
   protected readonly exporting = signal(false);
+  protected readonly exportingTxt = signal(false);
 
   private objectUrl: string | null = null;
   private pdfBlob: Blob | null = null;
@@ -111,7 +112,7 @@ export class KardexByProductReport {
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
     } catch {
-      this.toastService.show(this.languageService.t('reports.kardexByProduct.error'));
+      this.toastService.error(this.languageService.t('reports.kardexByProduct.error'));
     } finally {
       this.loading.set(false);
     }
@@ -131,9 +132,20 @@ export class KardexByProductReport {
     try {
       downloadBlob(await this.reportService.getKardexByProductReportExcelBlob(this.currentFilters()), 'kardex-por-material.xlsx');
     } catch {
-      this.toastService.show(this.languageService.t('reports.excel.error'));
+      this.toastService.error(this.languageService.t('reports.excel.error'));
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  protected async onExportTxt(): Promise<void> {
+    this.exportingTxt.set(true);
+    try {
+      downloadBlob(await this.reportService.getKardexByProductReportTxtBlob(this.currentFilters()), 'kardex-por-material.txt');
+    } catch {
+      this.toastService.error(this.languageService.t('reports.txt.error'));
+    } finally {
+      this.exportingTxt.set(false);
     }
   }
 

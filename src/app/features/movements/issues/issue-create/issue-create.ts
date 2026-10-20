@@ -1,17 +1,12 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, computed, effect, inject, signal, viewChildren } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
-import {
-  currentAndPreviousWarehousePeriods,
-  currentMonthKey,
-  issueDateRangeForPeriod,
-} from '../../../../core/catalogs/current-warehouse-periods';
-import { operationalWarehouseOnly } from '../../../../core/catalogs/operational-warehouse';
+import { minIssueDateIso } from '../../../../core/catalogs/current-warehouse-periods';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
@@ -37,8 +32,10 @@ import { ReportService } from '../../../reports/report.service';
 import { IssueRequest } from '../issue.models';
 import { IssueService } from '../issue.service';
 import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
+import { ProductPhoto } from '../../../../shared/components/product-photo/product-photo';
 import { localDateIso } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
+import { ShortcutDirective } from '../../../../shared/directives/shortcut.directive';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -49,7 +46,7 @@ const PAYMENT_TYPE_CODES = ['cash', 'credit', 'installments'] as const;
 
 @Component({
   selector: 'app-issue-create',
-  imports: [ReactiveFormsModule, AppInput, Select, PartySearchInput, Checkbox, DatePicker, TranslatePipe, DecimalPipe, InfoHint],
+  imports: [ShortcutDirective, ReactiveFormsModule, AppInput, Select, PartySearchInput, Checkbox, DatePicker, ProductPhoto, TranslatePipe, DecimalPipe, InfoHint],
   templateUrl: './issue-create.html',
 })
 export class IssueCreate {
@@ -63,7 +60,29 @@ export class IssueCreate {
   private readonly languageService = inject(LanguageService);
   private readonly reportService = inject(ReportService);
 
+  private readonly route = inject(ActivatedRoute);
+  private readonly productButtons = viewChildren<ElementRef<HTMLButtonElement>>('productButton');
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
   protected readonly todayIso = localDateIso();
+  /** La fecha de la salida solo puede ser del mes anterior o del actual, hasta hoy (al corregir, dentro del mes de la salida). */
+  protected readonly minIssueDate = signal(minIssueDateIso());
+  protected readonly maxIssueDate = signal(this.todayIso);
+
+  /**
+   * Corrección de una salida ya registrada: el mismo formulario con la salida cargada. No se
+   * guarda directo: se envía como solicitud con motivo y la aprueba el Contador.
+   */
+  protected readonly isCorrection = this.route.snapshot.data['motive'] === 'correct';
+  private readonly correctionId = Number(this.route.snapshot.paramMap.get('id')) || null;
+  protected readonly correctionNote = signal<string | null>(null);
+  /** Cantidades que ya salieron por producto: al corregir vuelven a estar disponibles. */
+  private readonly originalQuantities = signal<Record<number, number>>({});
+  protected readonly reasonControl = new FormControl('', { nonNullable: true });
+  private readonly reasonValue = toSignal(
+    this.reasonControl.valueChanges.pipe(startWith(this.reasonControl.value), takeUntilDestroyed()),
+    { initialValue: '' }
+  );
 
   protected readonly saving = signal(false);
   protected readonly clientLocked = signal(false);
@@ -78,7 +97,6 @@ export class IssueCreate {
   protected readonly printTypes = signal<CatalogItem[]>([]);
   protected readonly departments = signal<CatalogItem[]>([]);
   protected readonly documentTypes = signal<CatalogItem[]>([]);
-  protected readonly warehousePeriods = signal<CatalogItem[]>([]);
 
   private readonly departmentNames = computed(() =>
     Object.fromEntries(this.departments().map((item) => [item.id, item.name]))
@@ -88,16 +106,19 @@ export class IssueCreate {
   );
 
   protected readonly warehouseOptions = computed<SelectOption[]>(() =>
-    operationalWarehouseOnly(this.warehouses()).map((item) => ({ value: String(item.id), label: item.name }))
+    this.warehouses().map((item) => ({ value: String(item.id), label: item.name }))
   );
+  /** Tipo elegido en la tarjeta de Salidas: ya no se vuelve a preguntar en el formulario. */
+  protected readonly presetIssueTypeId = signal<number | null>(null);
+  protected readonly presetIssueTypeName = computed(() => {
+    const id = this.presetIssueTypeId();
+    return id ? (this.issueTypes().find((item) => item.id === id)?.name ?? null) : null;
+  });
   protected readonly issueTypeOptions = computed<SelectOption[]>(() =>
     this.issueTypes().map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly printTypeOptions = computed<SelectOption[]>(() =>
     this.printTypes().map((item) => ({ value: String(item.id), label: item.name }))
-  );
-  protected readonly warehousePeriodOptions = computed<SelectOption[]>(() =>
-    currentAndPreviousWarehousePeriods(this.warehousePeriods()).map((item) => ({ value: String(item.id), label: item.name }))
   );
   protected readonly paymentTypeOptions = computed<SelectOption[]>(() =>
     PAYMENT_TYPE_CODES.map((code) => ({ value: code, label: this.languageService.t(`issues.form.paymentTypes.${code}`) }))
@@ -105,7 +126,6 @@ export class IssueCreate {
 
   protected readonly headerForm = new FormGroup({
     warehouseId: new FormControl('', { nonNullable: true }),
-    warehousePeriodId: new FormControl('', { nonNullable: true }),
     clientId: new FormControl('', { nonNullable: true }),
     issueTypeId: new FormControl('', { nonNullable: true }),
     printTypeId: new FormControl('', { nonNullable: true }),
@@ -115,22 +135,6 @@ export class IssueCreate {
     paymentType: new FormControl('', { nonNullable: true }),
     paymentDetail: new FormControl('', { nonNullable: true }),
     dueDate: new FormControl('', { nonNullable: true }),
-  });
-
-  private readonly warehousePeriodIdValue = toSignal(
-    this.headerForm.controls.warehousePeriodId.valueChanges.pipe(
-      startWith(this.headerForm.controls.warehousePeriodId.value),
-      takeUntilDestroyed()
-    ),
-    { initialValue: '' }
-  );
-
-  // La Fecha de Emisión debe caer dentro del mes del Periodo de Almacén elegido (ej. si eliges
-  // 2026-09, no puedes poner una fecha de agosto) — se recalcula cada vez que cambia el período.
-  protected readonly issueDateRange = computed(() => {
-    const periodId = Number(this.warehousePeriodIdValue());
-    const periodName = this.warehousePeriods().find((period) => period.id === periodId)?.name ?? null;
-    return issueDateRangeForPeriod(periodName);
   });
 
   protected readonly detailsArray = new FormArray<DetailLineGroup>([]);
@@ -209,8 +213,9 @@ export class IssueCreate {
     this.lineStock().forEach((stock, index) => {
       const product = products[index];
       const requested = Number(values[index]?.quantity) || 0;
-      if (product && stock && requested > stock.availableQuantity) {
-        exceeding.set(product.productId, { name: product.name, requested, available: stock.availableQuantity });
+      const available = this.lineAvailable(index) ?? 0;
+      if (product && stock && requested > available) {
+        exceeding.set(product.productId, { name: product.name, requested, available });
       }
     });
     return [...exceeding.values()];
@@ -227,15 +232,24 @@ export class IssueCreate {
       this.detailsInvalid() ||
       this.detailsArray.length === 0 ||
       this.anyLineExceedsStock() ||
+      (this.isCorrection && (this.headerInvalid() || !this.reasonValue().trim())) ||
       this.saving()
   );
 
   constructor() {
-    void this.loadCatalogs();
-
-    const state = history.state as { clientId?: number };
-    if (state.clientId) {
-      void this.lockClient(state.clientId);
+    if (this.isCorrection && this.correctionId) {
+      void this.loadForCorrection(this.correctionId);
+    } else {
+      void this.loadCatalogs();
+      const state = history.state as { clientId?: number; issueTypeId?: number | null };
+      if (state.clientId) {
+        void this.lockClient(state.clientId);
+      }
+      // El tipo viene de la tarjeta elegida en Salidas.
+      if (state.issueTypeId) {
+        this.headerForm.controls.issueTypeId.setValue(String(state.issueTypeId));
+        this.presetIssueTypeId.set(state.issueTypeId);
+      }
     }
 
     // paymentType solo es obligatorio mientras "Enviar a cuentas por cobrar" esté marcado.
@@ -283,34 +297,92 @@ export class IssueCreate {
   }
 
   private async loadCatalogs(): Promise<void> {
-    const [warehouses, issueTypes, printTypes, departments, documentTypes, warehousePeriods] =
-      await settleCatalogs([
-        this.catalogService.getWarehouses(),
-        this.catalogService.getIssueTypes(),
-        this.catalogService.getPrintTypes(),
-        this.catalogService.getDepartments(),
-        this.catalogService.getDocumentTypes(),
-        this.catalogService.getWarehousePeriods(),
-      ]);
+    const [warehouses, issueTypes, printTypes, departments, documentTypes] = await settleCatalogs([
+      this.catalogService.getActiveWarehouses(),
+      this.catalogService.getIssueTypes(),
+      this.catalogService.getPrintTypes(),
+      this.catalogService.getDepartments(),
+      this.catalogService.getDocumentTypes(),
+    ]);
     this.warehouses.set(warehouses);
     this.issueTypes.set(issueTypes);
     this.printTypes.set(printTypes);
     this.departments.set(departments);
     this.documentTypes.set(documentTypes);
-    this.warehousePeriods.set(warehousePeriods);
 
-    // Solo hay un almacén operativo: se marca solo, no hay nada que elegir.
-    const [operationalWarehouse] = operationalWarehouseOnly(warehouses);
-    if (operationalWarehouse) {
-      this.headerForm.controls.warehouseId.setValue(String(operationalWarehouse.id));
+    // Con un solo almacén activo se marca solo; con varios, se elige.
+    if (warehouses.length === 1) {
+      this.headerForm.controls.warehouseId.setValue(String(warehouses[0].id));
       this.headerForm.controls.warehouseId.disable();
     }
+  }
 
-    // Si no elige un período explícitamente, se asume el del mes actual.
-    const currentPeriod = warehousePeriods.find((period) => period.name === currentMonthKey());
-    if (currentPeriod) {
-      this.headerForm.controls.warehousePeriodId.setValue(String(currentPeriod.id));
+  /** Carga la salida a corregir: datos y productos, listos para cambiar. */
+  private async loadForCorrection(issueId: number): Promise<void> {
+    let summary: Awaited<ReturnType<IssueService['getSummary']>>;
+    let catalogs: CatalogItem[][];
+    try {
+      [summary, catalogs] = await Promise.all([
+        this.issueService.getSummary(issueId),
+        settleCatalogs([
+          this.catalogService.getWarehouses(),
+          this.catalogService.getIssueTypes(),
+          this.catalogService.getDepartments(),
+        ]),
+      ]);
+    } catch {
+      // La salida no existe o no se pudo leer: se avisa y se vuelve al historial.
+      this.toastService.error(this.languageService.t('issues.correction.notFound'));
+      void this.router.navigate(['/reports/issue-history']);
+      return;
     }
+    const [warehouses, issueTypes, departments] = catalogs;
+    this.warehouses.set(warehouses);
+    this.issueTypes.set(issueTypes);
+    this.departments.set(departments);
+    this.correctionNote.set(summary.noteNumber);
+
+    const controls = this.headerForm.controls;
+    controls.warehouseId.setValue(summary.warehouseId ? String(summary.warehouseId) : '');
+    controls.warehouseId.disable();
+    controls.issueTypeId.setValue(summary.issueTypeId ? String(summary.issueTypeId) : '');
+    controls.issueDate.setValue(summary.issueDate.slice(0, 10));
+    controls.description.setValue(summary.description ?? '');
+    if (summary.clientId) {
+      controls.clientId.setValue(String(summary.clientId));
+      controls.clientId.disable();
+      this.lockedClient.set({ name: summary.clientName ?? '—' } as Client);
+      this.clientLocked.set(true);
+    }
+
+    // La fecha solo se mueve dentro del mes de la salida (su número es de ese mes).
+    const [year, month] = summary.issueDate.slice(0, 7).split('-').map(Number);
+    const monthEnd = localDateIso(new Date(year, month, 0));
+    this.minIssueDate.set(`${summary.issueDate.slice(0, 7)}-01`);
+    this.maxIssueDate.set(monthEnd < this.todayIso ? monthEnd : this.todayIso);
+
+    this.originalQuantities.set(Object.fromEntries(summary.lines.map((line) => [line.productId, line.quantity])));
+    for (const line of summary.lines) {
+      this.detailsArray.push(
+        new FormGroup({
+          productId: new FormControl(String(line.productId), { nonNullable: true, validators: [Validators.required] }),
+          quantity: new FormControl(String(line.quantity), { nonNullable: true }),
+        })
+      );
+    }
+    this.lineProducts.set(
+      summary.lines.map((line) => ({
+        productId: line.productId,
+        name: line.name,
+        code: line.code,
+        departmentId: null,
+        mediaTypeId: null,
+        imageVersion: line.imageVersion,
+      }))
+    );
+    this.lineStock.set(summary.lines.map(() => null));
+    this.headerConfirmed.set(true);
+    summary.lines.forEach((line, index) => void this.loadStock(index, line.productId));
   }
 
   protected readonly continueAttempted = signal(false);
@@ -353,6 +425,27 @@ export class IssueCreate {
     );
     this.lineProducts.update((current) => [...current, null]);
     this.lineStock.update((current) => [...current, null]);
+    // El cursor va al botón de producto de la línea nueva (Enter abre la ventana), para seguir
+    // solo con el teclado.
+    setTimeout(() => this.productButtons().at(-1)?.nativeElement.focus());
+  }
+
+  /** Enter en la cantidad de la última línea agrega otra línea. */
+  protected onQuantityEnter(index: number, event: Event): void {
+    event.preventDefault();
+    if (index === this.detailsArray.length - 1 && this.detailsArray.at(index).valid && !this.lineExceedsStock(index)) {
+      this.addLine();
+    }
+  }
+
+  /** Stock que se puede usar en la línea: al corregir, suma lo que ya salió de ese producto. */
+  protected lineAvailable(index: number): number | null {
+    const stock = this.lineStock()[index];
+    if (!stock) {
+      return null;
+    }
+    const productId = this.lineProducts()[index]?.productId;
+    return stock.availableQuantity + (productId ? (this.originalQuantities()[productId] ?? 0) : 0);
   }
 
   protected removeLine(index: number): void {
@@ -368,7 +461,7 @@ export class IssueCreate {
       return false;
     }
     const quantity = Number(line.quantity) || 0;
-    return quantity > stock.availableQuantity;
+    return quantity > (this.lineAvailable(index) ?? stock.availableQuantity);
   }
 
   protected lineTotalCost(index: number): number {
@@ -403,6 +496,10 @@ export class IssueCreate {
           return next;
         });
         void this.loadStock(index, result.productId);
+        // Elegido el producto, el cursor pasa a la cantidad de esa línea.
+        setTimeout(() => this.host.querySelectorAll('tbody tr')[index]?.querySelector<HTMLInputElement>('app-input input')?.focus());
+      } else {
+        setTimeout(() => this.productButtons()[index]?.nativeElement.focus());
       }
     });
   }
@@ -437,9 +534,13 @@ export class IssueCreate {
     const raw = this.headerForm.getRawValue();
     const details = this.detailsArray.getRawValue();
 
+    if (this.isCorrection && this.correctionId) {
+      await this.sendCorrection(this.correctionId, raw, details);
+      return;
+    }
+
     const request: IssueRequest = {
       warehouseId: Number(raw.warehouseId),
-      warehousePeriodId: raw.warehousePeriodId ? Number(raw.warehousePeriodId) : null,
       clientId: raw.clientId ? Number(raw.clientId) : null,
       issueTypeId: raw.issueTypeId ? Number(raw.issueTypeId) : null,
       printTypeId: raw.printTypeId ? Number(raw.printTypeId) : null,
@@ -462,11 +563,11 @@ export class IssueCreate {
 
     try {
       const response = await this.issueService.create(request);
-      this.toastService.show(this.languageService.t('issues.form.success'));
+      this.toastService.success(this.languageService.t('issues.form.success'));
       if (print) {
         try {
           const blob = await this.reportService.getIssueVoucherPdfBlob(response.id);
-          showPdf(blob, `salida-${String(response.id).padStart(5, '0')}.pdf`, newTab);
+          showPdf(blob, `salida-${response.id}.pdf`, newTab);
         } catch {
           newTab?.close();
         }
@@ -476,13 +577,39 @@ export class IssueCreate {
       newTab?.close();
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('issues.form.error'), message);
+      this.toastService.error(this.languageService.t('issues.form.error'), message);
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  private async sendCorrection(
+    issueId: number,
+    raw: ReturnType<typeof this.headerForm.getRawValue>,
+    details: ReturnType<typeof this.detailsArray.getRawValue>
+  ): Promise<void> {
+    try {
+      await this.issueService.requestEdit({
+        issueId,
+        reason: this.reasonControl.value.trim(),
+        issueTypeId: raw.issueTypeId ? Number(raw.issueTypeId) : null,
+        clientId: raw.clientId ? Number(raw.clientId) : null,
+        description: raw.description || null,
+        issueDate: raw.issueDate || null,
+        details: details.map((line) => ({ productId: Number(line.productId), quantity: Number(line.quantity) })),
+      });
+      this.toastService.success(this.languageService.t('issues.correction.sent'));
+      void this.router.navigate(['/reports/issue-history']);
+    } catch (error) {
+      const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
+        ?.description;
+      this.toastService.error(this.languageService.t('issues.correction.error'), message);
     } finally {
       this.saving.set(false);
     }
   }
 
   protected onCancel(): void {
-    void this.router.navigate(['/issues']);
+    void this.router.navigate([this.isCorrection ? '/reports/issue-history' : '/issues']);
   }
 }

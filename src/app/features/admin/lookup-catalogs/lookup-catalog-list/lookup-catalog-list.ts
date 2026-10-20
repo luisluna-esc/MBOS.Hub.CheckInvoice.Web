@@ -49,7 +49,11 @@ export class LookupCatalogList {
     const config = this.config();
     const columns: TableColumn<LookupCatalogItem>[] = [];
     if (config?.hasCode) {
-      columns.push({ key: 'code', header: this.languageService.t('lookupCatalogs.columns.code') });
+      columns.push({
+        key: 'code',
+        header: this.languageService.t(config.codeLabelKey ?? 'lookupCatalogs.columns.code'),
+        format: (value) => (value as string) || '—',
+      });
     }
     columns.push({ key: 'name', header: this.languageService.t('lookupCatalogs.columns.name') });
     if (config?.hasAddress) {
@@ -196,10 +200,10 @@ export class LookupCatalogList {
     }
     try {
       await this.catalogService.delete(config.resource, row[config.idField] as number);
-      this.toastService.show(this.languageService.t('lookupCatalogs.delete.success'));
+      this.toastService.success(this.languageService.t('lookupCatalogs.delete.success'));
       void this.load();
     } catch {
-      this.toastService.show(this.languageService.t('lookupCatalogs.delete.error'));
+      this.toastService.error(this.languageService.t('lookupCatalogs.delete.error'));
     }
   }
 
@@ -225,10 +229,10 @@ export class LookupCatalogList {
     }
     try {
       await this.catalogService.close(config.resource, row[config.idField] as number);
-      this.toastService.show(this.languageService.t('lookupCatalogs.close.success'));
+      this.toastService.success(this.languageService.t('lookupCatalogs.close.success'));
       void this.load();
     } catch {
-      this.toastService.show(this.languageService.t('lookupCatalogs.close.error'));
+      this.toastService.error(this.languageService.t('lookupCatalogs.close.error'));
     }
   }
 }

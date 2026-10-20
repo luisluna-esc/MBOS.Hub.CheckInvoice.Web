@@ -16,6 +16,10 @@ import {
   ReceiptVoidRequestDialog,
   ReceiptVoidRequestDialogData,
 } from '../../receipt-void-requests/receipt-void-request-dialog/receipt-void-request-dialog';
+import {
+  DocumentReviewDialog,
+  DocumentReviewDialogData,
+} from '../../../../shared/components/document-review-dialog/document-review-dialog';
 import { ReceiptDetailsDialog, ReceiptDetailsDialogData } from '../receipt-details-dialog/receipt-details-dialog';
 import { Receipt, ReceiptFilters } from '../receipt.models';
 import { ReceiptService } from '../receipt.service';
@@ -55,6 +59,11 @@ export class ReceiptsList {
 
   protected readonly filterFields = computed<FilterField[]>(() => [
     {
+      key: 'noteNumber',
+      label: this.languageService.t('receipts.filters.receiptNumber'),
+      type: 'text',
+    },
+    {
       key: 'warehouseId',
       label: this.languageService.t('receipts.filters.warehouse'),
       type: 'select',
@@ -89,9 +98,9 @@ export class ReceiptsList {
         format: (_value, _row, index) => String((this.pageNumber() - 1) * this.pageSize() + index + 1),
       },
       {
-        key: 'receiptId',
+        key: 'noteNumber',
         header: this.languageService.t('receipts.columns.voucherNumber'),
-        format: (value) => String(value).padStart(5, '0'),
+        format: (value, row) => (value as string) || String((row as Receipt).receiptId),
       },
       {
         key: 'supplierId',
@@ -125,6 +134,12 @@ export class ReceiptsList {
           return receipt.voidDetail ? `${base} (${receipt.voidDetail})` : base;
         },
       },
+      {
+        key: 'reviewStatus',
+        header: this.languageService.t('review.column'),
+        align: 'center',
+        format: (value) => this.languageService.t(`review.status.${(value as string) || 'digitado'}`),
+      },
       { key: 'invoiceNumber', header: this.languageService.t('receipts.columns.invoiceNumber'), format: (value) => (value as string) || '—' },
       {
         key: 'issueDate',
@@ -157,6 +172,16 @@ export class ReceiptsList {
       onClick: (row) => this.openDetails(row),
     },
     {
+      label: this.languageService.t('review.open'),
+      icon: 'verified',
+      onClick: (row) => this.openReview(row),
+    },
+    {
+      label: this.languageService.t('receipts.actions.viewWithPhotos'),
+      icon: 'photo',
+      onClick: (row) => void this.router.navigate(['/receipts/view', row.receiptId]),
+    },
+    {
       label: this.languageService.t('receipts.actions.print'),
       icon: 'print',
       onClick: (row) => void this.printVoucher(row),
@@ -167,6 +192,27 @@ export class ReceiptsList {
       disabled: (row) => row.relatedIssueId == null,
       disabledReason: (row) => (row.relatedIssueId == null ? this.languageService.t('receipts.actions.viewOriginIssueDisabled') : null),
       onClick: (row) => this.openOriginIssue(row),
+    },
+    {
+      label: this.languageService.t('receipts.actions.requestCorrection'),
+      icon: 'edit',
+      disabled: (row) => row.isVoided || row.hasPendingVoidRequest || row.hasPendingChangeRequest || row.relatedIssueId != null,
+      disabledReason: (row) => {
+        if (row.isVoided) {
+          return this.languageService.t('receipts.actions.requestVoidDisabledVoided');
+        }
+        if (row.hasPendingVoidRequest) {
+          return this.languageService.t('receipts.actions.requestVoidDisabledPending');
+        }
+        if (row.hasPendingChangeRequest) {
+          return this.languageService.t('receipts.actions.correctionPending');
+        }
+        if (row.relatedIssueId != null) {
+          return this.languageService.t('receipts.actions.correctionReturn');
+        }
+        return null;
+      },
+      onClick: (row) => void this.router.navigate(['/receipts', row.receiptId, 'correct']),
     },
     {
       label: this.languageService.t('receipts.actions.requestVoid'),
@@ -221,7 +267,9 @@ export class ReceiptsList {
   }
 
   protected onSearch(values: FilterValues): void {
+    // El N° de nota se escribe tal como sale impreso ("15-10"); el backend lo busca.
     this.currentFilters = {
+      noteNumber: values['noteNumber'] || undefined,
       warehouseId: values['warehouseId'] ? Number(values['warehouseId']) : undefined,
       supplierName: values['supplierName'] || undefined,
       receiptTypeId: values['receiptTypeId'] ? Number(values['receiptTypeId']) : undefined,
@@ -248,10 +296,6 @@ export class ReceiptsList {
     void this.load();
   }
 
-  protected openCreate(): void {
-    void this.router.navigate(['/receipts/new']);
-  }
-
   protected openDetails(row: Receipt): void {
     this.dialogService.open<void, ReceiptDetailsDialogData, ReceiptDetailsDialog>(ReceiptDetailsDialog, {
       data: { receiptId: row.receiptId },
@@ -264,11 +308,26 @@ export class ReceiptsList {
     const newTab = openPdfTab();
     try {
       const blob = await this.reportService.getReceiptVoucherPdfBlob(row.receiptId);
-      showPdf(blob, `ingreso-${String(row.receiptId).padStart(5, '0')}.pdf`, newTab);
+      showPdf(blob, `nota-ingreso-${this.fileSafe(row)}.pdf`, newTab);
     } catch {
       newTab?.close();
-      this.toastService.show(this.languageService.t('receipts.printError'));
+      this.toastService.error(this.languageService.t('receipts.printError'));
     }
+  }
+
+  private fileSafe(row: Receipt): string {
+    return (row.noteNumber ?? String(row.receiptId)).replace(/[^0-9A-Za-z-]/g, '-');
+  }
+
+  protected openReview(row: Receipt): void {
+    const ref = this.dialogService.open<boolean, DocumentReviewDialogData, DocumentReviewDialog>(DocumentReviewDialog, {
+      data: { type: 'receipt', id: row.receiptId, title: `${this.languageService.t('receipts.columns.voucherNumber')} ${row.noteNumber ?? row.receiptId}` },
+    });
+    ref.closed.subscribe((changed) => {
+      if (changed) {
+        void this.load();
+      }
+    });
   }
 
   protected openOriginIssue(row: Receipt): void {

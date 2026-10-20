@@ -1,0 +1,146 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-1">
+    <h1 class="text-xl font-semibold text-foreground">{{ 'issueEdits.title' | translate }}</h1>
+    <p class="text-sm text-muted-foreground">{{ 'issueEdits.description' | translate }}</p>
+  </div>
+
+  <div class="w-full sm:w-64">
+    <app-select
+      [label]="'issueEdits.statusFilter' | translate"
+      [options]="statusOptions()"
+      [ngModel]="status()"
+      (ngModelChange)="onStatusChange($event)"
+    />
+  </div>
+
+  @if (loading()) {
+    <p class="text-sm text-muted-foreground">{{ 'issueEdits.loading' | translate }}</p>
+  } @else {
+    @for (edit of edits(); track edit.changeRequestId) {
+      <div class="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-semibold text-foreground">{{ 'issueEdits.note' | translate: { note: edit.noteNumber } }}</span>
+            <span class="text-xs text-muted-foreground">
+              {{ 'issueEdits.requestedBy' | translate: { name: edit.requestedByName ?? '—', date: formatInstant(edit.requestedAt) } }}
+            </span>
+          </div>
+          <span
+            class="rounded-full border px-3 py-0.5 text-xs font-medium"
+            [class.border-border]="edit.status === 'pending'"
+            [class.text-foreground]="edit.status === 'pending'"
+            [class.border-success]="edit.status === 'approved'"
+            [class.text-success]="edit.status === 'approved'"
+            [class.border-danger]="edit.status === 'rejected'"
+            [class.text-danger]="edit.status === 'rejected'"
+          >
+            {{ 'issueEdits.status.' + edit.status | translate }}
+          </span>
+        </div>
+
+        <p class="text-sm text-foreground"><span class="font-medium">{{ 'issueEdits.reason' | translate }}:</span> {{ edit.reason }}</p>
+
+        @if (edit.headerChanges.length > 0) {
+          <ul class="flex flex-col gap-0.5 text-sm">
+            @for (change of edit.headerChanges; track change.field) {
+              <li class="text-foreground">
+                <span class="text-muted-foreground">{{ 'issueEdits.fields.' + change.field | translate }}:</span>
+                <span class="line-through decoration-danger">{{ change.before || '—' }}</span>
+                →
+                <span class="font-medium">{{ change.after || '—' }}</span>
+              </li>
+            }
+          </ul>
+        }
+
+        <div class="overflow-x-auto rounded-md border border-border">
+          <table class="w-full divide-y divide-border text-sm">
+            <thead class="bg-background">
+              <tr>
+                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'issueEdits.product' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'issueEdits.quantity' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'issueEdits.price' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (line of edit.lines; track line.productId) {
+                <tr [class.bg-background]="lineChanged(line)">
+                  <td class="px-3 py-2 text-foreground">
+                    {{ line.code || '—' }} — {{ line.name }}
+                    @if (line.quantityBefore === 0) {
+                      <span class="text-xs font-medium text-success">({{ 'issueEdits.added' | translate }})</span>
+                    } @else if (line.quantityAfter === 0) {
+                      <span class="text-xs font-medium text-danger">({{ 'issueEdits.removed' | translate }})</span>
+                    }
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right tabular-nums text-foreground">
+                    @if (line.quantityBefore !== line.quantityAfter) {
+                      <span class="text-muted-foreground line-through">{{ line.quantityBefore | number: '1.0-2' }}</span>
+                      → <span class="font-semibold">{{ line.quantityAfter | number: '1.0-2' }}</span>
+                    } @else {
+                      {{ line.quantityAfter | number: '1.0-2' }}
+                    }
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right tabular-nums text-foreground">
+                    @if (line.priceBefore !== line.priceAfter) {
+                      <span class="text-muted-foreground line-through">{{ line.priceBefore | number: '1.2-2' }}</span>
+                      → <span class="font-semibold">{{ line.priceAfter | number: '1.2-2' }}</span>
+                    } @else {
+                      {{ line.priceAfter | number: '1.2-2' }}
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (edit.status === 'pending') {
+          @if (canReview()) {
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
+              <label class="flex flex-1 flex-col gap-1">
+                <span class="text-sm font-medium text-foreground">{{ 'issueEdits.notes' | translate }}</span>
+                <input
+                  type="text"
+                  maxlength="255"
+                  class="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  [ngModel]="notes()[edit.changeRequestId] ?? ''"
+                  (ngModelChange)="setNotes(edit.changeRequestId, $event)"
+                />
+              </label>
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  class="rounded-md border border-danger px-4 py-2 text-sm text-danger transition-colors hover:bg-danger/10 disabled:opacity-50"
+                  [disabled]="working() === edit.changeRequestId"
+                  (click)="review(edit, 'reject')"
+                >
+                  {{ 'issueEdits.reject' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:opacity-50"
+                  [disabled]="working() === edit.changeRequestId"
+                  (click)="review(edit, 'approve')"
+                >
+                  {{ 'issueEdits.approve' | translate }}
+                </button>
+              </div>
+            </div>
+          } @else {
+            <p class="text-xs text-muted-foreground">{{ 'issueEdits.waiting' | translate }}</p>
+          }
+        } @else {
+          <p class="text-xs text-muted-foreground">
+            {{ 'issueEdits.reviewedBy' | translate: { name: edit.reviewedByName ?? '—', date: formatInstant(edit.reviewedAt) } }}
+            @if (edit.reviewNotes) {
+              · {{ edit.reviewNotes }}
+            }
+          </p>
+        }
+      </div>
+    } @empty {
+      <p class="text-sm text-muted-foreground">{{ 'issueEdits.empty' | translate }}</p>
+    }
+  }
+</div>

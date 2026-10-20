@@ -28,6 +28,11 @@
 
   /* Excepción: color fuera de la paleta, solo para errores de validación de formularios */
   --color-danger: #b91c1c;
+  /* Confirmaciones (ej. firma digital válida). */
+  --color-success: #15803d;
+  /* Avisos (toast): advertencia e información. */
+  --color-warning: #b45309;
+  --color-info: #1d4ed8;
 
   /* Escala exclusiva para modo oscuro, de más claro (100) a más oscuro (500) */
   --color-dark-100: #e0e0e0;
@@ -47,4 +52,7 @@
   --color-primary: var(--color-dark-300);
   --color-primary-foreground: var(--color-dark-100);
   --color-danger: #f87171;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-info: #60a5fa;
 }

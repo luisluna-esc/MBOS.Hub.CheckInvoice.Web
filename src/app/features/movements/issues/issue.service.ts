@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiMessage } from '../../../core/auth/auth.models';
 import { PagedResult } from '../../../core/http/paged-result';
-import { Issue, IssueDetail, IssueFilters, IssueRequest } from './issue.models';
+import { Issue, IssueDetail, IssueEdit, IssueEditRequest, IssueFilters, IssueRequest, IssueSummary } from './issue.models';
 
 interface CreateResponse {
   id: number;
@@ -29,6 +29,32 @@ export class IssueService {
       this.http.get<{ data: IssueDetail[] }>(`${environment.apiUrl}/Issues/${issueId}/details`)
     );
     return response.data;
+  }
+
+  async getSummary(issueId: number): Promise<IssueSummary> {
+    const response = await firstValueFrom(
+      this.http.get<{ data: IssueSummary }>(`${environment.apiUrl}/Issues/${issueId}/summary`)
+    );
+    return response.data;
+  }
+
+  /** Solicita la corrección de una salida (la aprueba o rechaza el Contador). */
+  requestEdit(request: IssueEditRequest): Promise<CreateResponse> {
+    return firstValueFrom(this.http.post<CreateResponse>(`${environment.apiUrl}/IssueEdits`, request));
+  }
+
+  async listEdits(status?: string): Promise<IssueEdit[]> {
+    const params: Record<string, string> = status ? { status } : {};
+    const response = await firstValueFrom(
+      this.http.get<{ data: IssueEdit[] }>(`${environment.apiUrl}/IssueEdits`, { params })
+    );
+    return response.data;
+  }
+
+  reviewEdit(changeRequestId: number, decision: 'approve' | 'reject', reviewNotes: string | null): Promise<unknown> {
+    return firstValueFrom(
+      this.http.put(`${environment.apiUrl}/IssueEdits/${changeRequestId}/${decision}`, { reviewNotes })
+    );
   }
 
   create(request: IssueRequest): Promise<CreateResponse> {

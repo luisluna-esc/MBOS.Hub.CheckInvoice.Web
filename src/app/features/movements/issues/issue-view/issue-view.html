@@ -1,0 +1,94 @@
+<div class="flex flex-col gap-4">
+  @if (loading()) {
+    <p class="text-sm text-muted-foreground">{{ 'issues.view.loading' | translate }}</p>
+  } @else if (errorCode()) {
+    <div class="rounded-lg border border-border">
+      <app-error-state [code]="errorCode()!" />
+    </div>
+  } @else if (summary(); as issue) {
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="flex flex-col gap-1">
+        <h1 class="text-xl font-semibold text-foreground">
+          {{ 'issues.view.title' | translate }} {{ issue.noteNumber }}
+        </h1>
+        <p class="text-sm text-muted-foreground">
+          {{ issue.issueTypeName ?? '—' }} · {{ 'issues.view.registeredBy' | translate: { name: issue.createdByName ?? '—' } }}
+        </p>
+      </div>
+      @if (issue.isVoided) {
+        <span class="rounded-full border border-danger px-3 py-1 text-xs font-medium text-danger">{{ 'issues.columns.statusVoided' | translate }}</span>
+      }
+    </div>
+
+    <dl class="grid grid-cols-1 gap-3 rounded-lg border border-border bg-surface p-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
+      <div>
+        <dt class="text-xs text-muted-foreground">{{ 'issues.form.warehouse' | translate }}</dt>
+        <dd class="text-foreground">{{ issue.warehouseName ?? '—' }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-muted-foreground">{{ 'issues.form.issueDate' | translate }}</dt>
+        <dd class="text-foreground">{{ formatDate(issue.issueDate) }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-muted-foreground">{{ 'issues.form.client' | translate }}</dt>
+        <dd class="text-foreground">{{ issue.clientName ?? '—' }}</dd>
+      </div>
+      @if (issue.description) {
+        <div class="sm:col-span-2 lg:col-span-3">
+          <dt class="text-xs text-muted-foreground">{{ 'issues.form.description' | translate }}</dt>
+          <dd class="text-foreground">{{ issue.description }}</dd>
+        </div>
+      }
+    </dl>
+
+    <div class="flex flex-col gap-2">
+      @for (line of issue.lines; track line.productId) {
+        <div class="flex items-center gap-3 rounded-lg border border-border bg-surface p-3">
+          <app-product-photo [productId]="line.productId" [version]="line.imageVersion" [name]="line.name" size="md" />
+          <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span class="truncate text-sm font-medium text-foreground">{{ line.name }}</span>
+            <span class="text-xs text-muted-foreground">
+              {{ line.code || '—' }} · {{ line.quantity | number: '1.0-2' }} {{ line.unitMeasure ?? '' }}
+              · {{ 'issues.view.cost' | translate }} {{ line.unitCost | number: '1.2-2' }}
+            </span>
+          </div>
+          <span class="shrink-0 text-sm font-semibold tabular-nums text-foreground">{{ line.totalCost | number: '1.2-2' }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="flex justify-end">
+      <span class="text-sm font-semibold text-foreground">{{ 'issues.view.total' | translate }}: {{ total() | number: '1.2-2' }} Bs.</span>
+    </div>
+
+    @if (review(); as current) {
+      <!-- Firmas digitales de la versión vigente: con ellas se comprueba el código impreso en el comprobante. -->
+      <div class="flex flex-col gap-2">
+        <h2 class="text-sm font-semibold text-foreground">
+          {{ 'issues.view.signatures' | translate }} · {{ 'review.status.' + current.status | translate }} · V.{{ current.version }}
+        </h2>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          @for (slot of [
+            { title: 'review.actions.verificado', entry: signatures().verified },
+            { title: 'review.actions.aprobado', entry: signatures().approved }
+          ]; track slot.title) {
+            <div class="flex flex-col gap-1 rounded-lg border border-border bg-surface p-3 text-sm">
+              <span class="text-xs text-muted-foreground">{{ slot.title | translate }}</span>
+              @if (slot.entry; as entry) {
+                <span class="font-medium text-foreground">{{ entry.userName ?? '—' }}</span>
+                <span class="text-xs text-muted-foreground">{{ formatInstant(entry.at) }} · {{ entry.signatureCode }}</span>
+                @if (entry.signatureValid === false) {
+                  <span class="text-xs font-medium text-danger">{{ 'review.signatureInvalid' | translate }}</span>
+                } @else {
+                  <span class="text-xs text-success">{{ 'review.signatureValid' | translate }}</span>
+                }
+              } @else {
+                <span class="text-muted-foreground">{{ 'receipts.view.pendingSignature' | translate }}</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

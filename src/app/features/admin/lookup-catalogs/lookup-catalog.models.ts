@@ -27,6 +27,11 @@ export interface LookupCatalogConfig {
   hasAddress: boolean;
   nameMaxLength: number;
   codeMaxLength?: number;
+  /** Etiqueta propia del campo Código (ej. "Código contable" en Departamentos). */
+  codeLabelKey?: string;
+  codeHintKey?: string;
+  /** Falso cuando el código se puede dejar vacío (Departamentos: se carga después). */
+  codeRequired?: boolean;
   /** Solo Períodos de Almacén: se cierran con una acción propia (PUT {id}/close), no se
    * editan como un booleano cualquiera — una vez cerrado, ya no se puede editar ni eliminar. */
   hasCloseAction?: boolean;

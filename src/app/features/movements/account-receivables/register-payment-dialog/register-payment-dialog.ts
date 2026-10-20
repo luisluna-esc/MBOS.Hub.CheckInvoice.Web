@@ -91,7 +91,7 @@ export class RegisterPaymentDialog {
         this.lineAmounts.push(new FormControl('', { nonNullable: true }));
       }
     } catch {
-      this.toastService.show(this.languageService.t('accountReceivables.payment.linesError'));
+      this.toastService.error(this.languageService.t('accountReceivables.payment.linesError'));
     } finally {
       this.loadingLines.set(false);
     }
@@ -126,11 +126,11 @@ export class RegisterPaymentDialog {
   protected async onSave(): Promise<void> {
     if (!this.form.controls.paymentMethod.value) {
       this.form.controls.paymentMethod.markAsTouched();
-      this.toastService.show(this.languageService.t('accountReceivables.payment.methodRequired'));
+      this.toastService.warning(this.languageService.t('accountReceivables.payment.methodRequired'));
       return;
     }
     if (this.depositTotal() <= 0) {
-      this.toastService.show(this.languageService.t('accountReceivables.payment.amountRequired'));
+      this.toastService.warning(this.languageService.t('accountReceivables.payment.amountRequired'));
       return;
     }
 
@@ -149,12 +149,12 @@ export class RegisterPaymentDialog {
         notes: this.form.controls.notes.value || null,
         details,
       });
-      this.toastService.show(this.languageService.t('accountReceivables.payment.success'));
+      this.toastService.success(this.languageService.t('accountReceivables.payment.success'));
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('accountReceivables.payment.error'), message);
+      this.toastService.error(this.languageService.t('accountReceivables.payment.error'), message);
     } finally {
       this.saving.set(false);
     }

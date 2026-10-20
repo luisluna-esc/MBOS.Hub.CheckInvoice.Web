@@ -108,12 +108,12 @@ export class DistrictFormDialog {
       } else {
         await this.districtService.create(request);
       }
-      this.toastService.show(this.languageService.t('districts.form.success'));
+      this.toastService.success(this.languageService.t('districts.form.success'));
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('districts.form.error'), message);
+      this.toastService.error(this.languageService.t('districts.form.error'), message);
     } finally {
       this.saving.set(false);
     }

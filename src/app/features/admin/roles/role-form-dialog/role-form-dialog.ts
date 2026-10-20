@@ -70,12 +70,12 @@ export class RoleFormDialog {
       } else {
         await this.roleService.create(request);
       }
-      this.toastService.show(this.languageService.t('roles.form.success'));
+      this.toastService.success(this.languageService.t('roles.form.success'));
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('roles.form.error'), message);
+      this.toastService.error(this.languageService.t('roles.form.error'), message);
     } finally {
       this.saving.set(false);
     }

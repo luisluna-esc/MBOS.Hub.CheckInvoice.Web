@@ -173,10 +173,10 @@ export class UsersList {
   private async deleteUser(row: AppUser): Promise<void> {
     try {
       await this.appUserService.delete(row.appUserId);
-      this.toastService.show(this.languageService.t('users.delete.success'));
+      this.toastService.success(this.languageService.t('users.delete.success'));
       void this.load();
     } catch {
-      this.toastService.show(this.languageService.t('users.delete.error'));
+      this.toastService.error(this.languageService.t('users.delete.error'));
     }
   }
 }

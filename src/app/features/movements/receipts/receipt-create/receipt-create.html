@@ -10,77 +10,80 @@
         <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     </button>
-    <h1 class="text-xl font-semibold text-foreground">{{ 'receipts.form.title' | translate }}</h1>
+    <h1 class="text-xl font-semibold text-foreground">
+      @if (isCorrection) {
+        {{ 'receipts.correction.title' | translate: { note: correctionNote() ?? '' } }}
+      } @else {
+        {{ (isDonation() ? 'receipts.form.donationTitle' : 'receipts.form.title') | translate }}
+      }
+    </h1>
   </div>
 
   <form [formGroup]="headerForm" class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-foreground">{{ (isDonation() ? 'receipts.form.donor' : 'receipts.form.supplier') | translate }}</label>
+        <div class="truncate rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
+          {{ lockedSupplierName() ?? '—' }}
+        </div>
+        <p class="min-h-4 text-xs text-muted-foreground">{{ 'receipts.form.supplierLocked' | translate }}</p>
+      </div>
       <app-select
         formControlName="warehouseId"
         [label]="'receipts.form.warehouse' | translate"
         [options]="warehouseOptions()"
         [required]="true"
       />
-      <app-select
-        formControlName="warehousePeriodId"
-        [label]="'receipts.form.warehousePeriod' | translate"
-        [options]="warehousePeriodOptions()"
-        [required]="true"
-      />
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-foreground">{{ 'receipts.form.supplier' | translate }}</label>
-        @if (supplierLocked()) {
-          <div class="truncate rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
-            {{ lockedSupplierName() ?? '—' }}
-          </div>
-          <p class="min-h-4 text-xs text-muted-foreground">{{ 'receipts.form.supplierLocked' | translate }}</p>
-        } @else if (selectedSupplier(); as supplier) {
-          <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
-            <span class="min-w-0 truncate text-foreground">{{ supplier.name }}</span>
-            <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="clearSupplier()">
-              {{ 'receipts.form.changeSupplier' | translate }}
-            </button>
-          </div>
-          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
-        } @else {
-          <app-party-search-input mode="supplier" (picked)="onSupplierPicked($event)" />
-          <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
-        }
-      </div>
-      <app-select
-        formControlName="receiptTypeId"
-        [label]="'receipts.form.receiptType' | translate"
-        [options]="receiptTypeOptions()"
-        [required]="true"
-      />
-      <app-input formControlName="invoiceNumber" [label]="'receipts.form.invoiceNumber' | translate" [required]="true" />
-      <app-input
-        formControlName="taxId"
-        [label]="'receipts.form.taxId' | translate"
-        [required]="true"
-        [hint]="supplierLocked() ? ('receipts.form.supplierLocked' | translate) : null"
-      />
-      <app-input
-        formControlName="invoiceTotal"
-        type="number"
-        [label]="'receipts.form.invoiceTotal' | translate"
-        [required]="true"
-        [min]="0"
-        [decimals]="2"
-      />
+      @if (!isDonation()) {
+        <app-select
+          formControlName="receiptTypeId"
+          [label]="'receipts.form.purchaseType' | translate"
+          [options]="purchaseTypeOptions()"
+          [required]="true"
+        />
+        <app-input
+          formControlName="invoiceNumber"
+          [label]="(withRetention() ? 'receipts.form.documentNumber' : 'receipts.form.invoiceNumber') | translate"
+          [required]="!withRetention()"
+          [maxLength]="50"
+        />
+        <app-input
+          formControlName="taxId"
+          [label]="(withRetention() ? 'receipts.form.ci' : 'receipts.form.taxId') | translate"
+          [hint]="(supplierTaxId() ? 'receipts.form.taxIdFromSupplier' : 'receipts.form.taxIdMissing') | translate"
+          [required]="true"
+          [maxLength]="20"
+        />
+        <app-input
+          formControlName="invoiceTotal"
+          type="number"
+          [label]="'receipts.form.purchaseTotal' | translate"
+          [required]="true"
+          [min]="0"
+          [decimals]="2"
+        />
+        <app-date-picker
+          formControlName="purchaseDate"
+          [label]="'receipts.form.purchaseDate' | translate"
+          [required]="true"
+          [max]="todayIso"
+        />
+      }
       <app-date-picker
         formControlName="issueDate"
-        [label]="'receipts.form.issueDate' | translate"
+        [label]="'receipts.form.entryDate' | translate"
         [required]="true"
-        [min]="issueDateRange().min"
-        [max]="issueDateRange().max"
+        [min]="minEntryDateIso()"
+        [max]="maxEntryDateIso()"
+        [hint]="(isCorrection ? 'receipts.correction.entryDateHint' : 'receipts.form.entryDateHint') | translate"
       />
     </div>
 
-    <app-input formControlName="description" [label]="'receipts.form.description' | translate" />
+    <app-input formControlName="description" [label]="'receipts.form.description' | translate" [maxLength]="255" />
 
     @if (!headerConfirmed()) {
       <button
+        appShortcut="save"
         type="button"
         class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
         [class.cursor-not-allowed]="continueDisabled()"
@@ -94,8 +97,11 @@
 
   @if (headerConfirmed()) {
     <div class="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-sm font-semibold text-foreground">{{ 'receipts.form.lines' | translate }}</h3>
+      <div class="flex items-center justify-between gap-2">
+        <div>
+          <h3 class="text-sm font-semibold text-foreground">{{ 'receipts.form.lines' | translate }}</h3>
+          <p class="text-xs text-muted-foreground">{{ 'receipts.form.keyboardHint' | translate }}</p>
+        </div>
         <button
           type="button"
           class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-background"
@@ -115,11 +121,16 @@
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.rowNumber' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.product' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.quantity' | translate }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.unitCost' | translate }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.totalCost' | translate }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">%</th>
-                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.workOrder' | translate }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.detail' | translate }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">
+                  {{ (isDonation() ? 'receipts.form.estimatedValue' : 'receipts.form.unitPrice') | translate }}
+                </th>
+                @if (withRetention()) {
+                  <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.unitCostRetention' | translate }}</th>
+                }
+                <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.lineTotal' | translate }}</th>
+                @if (!isDonation()) {
+                  <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">%</th>
+                }
                 <th class="whitespace-nowrap px-3 py-2 text-center font-semibold text-foreground">{{ 'table.actions' | translate }}</th>
               </tr>
             </thead>
@@ -128,34 +139,54 @@
                 <tr [formGroup]="line">
                   <td class="px-3 py-2 align-middle text-foreground">{{ i + 1 }}</td>
                   <td class="px-3 py-2 align-middle">
+                    <div class="flex items-center gap-2">
+                    <app-product-photo
+                      [productId]="lineProducts()[i]?.productId ?? null"
+                      [version]="lineProducts()[i]?.imageVersion"
+                      [name]="lineProducts()[i]?.name ?? ''"
+                    />
                     <button
+                      #productButton
                       type="button"
-                      class="w-full rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background"
+                      class="min-w-0 flex-1 truncate rounded-md border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                      [class.border-border]="!(line.controls.productId.touched && line.controls.productId.invalid)"
+                      [class.border-danger]="line.controls.productId.touched && line.controls.productId.invalid"
                       (click)="pickProduct(i)"
                     >
                       @if (lineProducts()[i]; as product) {
-                        <span class="font-medium">{{ product.code }}</span> — {{ product.name }}
+                        @if (product.code) {
+                          <span class="text-muted-foreground">{{ product.code }} · </span>
+                        }
+                        {{ product.name }}
                       } @else {
-                        <span class="text-muted-foreground">{{ 'receipts.form.selectProduct' | translate }}</span>
+                        <span class="text-muted-foreground">{{ 'issues.form.selectProduct' | translate }}</span>
                       }
                     </button>
+                    </div>
                   </td>
                   <td class="w-32 px-3 py-2 align-middle">
                     <app-input formControlName="quantity" errorDisplay="icon" type="number" [required]="true" [min]="1" [decimals]="0" />
                   </td>
                   <td class="w-32 px-3 py-2 align-middle">
-                    <app-input formControlName="unitCost" errorDisplay="icon" type="number" [required]="true" [min]="0" [decimals]="2" />
+                    <app-input
+                      formControlName="unitPrice"
+                      errorDisplay="icon"
+                      type="number"
+                      [required]="true"
+                      [min]="0"
+                      [decimals]="2"
+                      (keydown.enter)="onPriceEnter(i, $event)"
+                    />
                   </td>
-                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">{{ lineTotal(i).toFixed(2) }}</td>
-                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
-                    {{ linePercentage(i) !== null ? (linePercentage(i)! | number: '1.0-1') + '%' : '—' }}
-                  </td>
-                  <td class="w-40 px-3 py-2 align-middle">
-                    <app-input formControlName="workOrder" errorDisplay="icon" />
-                  </td>
-                  <td class="w-40 px-3 py-2 align-middle">
-                    <app-input formControlName="detail" errorDisplay="icon" />
-                  </td>
+                  @if (withRetention()) {
+                    <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">{{ lineUnitCost(i) | number: '1.2-2' }}</td>
+                  }
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">{{ lineTotal(i) | number: '1.2-2' }}</td>
+                  @if (!isDonation()) {
+                    <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
+                      {{ linePercentage(i) !== null ? (linePercentage(i)! | number: '1.0-1') + '%' : '—' }}
+                    </td>
+                  }
                   <td class="px-3 py-2 text-center align-middle">
                     <button
                       type="button"
@@ -186,14 +217,16 @@
             </tbody>
             <tfoot class="bg-background">
               <tr>
-                <td colspan="4" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.linesTotal' | translate }}</td>
+                <td [attr.colspan]="withRetention() ? 5 : 4" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.linesTotal' | translate }}</td>
                 <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums" [class.text-danger]="totalMismatch()" [class.text-foreground]="!totalMismatch()">
                   {{ linesTotalSum() | number: '1.2-2' }}
                 </td>
-                <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums" [class.text-danger]="totalMismatch()" [class.text-foreground]="!totalMismatch()">
-                  {{ linesTotalPercentage() !== null ? (linesTotalPercentage()! | number: '1.0-1') + '%' : '—' }}
-                </td>
-                <td colspan="3"></td>
+                @if (!isDonation()) {
+                  <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums" [class.text-danger]="totalMismatch()" [class.text-foreground]="!totalMismatch()">
+                    {{ linesTotalPercentage() !== null ? (linesTotalPercentage()! | number: '1.0-1') + '%' : '—' }}
+                  </td>
+                }
+                <td></td>
               </tr>
             </tfoot>
           </table>
@@ -202,7 +235,18 @@
         @if (totalMismatch()) {
           <p class="text-xs text-danger">{{ totalMismatchMessage() }}</p>
         }
+        @if (withRetention()) {
+          <p class="text-xs text-muted-foreground">{{ 'receipts.form.retentionNote' | translate }}</p>
+        }
       }
+    </div>
+  }
+
+  @if (isCorrection) {
+    <!-- La corrección no se guarda directo: va al Contador con su motivo. -->
+    <div class="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4">
+      <p class="text-xs text-muted-foreground">{{ 'receipts.correction.hint' | translate }}</p>
+      <app-input [formControl]="reasonControl" [label]="'receipts.correction.reason' | translate" [required]="true" [maxLength]="255" />
     </div>
   }
 
@@ -214,7 +258,19 @@
     >
       {{ 'dialog.cancel' | translate }}
     </button>
+    @if (isCorrection) {
+      <button
+        appShortcut="save"
+        type="button"
+        class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="saveDisabled()"
+        (click)="onSave()"
+      >
+        {{ 'receipts.correction.send' | translate }}
+      </button>
+    } @else {
     <button
+      appShortcut="save"
       type="button"
       class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:bg-brand-300/20"
       [disabled]="saveDisabled()"
@@ -230,5 +286,6 @@
     >
       {{ 'receipts.form.print' | translate }}
     </button>
+    }
   </div>
 </div>

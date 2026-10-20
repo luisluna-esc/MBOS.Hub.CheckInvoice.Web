@@ -34,6 +34,15 @@ export class CatalogService {
     }));
   }
 
+  /** Almacenes donde se puede registrar movimientos (Almacén 1, 2, 3...). Los inactivos no se ofrecen. */
+  getActiveWarehouses(): Promise<CatalogItem[]> {
+    return this.fetch<{ warehouseId: number; name: string }>(
+      'Warehouses',
+      (item) => ({ id: item.warehouseId, name: item.name }),
+      { isActive: 'true' }
+    );
+  }
+
   getSuppliers(): Promise<CatalogItem[]> {
     return this.fetch<{ supplierId: number; name: string }>('Suppliers', (item) => ({
       id: item.supplierId,

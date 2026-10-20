@@ -19,6 +19,72 @@ export const routes: Routes = [
       {
         path: 'receipts',
         loadComponent: () =>
+          import('./features/movements/receipts/receipt-motives/receipt-motives').then((m) => m.ReceiptMotives),
+      },
+      {
+        path: 'receipts/view/:id',
+        loadComponent: () =>
+          import('./features/movements/receipts/receipt-view/receipt-view').then((m) => m.ReceiptView),
+      },
+      {
+        path: 'receipts/donation',
+        loadComponent: () =>
+          import('./features/movements/receipts/receipt-supplier-picker/receipt-supplier-picker').then(
+            (m) => m.ReceiptSupplierPicker
+          ),
+        data: { motive: 'donation' },
+      },
+      {
+        path: 'receipts/donation/details',
+        loadComponent: () =>
+          import('./features/movements/receipts/receipt-create/receipt-create').then((m) => m.ReceiptCreate),
+        data: { motive: 'donation' },
+      },
+      {
+        path: 'inbox',
+        loadComponent: () => import('./features/inbox/inbox').then((m) => m.Inbox),
+      },
+      {
+        path: 'transfers/void-requests',
+        loadComponent: () =>
+          import('./features/movements/transfer-void-requests/transfer-void-requests').then((m) => m.TransferVoidRequests),
+      },
+      {
+        path: 'receipts/edit-requests',
+        loadComponent: () =>
+          import('./features/movements/receipt-edit-requests/receipt-edit-requests').then((m) => m.ReceiptEditRequests),
+      },
+      {
+        path: 'receipts/:id/correct',
+        loadComponent: () =>
+          import('./features/movements/receipts/receipt-create/receipt-create').then((m) => m.ReceiptCreate),
+        data: { motive: 'correct' },
+      },
+      {
+        path: 'reports/transfers',
+        loadComponent: () =>
+          import('./features/reports/transfers-report/transfers-report').then((m) => m.TransfersReport),
+      },
+      {
+        path: 'reports/issues-accounting',
+        loadComponent: () =>
+          import('./features/reports/accounting-report/accounting-report').then((m) => m.AccountingReport),
+        data: { kind: 'issues' },
+      },
+      {
+        path: 'reports/receipts-accounting',
+        loadComponent: () =>
+          import('./features/reports/accounting-report/accounting-report').then((m) => m.AccountingReport),
+        data: { kind: 'receipts' },
+      },
+      {
+        path: 'admin/initial-inventory',
+        loadComponent: () =>
+          import('./features/admin/initial-inventory/initial-inventory').then((m) => m.InitialInventory),
+      },
+      {
+        path: 'reports/receipt-history',
+        loadComponent: () =>
           import('./features/movements/receipts/receipts-list/receipts-list').then((m) => m.ReceiptsList),
       },
       {
@@ -36,7 +102,28 @@ export const routes: Routes = [
       {
         path: 'issues',
         loadComponent: () =>
+          import('./features/movements/issues/issue-motives/issue-motives').then((m) => m.IssueMotives),
+      },
+      {
+        path: 'reports/issue-history',
+        loadComponent: () =>
           import('./features/movements/issues/issues-list/issues-list').then((m) => m.IssuesList),
+      },
+      {
+        path: 'issues/view/:id',
+        loadComponent: () =>
+          import('./features/movements/issues/issue-view/issue-view').then((m) => m.IssueView),
+      },
+      {
+        path: 'issues/edit-requests',
+        loadComponent: () =>
+          import('./features/movements/issue-edit-requests/issue-edit-requests').then((m) => m.IssueEditRequests),
+      },
+      {
+        path: 'issues/:id/correct',
+        loadComponent: () =>
+          import('./features/movements/issues/issue-create/issue-create').then((m) => m.IssueCreate),
+        data: { motive: 'correct' },
       },
       {
         path: 'issues/new',
@@ -142,13 +229,6 @@ export const routes: Routes = [
       {
         path: 'transfers/new',
         loadComponent: () =>
-          import('./features/movements/transfers/transfer-receiver-picker/transfer-receiver-picker').then(
-            (m) => m.TransferReceiverPicker
-          ),
-      },
-      {
-        path: 'transfers/new/details',
-        loadComponent: () =>
           import('./features/movements/transfers/transfer-create/transfer-create').then((m) => m.TransferCreate),
       },
       {
@@ -156,20 +236,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/movements/transfers/transfers-sent-list/transfers-sent-list').then(
             (m) => m.TransfersSentList
-          ),
-      },
-      {
-        path: 'transfers/received',
-        loadComponent: () =>
-          import('./features/movements/transfers/transfers-received-list/transfers-received-list').then(
-            (m) => m.TransfersReceivedList
-          ),
-      },
-      {
-        path: 'transfers/received/new',
-        loadComponent: () =>
-          import('./features/movements/transfers/transfer-receive-create/transfer-receive-create').then(
-            (m) => m.TransferReceiveCreate
           ),
       },
       {

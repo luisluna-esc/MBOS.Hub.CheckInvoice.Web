@@ -81,7 +81,7 @@ export class UserRolesDialog {
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('users.roles.error'), message);
+      this.toastService.error(this.languageService.t('users.roles.error'), message);
     } finally {
       this.pendingIds.update((current) => {
         const next = new Set(current);

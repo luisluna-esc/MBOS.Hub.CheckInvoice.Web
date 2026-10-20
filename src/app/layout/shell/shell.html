@@ -54,6 +54,34 @@
   }
 
   <nav class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto" [class.px-2]="isCollapsed" [class.px-3]="!isCollapsed">
+    @if (inboxService.enabled()) {
+      <app-tooltip [text]="isCollapsed ? ('inbox.title' | translate) : ''" position="right" class="w-full">
+        <a
+          routerLink="/inbox"
+          routerLinkActive="bg-primary text-primary-foreground"
+          #inboxLink="routerLinkActive"
+          (click)="mobileNavOpen.set(false)"
+          class="relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors"
+          [class.hover:bg-background]="!inboxLink.isActive"
+          [class.justify-center]="isCollapsed"
+        >
+          <app-icon name="inbox" />
+          @if (!isCollapsed) {
+            <span class="flex-1">{{ 'inbox.title' | translate }}</span>
+          }
+          @if (inboxService.actionCount() > 0) {
+            <span
+              class="min-w-5 rounded-full bg-danger px-1.5 text-center text-xs font-semibold leading-5 text-white"
+              [class.absolute]="isCollapsed"
+              [class.-top-1]="isCollapsed"
+              [class.right-1]="isCollapsed"
+            >
+              {{ inboxService.actionCount() > 99 ? '99+' : inboxService.actionCount() }}
+            </span>
+          }
+        </a>
+      </app-tooltip>
+    }
     @for (item of visibleNavItems(); track item.menuId) {
       @if (item.children.length) {
         <app-tooltip [text]="isCollapsed ? displayName(item) : ''" position="right" class="w-full">
@@ -181,6 +209,17 @@
 
         <button
           type="button"
+          class="hidden items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors hover:bg-surface md:flex"
+          (click)="openShortcutsHelp()"
+        >
+          {{ 'shortcuts.title' | translate }}
+          <kbd class="rounded border border-border border-b-2 bg-surface px-1.5 text-xs text-muted-foreground">{{
+            shortcuts.label('help')
+          }}</kbd>
+        </button>
+
+        <button
+          type="button"
           class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-danger transition-colors hover:bg-surface"
           (click)="onLogout()"
         >
@@ -237,7 +276,22 @@
 
       <img [src]="logoSrc()" alt="InvenTrack" class="h-6 w-auto" />
 
-      <span class="size-8"></span>
+      @if (inboxService.enabled()) {
+        <a
+          routerLink="/inbox"
+          class="relative flex size-8 items-center justify-center rounded-md text-foreground"
+          [attr.aria-label]="'inbox.title' | translate"
+        >
+          <app-icon name="inbox" />
+          @if (inboxService.actionCount() > 0) {
+            <span class="absolute -right-1 -top-1 min-w-4 rounded-full bg-danger px-1 text-center text-[10px] font-semibold leading-4 text-white">
+              {{ inboxService.actionCount() > 99 ? '99+' : inboxService.actionCount() }}
+            </span>
+          }
+        </a>
+      } @else {
+        <span class="size-8"></span>
+      }
     </header>
 
     @if (mobileNavOpen()) {

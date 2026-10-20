@@ -14,6 +14,9 @@ export interface Supplier extends Record<string, unknown> {
   isActive: boolean;
   linkedClientId: number | null;
   linkedClientName: string | null;
+  /** Proveedor adventista: distrito e iglesia (null si no lo es). */
+  districtId: number | null;
+  churchId: number | null;
 }
 
 export interface SupplierRequest {
@@ -31,6 +34,8 @@ export interface SupplierRequest {
   email?: string | null;
   notes?: string | null;
   isActive: boolean;
+  districtId?: number | null;
+  churchId?: number | null;
 }
 
 export interface SupplierFilters {

@@ -12,7 +12,7 @@ import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Switch } from '../../../shared/components/switch/switch';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
-import { ExcelDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { AccountReceivablesReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 import { canPreviewPdf } from '../../../core/files/pdf';
@@ -25,7 +25,7 @@ const OPEN_STATUS_VALUE = 'open';
 
 @Component({
   selector: 'app-account-receivables-report',
-  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, Switch, TranslatePipe, ExcelDownloadButton, PdfDownloadButton],
+  imports: [FormsModule, PartySearchInput, Select, DatePicker, Skeleton, Switch, TranslatePipe, ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton],
   templateUrl: './account-receivables-report.html',
 })
 export class AccountReceivablesReport {
@@ -59,6 +59,7 @@ export class AccountReceivablesReport {
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
   protected readonly exporting = signal(false);
+  protected readonly exportingTxt = signal(false);
 
   private objectUrl: string | null = null;
   private pdfBlob: Blob | null = null;
@@ -129,7 +130,7 @@ export class AccountReceivablesReport {
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
     } catch {
-      this.toastService.show(this.languageService.t('reports.accountReceivables.error'));
+      this.toastService.error(this.languageService.t('reports.accountReceivables.error'));
     } finally {
       this.loading.set(false);
     }
@@ -149,9 +150,20 @@ export class AccountReceivablesReport {
     try {
       downloadBlob(await this.reportService.getAccountReceivablesReportExcelBlob(this.currentFilters()), 'cuentas-por-cobrar.xlsx');
     } catch {
-      this.toastService.show(this.languageService.t('reports.excel.error'));
+      this.toastService.error(this.languageService.t('reports.excel.error'));
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  protected async onExportTxt(): Promise<void> {
+    this.exportingTxt.set(true);
+    try {
+      downloadBlob(await this.reportService.getAccountReceivablesReportTxtBlob(this.currentFilters()), 'cuentas-por-cobrar.txt');
+    } catch {
+      this.toastService.error(this.languageService.t('reports.txt.error'));
+    } finally {
+      this.exportingTxt.set(false);
     }
   }
 

@@ -64,6 +64,12 @@ export class ProductsList {
     const departmentNames = this.nameMap(this.departments());
 
     return [
+      {
+        key: 'imageVersion',
+        header: this.languageService.t('products.columns.photo'),
+        align: 'center',
+        photo: (row) => ({ productId: row.productId, version: row.imageVersion, name: row.name }),
+      },
       { key: 'code', header: this.languageService.t('products.columns.code'), format: (value) => (value as string) || '—' },
       { key: 'name', header: this.languageService.t('products.columns.name') },
       {
@@ -188,11 +194,11 @@ export class ProductsList {
   private async deleteProduct(row: Product): Promise<void> {
     try {
       await this.productService.delete(row.productId);
-      this.toastService.show(this.languageService.t('products.delete.success'));
+      this.toastService.success(this.languageService.t('products.delete.success'));
       void this.load();
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]?.description;
-      this.toastService.show(this.languageService.t('products.delete.error'), message);
+      this.toastService.error(this.languageService.t('products.delete.error'), message);
     }
   }
 }

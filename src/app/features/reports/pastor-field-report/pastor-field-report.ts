@@ -12,14 +12,14 @@ import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
-import { ExcelDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { PastorFieldReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 import { canPreviewPdf } from '../../../core/files/pdf';
 
 @Component({
   selector: 'app-pastor-field-report',
-  imports: [FormsModule, PartySearchInput, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, PdfDownloadButton],
+  imports: [FormsModule, PartySearchInput, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton],
   templateUrl: './pastor-field-report.html',
 })
 export class PastorFieldReport {
@@ -37,6 +37,7 @@ export class PastorFieldReport {
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
   protected readonly exporting = signal(false);
+  protected readonly exportingTxt = signal(false);
 
   private objectUrl: string | null = null;
   private pdfBlob: Blob | null = null;
@@ -92,7 +93,7 @@ export class PastorFieldReport {
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
     } catch {
-      this.toastService.show(this.languageService.t('reports.pastorField.error'));
+      this.toastService.error(this.languageService.t('reports.pastorField.error'));
     } finally {
       this.loading.set(false);
     }
@@ -111,9 +112,20 @@ export class PastorFieldReport {
     try {
       downloadBlob(await this.reportService.getPastorFieldReportExcelBlob(this.currentFilters()), 'campo-pastor.xlsx');
     } catch {
-      this.toastService.show(this.languageService.t('reports.excel.error'));
+      this.toastService.error(this.languageService.t('reports.excel.error'));
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  protected async onExportTxt(): Promise<void> {
+    this.exportingTxt.set(true);
+    try {
+      downloadBlob(await this.reportService.getPastorFieldReportTxtBlob(this.currentFilters()), 'campo-pastor.txt');
+    } catch {
+      this.toastService.error(this.languageService.t('reports.txt.error'));
+    } finally {
+      this.exportingTxt.set(false);
     }
   }
 

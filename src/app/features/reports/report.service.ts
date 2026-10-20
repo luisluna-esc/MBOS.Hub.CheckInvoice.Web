@@ -11,6 +11,10 @@ import {
   KardexReportFilters,
   PastorFieldReportFilters,
   ReceiptsReportFilters,
+  TransfersReportFilters,
+  AccountingEntryRow,
+  AccountingKind,
+  AccountingReportFilters,
   StockByDepartmentReportFilters,
   StockReportFilters
 } from './report.models';
@@ -37,6 +41,15 @@ export class ReportService {
   async getStockReportExcelBlob(filters: StockReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/stock/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
+  async getStockReportTxtBlob(filters: StockReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/stock/txt`, {
         params: this.cleanFilters(filters),
         responseType: 'blob'
       })
@@ -70,6 +83,15 @@ export class ReportService {
     );
   }
 
+  async getStockByDepartmentReportTxtBlob(filters: StockByDepartmentReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/stock-by-department/txt`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getKardexReportPdfBlob(filters: KardexReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/kardex/pdf`, {
@@ -82,6 +104,15 @@ export class ReportService {
   async getKardexReportExcelBlob(filters: KardexReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/kardex/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
+  async getKardexReportTxtBlob(filters: KardexReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/kardex/txt`, {
         params: this.cleanFilters(filters),
         responseType: 'blob'
       })
@@ -106,6 +137,15 @@ export class ReportService {
     );
   }
 
+  async getInventoryCountReportTxtBlob(filters: InventoryCountReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/inventory-count/txt`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getIssuesReportPdfBlob(filters: IssuesReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/issues/pdf`, {
@@ -118,6 +158,15 @@ export class ReportService {
   async getIssuesReportExcelBlob(filters: IssuesReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/issues/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
+  async getIssuesReportTxtBlob(filters: IssuesReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/issues/txt`, {
         params: this.cleanFilters(filters),
         responseType: 'blob'
       })
@@ -140,6 +189,86 @@ export class ReportService {
         responseType: 'blob'
       })
     );
+  }
+
+  async getReceiptsReportTxtBlob(filters: ReceiptsReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/receipts/txt`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
+  async getTransfersReportPdfBlob(filters: TransfersReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/transfers/pdf`, { params: this.transferParams(filters), responseType: 'blob' })
+    );
+  }
+
+  async getTransfersReportExcelBlob(filters: TransfersReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/transfers/excel`, { params: this.transferParams(filters), responseType: 'blob' })
+    );
+  }
+
+  async getTransfersReportTxtBlob(filters: TransfersReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/transfers/txt`, { params: this.transferParams(filters), responseType: 'blob' })
+    );
+  }
+
+  /** Salidas o Ingresos para contabilidad (formato de importación del sistema contable). */
+  async getAccounting(kind: AccountingKind, filters: AccountingReportFilters): Promise<AccountingEntryRow[]> {
+    return firstValueFrom(
+      this.http.get<AccountingEntryRow[]>(`${environment.apiUrl}/Reports/${kind}-accounting`, { params: this.accountingParams(filters) })
+    );
+  }
+
+  async getAccountingExcelBlob(kind: AccountingKind, filters: AccountingReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/${kind}-accounting/excel`, { params: this.accountingParams(filters), responseType: 'blob' })
+    );
+  }
+
+  async getAccountingTxtBlob(kind: AccountingKind, filters: AccountingReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/${kind}-accounting/txt`, { params: this.accountingParams(filters), responseType: 'blob' })
+    );
+  }
+
+  private accountingParams(filters: AccountingReportFilters): Record<string, string> {
+    const params: Record<string, string> = {};
+    if (filters.warehouseId) {
+      params['WarehouseId'] = String(filters.warehouseId);
+    }
+    if (filters.dateFrom) {
+      params['DateFrom'] = filters.dateFrom;
+    }
+    if (filters.dateTo) {
+      params['DateTo'] = filters.dateTo;
+    }
+    if (filters.receiptTypeId) {
+      params['ReceiptTypeId'] = String(filters.receiptTypeId);
+    }
+    return params;
+  }
+
+  private transferParams(filters: TransfersReportFilters): Record<string, string> {
+    const params: Record<string, string> = {};
+    if (filters.sourceWarehouseId) {
+      params['SourceWarehouseId'] = String(filters.sourceWarehouseId);
+    }
+    if (filters.destinationWarehouseId) {
+      params['DestinationWarehouseId'] = String(filters.destinationWarehouseId);
+    }
+    if (filters.dateFrom) {
+      params['DateFrom'] = filters.dateFrom;
+    }
+    if (filters.dateTo) {
+      params['DateTo'] = filters.dateTo;
+    }
+    return params;
   }
 
   async getReceiptVoucherPdfBlob(receiptId: number): Promise<Blob> {
@@ -181,6 +310,15 @@ export class ReportService {
     );
   }
 
+  async getKardexByProductReportTxtBlob(filters: KardexByProductReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/kardex-by-product/txt`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getPastorFieldReportPdfBlob(filters: PastorFieldReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/pastor-field/pdf`, {
@@ -199,6 +337,15 @@ export class ReportService {
     );
   }
 
+  async getPastorFieldReportTxtBlob(filters: PastorFieldReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/pastor-field/txt`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getAccountReceivablesReportPdfBlob(filters: AccountReceivablesReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/account-receivables/pdf`, {
@@ -211,6 +358,15 @@ export class ReportService {
   async getAccountReceivablesReportExcelBlob(filters: AccountReceivablesReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/account-receivables/excel`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
+  async getAccountReceivablesReportTxtBlob(filters: AccountReceivablesReportFilters): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/account-receivables/txt`, {
         params: this.cleanFilters(filters),
         responseType: 'blob'
       })

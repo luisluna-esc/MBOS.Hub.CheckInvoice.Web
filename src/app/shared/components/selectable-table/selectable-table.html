@@ -35,6 +35,11 @@
         @for (row of rows(); track $index; let rowIndex = $index) {
           <tr
             class="transition-colors"
+            [attr.data-row]="rowIndex"
+            [class.bg-brand-300]="rowIndex === activeIndex() && !isRowDisabled(row)"
+            [class.ring-2]="rowIndex === activeIndex()"
+            [class.ring-inset]="rowIndex === activeIndex()"
+            [class.ring-primary]="rowIndex === activeIndex()"
             [class.cursor-pointer]="!isRowDisabled(row)"
             [class.hover:bg-brand-300]="!isRowDisabled(row)"
             [class.cursor-not-allowed]="isRowDisabled(row)"
@@ -48,7 +53,15 @@
                 [class.text-center]="column.align === 'center'"
                 [class.text-right]="column.align === 'right'"
               >
-                {{ getCellValue(row, column, rowIndex) }}
+                @if (column.photo) {
+                  @let photo = column.photo(row);
+                  <!-- Clic en la foto: la amplía, sin elegir la fila. -->
+                  <span class="inline-block" (click)="$event.stopPropagation()">
+                    <app-product-photo [productId]="photo.productId" [version]="photo.version" [name]="photo.name" size="sm" />
+                  </span>
+                } @else {
+                  {{ getCellValue(row, column, rowIndex) }}
+                }
               </td>
             }
           </tr>

@@ -7,6 +7,7 @@
 
   <button
     #origin="cdkOverlayOrigin"
+    #trigger
     cdkOverlayOrigin
     type="button"
     [id]="pickerId"
@@ -19,8 +20,14 @@
     [class.border-border]="!showError"
     [class.border-danger]="showError"
     (click)="toggle()"
+    (keydown)="onTriggerKeydown($event)"
+    (blur)="onTriggerBlur()"
   >
-    <span class="min-w-0 truncate" [class.text-muted-foreground]="!displayValue()">{{ (displayValue() ?? placeholder()) || ' ' }}</span>
+    @if (typed()) {
+      <span class="min-w-0 truncate text-foreground">{{ typed() }}<span class="animate-pulse text-primary">|</span></span>
+    } @else {
+      <span class="min-w-0 truncate" [class.text-muted-foreground]="!displayValue()">{{ (displayValue() ?? placeholder()) || ' ' }}</span>
+    }
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0 text-muted-foreground">
       <path
         d="M8 2V5M16 2V5"
@@ -48,7 +55,12 @@
     (backdropClick)="close()"
     (detach)="close()"
   >
-    <div class="w-64 rounded-md border border-border bg-surface p-3 shadow-lg">
+    <div
+      #panel
+      tabindex="-1"
+      class="w-64 rounded-md border border-border bg-surface p-3 shadow-lg focus:outline-none"
+      (keydown)="onPanelKeydown($event)"
+    >
       @if (view() === 'days') {
         <div class="mb-2 flex items-center justify-between">
           <button
@@ -100,6 +112,9 @@
               [class.bg-primary]="isSelected(day)"
               [class.text-primary-foreground]="isSelected(day)"
               [class.font-semibold]="day.isToday && !isSelected(day)"
+              [class.ring-2]="isFocused(day)"
+              [class.ring-primary]="isFocused(day)"
+              tabindex="-1"
               (click)="selectDay(day)"
             >
               {{ day.label }}

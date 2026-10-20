@@ -11,14 +11,14 @@ import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
 import { ALL_WAREHOUSES_VALUE, warehouseIdFilter, warehouseOptionsWithGeneral } from '../report-warehouse.util';
-import { ExcelDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { StockReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 import { canPreviewPdf } from '../../../core/files/pdf';
 
 @Component({
   selector: 'app-stock-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, PdfDownloadButton],
+  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton],
   templateUrl: './stock-report.html',
 })
 export class StockReport {
@@ -37,6 +37,7 @@ export class StockReport {
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
   protected readonly exporting = signal(false);
+  protected readonly exportingTxt = signal(false);
 
   private objectUrl: string | null = null;
   private pdfBlob: Blob | null = null;
@@ -96,7 +97,7 @@ export class StockReport {
       this.objectUrl = URL.createObjectURL(blob);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
     } catch {
-      this.toastService.show(this.languageService.t('reports.stock.error'));
+      this.toastService.error(this.languageService.t('reports.stock.error'));
     } finally {
       this.loading.set(false);
     }
@@ -115,9 +116,20 @@ export class StockReport {
     try {
       downloadBlob(await this.reportService.getStockReportExcelBlob(this.currentFilters()), 'inventario-general.xlsx');
     } catch {
-      this.toastService.show(this.languageService.t('reports.excel.error'));
+      this.toastService.error(this.languageService.t('reports.excel.error'));
     } finally {
       this.exporting.set(false);
+    }
+  }
+
+  protected async onExportTxt(): Promise<void> {
+    this.exportingTxt.set(true);
+    try {
+      downloadBlob(await this.reportService.getStockReportTxtBlob(this.currentFilters()), 'inventario-general.txt');
+    } catch {
+      this.toastService.error(this.languageService.t('reports.txt.error'));
+    } finally {
+      this.exportingTxt.set(false);
     }
   }
 

@@ -1,9 +1,10 @@
 import { Component, computed, input, output } from '@angular/core';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { ShortcutDirective } from '../../directives/shortcut.directive';
 
 @Component({
   selector: 'app-dialog',
-  imports: [TranslatePipe],
+  imports: [ShortcutDirective, TranslatePipe],
   templateUrl: './dialog.html',
 })
 export class Dialog {

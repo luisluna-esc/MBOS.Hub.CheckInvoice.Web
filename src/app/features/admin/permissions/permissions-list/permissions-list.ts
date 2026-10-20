@@ -171,10 +171,10 @@ export class PermissionsList {
   private async deletePermission(row: Permission): Promise<void> {
     try {
       await this.permissionService.delete(row.permissionId);
-      this.toastService.show(this.languageService.t('permissions.delete.success'));
+      this.toastService.success(this.languageService.t('permissions.delete.success'));
       void this.load();
     } catch {
-      this.toastService.show(this.languageService.t('permissions.delete.error'));
+      this.toastService.error(this.languageService.t('permissions.delete.error'));
     }
   }
 }

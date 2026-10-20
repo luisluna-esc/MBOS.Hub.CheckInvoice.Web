@@ -1,0 +1,89 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div class="flex flex-col gap-1">
+      <h1 class="text-xl font-semibold text-foreground">{{ 'inbox.title' | translate }}</h1>
+      <p class="text-sm text-muted-foreground">{{ 'inbox.description' | translate }}</p>
+    </div>
+    @if (tab() === 'answers' && (counts()?.unread ?? 0) > 0) {
+      <button
+        type="button"
+        class="rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-surface"
+        (click)="markAllSeen()"
+      >
+        {{ 'inbox.actions.markAllSeen' | translate }}
+      </button>
+    }
+  </div>
+
+  <!-- Pestañas: lo que hay que hacer, las respuestas a lo mío y lo que yo firmé. -->
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3" role="tablist">
+    @for (item of tabs(); track item.key) {
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="tab() === item.key"
+        class="flex items-center justify-between gap-3 rounded-lg border p-4 text-left transition-colors"
+        [class.border-primary]="tab() === item.key"
+        [class.bg-surface]="tab() === item.key"
+        [class.border-border]="tab() !== item.key"
+        [class.hover:bg-surface]="tab() !== item.key"
+        (click)="selectTab(item.key)"
+      >
+        <span class="flex flex-col gap-0.5">
+          <span class="text-sm font-semibold text-foreground">{{ 'inbox.tabs.' + item.key | translate }}</span>
+          <span class="text-xs text-muted-foreground">{{ 'inbox.tabHints.' + item.key | translate }}</span>
+        </span>
+        <span
+          class="min-w-8 rounded-full px-2.5 py-1 text-center text-sm font-semibold"
+          [class.bg-danger]="item.alert && item.count > 0"
+          [class.text-white]="item.alert && item.count > 0"
+          [class.bg-background]="!item.alert || item.count === 0"
+          [class.text-muted-foreground]="!item.alert || item.count === 0"
+        >
+          {{ item.count }}
+        </span>
+      </button>
+    }
+  </div>
+
+  @if (kindChips().length > 0) {
+    <div class="flex flex-wrap gap-2">
+      @for (chip of kindChips(); track chip.kind) {
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors"
+          [class.border-primary]="kind() === chip.kind"
+          [class.bg-primary]="kind() === chip.kind"
+          [class.text-primary-foreground]="kind() === chip.kind"
+          [class.border-border]="kind() !== chip.kind"
+          [class.text-foreground]="kind() !== chip.kind"
+          (click)="selectKind(chip.kind)"
+        >
+          {{ 'inbox.kinds.' + chip.kind | translate }}
+          <span class="text-xs font-semibold">{{ chip.count }}</span>
+        </button>
+      }
+    </div>
+  }
+
+  <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
+
+  @if (errorCode()) {
+    <div class="rounded-lg border border-border">
+      <app-error-state [code]="errorCode()!" />
+    </div>
+  } @else {
+    <app-table
+      [columns]="columns()"
+      [rows]="rows()"
+      [actions]="actions()"
+      [totalRecords]="totalRecords()"
+      [pageNumber]="pageNumber()"
+      [pageSize]="pageSize()"
+      [emptyMessage]="('inbox.emptyTabs.' + tab()) | translate"
+      [loading]="loading()"
+      (pageChange)="onPageChange($event)"
+      (pageSizeChange)="onPageSizeChange($event)"
+    />
+  }
+</div>

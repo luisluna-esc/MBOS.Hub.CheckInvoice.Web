@@ -27,6 +27,10 @@ export class ReceiptDetailsDialog {
   protected readonly loading = signal(true);
   protected readonly totalQuantity = computed(() => this.lines().reduce((sum, line) => sum + line.quantity, 0));
   protected readonly grandTotal = computed(() => this.lines().reduce((sum, line) => sum + (line.totalCost ?? 0), 0));
+  /** Compras con retención: el precio de compra difiere del costo (precio x 0,92), se muestran ambos. */
+  protected readonly hasPrices = computed(() =>
+    this.lines().some((line) => line.unitPrice != null && line.unitPrice !== line.unitCost)
+  );
   protected readonly hasWorkOrders = computed(() => this.lines().some((line) => !!line.workOrder));
   protected readonly hasDetails = computed(() => this.lines().some((line) => !!line.detail));
 

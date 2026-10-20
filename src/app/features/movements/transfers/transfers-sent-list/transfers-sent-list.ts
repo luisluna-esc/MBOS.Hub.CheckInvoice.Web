@@ -10,7 +10,16 @@ import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
+import {
+  DocumentReviewDialog,
+  DocumentReviewDialogData,
+} from '../../../../shared/components/document-review-dialog/document-review-dialog';
 import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
+import { InfoHint } from '../../../../shared/components/info-hint/info-hint';
+import {
+  TransferVoidRequestDialog,
+  TransferVoidRequestDialogData,
+} from '../../transfer-void-requests/transfer-void-requests';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ReportService } from '../../../reports/report.service';
 import { TransferDetailsDialog, TransferDetailsDialogData } from '../transfer-details-dialog/transfer-details-dialog';
@@ -21,7 +30,7 @@ import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 @Component({
   selector: 'app-transfers-sent-list',
-  imports: [Filters, Table, ErrorState, TranslatePipe],
+  imports: [Filters, Table, ErrorState, InfoHint, TranslatePipe],
   templateUrl: './transfers-sent-list.html',
 })
 export class TransfersSentList {
@@ -42,7 +51,6 @@ export class TransfersSentList {
   protected readonly loading = signal(false);
 
   protected readonly warehouses = signal<CatalogItem[]>([]);
-  protected readonly clients = signal<CatalogItem[]>([]);
 
   private currentFilters: TransferFilters = {};
   private readonly todayIso = localDateIso();
@@ -90,7 +98,6 @@ export class TransfersSentList {
 
   protected readonly columns = computed<TableColumn<Transfer>[]>(() => {
     const warehouseNames = this.nameMap(this.warehouses());
-    const clientNames = this.nameMap(this.clients());
 
     return [
       {
@@ -105,19 +112,38 @@ export class TransfersSentList {
         format: (value) => String(value).padStart(5, '0'),
       },
       {
+        key: 'sourceWarehouseId',
+        header: this.languageService.t('transfers.columns.sourceWarehouse'),
+        format: (value) => (value ? (warehouseNames[value as number] ?? String(value)) : '—'),
+      },
+      {
         key: 'destinationWarehouseId',
         header: this.languageService.t('transfers.columns.destinationWarehouse'),
         format: (value) => (value ? (warehouseNames[value as number] ?? String(value)) : '—'),
       },
       {
-        key: 'receiverClientId',
-        header: this.languageService.t('transfers.columns.receiver'),
-        format: (value) => (value ? (clientNames[value as number] ?? String(value)) : '—'),
-      },
-      {
         key: 'transferDate',
         header: this.languageService.t('transfers.columns.transferDate'),
         format: (value) => new Date(value as string).toLocaleString(),
+      },
+      {
+        key: 'isVoided',
+        header: this.languageService.t('transfers.columns.status'),
+        align: 'center',
+        format: (value, row) => {
+          if (value) {
+            return this.languageService.t('transfers.columns.statusVoided');
+          }
+          return (row as Transfer).hasPendingVoidRequest
+            ? this.languageService.t('transfers.columns.statusVoidPending')
+            : this.languageService.t('transfers.columns.statusNormal');
+        },
+      },
+      {
+        key: 'reviewStatus',
+        header: this.languageService.t('review.column'),
+        align: 'center',
+        format: (value) => this.languageService.t(`review.status.${(value as string) || 'digitado'}`),
       },
       {
         key: 'notes',
@@ -134,9 +160,27 @@ export class TransfersSentList {
       onClick: (row) => this.openDetails(row),
     },
     {
+      label: this.languageService.t('review.open'),
+      icon: 'verified',
+      onClick: (row) => this.openReview(row),
+    },
+    {
       label: this.languageService.t('transfers.actions.print'),
       icon: 'print',
       onClick: (row) => void this.printVoucher(row),
+    },
+    {
+      label: this.languageService.t('transfers.actions.requestVoid'),
+      icon: 'void',
+      variant: 'danger',
+      disabled: (row) => row.isVoided || row.hasPendingVoidRequest,
+      disabledReason: (row) =>
+        row.isVoided
+          ? this.languageService.t('transfers.actions.requestVoidDisabledVoided')
+          : row.hasPendingVoidRequest
+            ? this.languageService.t('transfers.actions.requestVoidDisabledPending')
+            : null,
+      onClick: (row) => this.openVoidRequest(row),
     },
   ]);
 
@@ -145,28 +189,44 @@ export class TransfersSentList {
     void this.load();
   }
 
+  protected openVoidRequest(row: Transfer): void {
+    const ref = this.dialogService.open<boolean, TransferVoidRequestDialogData, TransferVoidRequestDialog>(
+      TransferVoidRequestDialog,
+      { data: { transferId: row.transferId } }
+    );
+    ref.closed.subscribe((sent) => {
+      if (sent) {
+        void this.load();
+      }
+    });
+  }
+
+  protected openReview(row: Transfer): void {
+    const ref = this.dialogService.open<boolean, DocumentReviewDialogData, DocumentReviewDialog>(DocumentReviewDialog, {
+      data: { type: 'transfer', id: row.transferId, title: `${this.languageService.t('transfers.columns.voucherNumber')} ${String(row.transferId).padStart(5, '0')}` },
+    });
+    ref.closed.subscribe((changed) => {
+      if (changed) {
+        void this.load();
+      }
+    });
+  }
+
   private nameMap(items: CatalogItem[]): Record<number, string> {
     return Object.fromEntries(items.map((item) => [item.id, item.name]));
   }
 
   private async loadCatalogs(): Promise<void> {
-    const [warehouses, clients] = await settleCatalogs([
-      this.catalogService.getWarehouses(),
-      this.catalogService.getClients(),
-    ]);
+    const [warehouses] = await settleCatalogs([this.catalogService.getWarehouses()]);
     this.warehouses.set(warehouses);
-    this.clients.set(clients);
   }
 
   private async load(): Promise<void> {
     this.errorCode.set(null);
     this.loading.set(true);
     try {
-      const senderUserId = this.authService.session()?.appUserId;
-      const result = await this.transferService.list(this.pageNumber(), this.pageSize(), {
-        ...this.currentFilters,
-        senderUserId,
-      });
+      // Transferencias internas: se ven todas (no solo las del usuario), para revisarlas o anularlas.
+      const result = await this.transferService.list(this.pageNumber(), this.pageSize(), this.currentFilters);
       this.rows.set(result.items);
       this.totalRecords.set(result.totalRecords);
     } catch (error) {
@@ -227,7 +287,7 @@ export class TransfersSentList {
       showPdf(blob, `transferencia-${String(row.transferId).padStart(5, '0')}.pdf`, newTab);
     } catch {
       newTab?.close();
-      this.toastService.show(this.languageService.t('transfers.printError'));
+      this.toastService.error(this.languageService.t('transfers.printError'));
     }
   }
 }

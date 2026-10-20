@@ -1,11 +1,12 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
+import { MAX_PRODUCT_IMAGE_BYTES, productImageUrl, shrinkImage } from '../../../../core/files/image';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { Checkbox } from '../../../../shared/components/checkbox/checkbox';
@@ -25,7 +26,7 @@ export interface ProductFormDialogData {
   imports: [ReactiveFormsModule, Dialog, AppInput, Select, Checkbox, TranslatePipe],
   templateUrl: './product-form-dialog.html',
 })
-export class ProductFormDialog {
+export class ProductFormDialog implements OnDestroy {
   private readonly data = inject<ProductFormDialogData>(DIALOG_DATA);
   private readonly dialogRef = inject(DialogRef<boolean, ProductFormDialog>);
   private readonly catalogService = inject(CatalogService);
@@ -36,6 +37,14 @@ export class ProductFormDialog {
   protected readonly saving = signal(false);
   protected readonly isEdit = !!this.data.product;
   protected readonly productCode = this.data.product?.code ?? null;
+
+  /** Foto que se ve en el formulario: la guardada, la recién elegida o ninguna. */
+  protected readonly photoUrl = signal<string | null>(
+    this.data.product?.imageVersion ? productImageUrl(this.data.product.productId, this.data.product.imageVersion) : null
+  );
+  private pendingPhoto: Blob | null = null;
+  private removePhoto = false;
+  private previewObjectUrl: string | null = null;
 
   protected readonly departments = signal<CatalogItem[]>([]);
   protected readonly subDepartments = signal<CatalogItem[]>([]);
@@ -110,6 +119,54 @@ export class ProductFormDialog {
     this.mediaTypes.set(mediaTypes);
   }
 
+  protected async onPhotoChosen(event: Event): Promise<void> {
+    const inputElement = event.target as HTMLInputElement;
+    const file = inputElement.files?.[0];
+    inputElement.value = '';
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      this.toastService.error(this.languageService.t('products.form.photoInvalid'));
+      return;
+    }
+    // Límite sobre el archivo original (no solo después de achicarlo).
+    if (file.size > MAX_PRODUCT_IMAGE_BYTES) {
+      this.toastService.error(this.languageService.t('products.form.photoTooLarge'));
+      return;
+    }
+
+    const photo = await shrinkImage(file);
+    if (photo.size > MAX_PRODUCT_IMAGE_BYTES) {
+      this.toastService.error(this.languageService.t('products.form.photoTooLarge'));
+      return;
+    }
+
+    this.pendingPhoto = photo;
+    this.removePhoto = false;
+    this.revokePreview();
+    this.previewObjectUrl = URL.createObjectURL(photo);
+    this.photoUrl.set(this.previewObjectUrl);
+  }
+
+  protected onRemovePhoto(): void {
+    this.pendingPhoto = null;
+    this.removePhoto = !!this.data.product?.imageVersion;
+    this.revokePreview();
+    this.photoUrl.set(null);
+  }
+
+  private revokePreview(): void {
+    if (this.previewObjectUrl) {
+      URL.revokeObjectURL(this.previewObjectUrl);
+      this.previewObjectUrl = null;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.revokePreview();
+  }
+
   protected async onSave(): Promise<void> {
     if (this.saveDisabled()) {
       this.form.markAllAsTouched();
@@ -129,17 +186,32 @@ export class ProductFormDialog {
     };
 
     try {
+      let productId = request.productId;
       if (this.isEdit) {
         await this.productService.update(request.productId, request);
       } else {
-        await this.productService.create(request);
+        productId = (await this.productService.create(request)).id;
       }
-      this.toastService.show(this.languageService.t('products.form.success'));
+
+      // La foto va aparte: si fallara, el producto ya quedó guardado y se avisa solo de la foto.
+      try {
+        if (this.pendingPhoto) {
+          await this.productService.setImage(productId, this.pendingPhoto);
+        } else if (this.removePhoto) {
+          await this.productService.deleteImage(productId);
+        }
+      } catch (error) {
+        const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
+          ?.description;
+        this.toastService.error(this.languageService.t('products.form.photoError'), message);
+      }
+
+      this.toastService.success(this.languageService.t('products.form.success'));
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('products.form.error'), message);
+      this.toastService.error(this.languageService.t('products.form.error'), message);
     } finally {
       this.saving.set(false);
     }

@@ -4,7 +4,6 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular
 import { startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
-import { operationalWarehouseOnly } from '../../../../core/catalogs/operational-warehouse';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
@@ -21,6 +20,7 @@ import { Select, SelectOption } from '../../../../shared/components/select/selec
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { IssueService } from '../../issues/issue.service';
 import { ReceiptService } from '../../receipts/receipt.service';
+import { ShortcutDirective } from '../../../../shared/directives/shortcut.directive';
 
 type AdjustmentLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -35,7 +35,7 @@ interface LineInfo {
 
 @Component({
   selector: 'app-stock-adjustment-create',
-  imports: [ReactiveFormsModule, AppInput, Select, TranslatePipe, InfoHint],
+  imports: [ShortcutDirective, ReactiveFormsModule, AppInput, Select, TranslatePipe, InfoHint],
   templateUrl: './stock-adjustment-create.html',
 })
 export class StockAdjustmentCreate {
@@ -52,7 +52,7 @@ export class StockAdjustmentCreate {
   protected readonly lineInfos = signal<LineInfo[]>([]);
 
   protected readonly warehouseOptions = computed<SelectOption[]>(() =>
-    operationalWarehouseOnly(this.warehouses()).map((item) => ({ value: String(item.id), label: item.name }))
+    this.warehouses().map((item) => ({ value: String(item.id), label: item.name }))
   );
 
   protected readonly warehouseControl = new FormControl('', { nonNullable: true });
@@ -84,7 +84,7 @@ export class StockAdjustmentCreate {
 
   private async loadCatalogs(): Promise<void> {
     const [warehouses, receiptTypes, issueTypes] = await settleCatalogs([
-      this.catalogService.getWarehouses(),
+      this.catalogService.getActiveWarehouses(),
       this.catalogService.getReceiptTypes(),
       this.catalogService.getIssueTypes(),
     ]);
@@ -151,7 +151,7 @@ export class StockAdjustmentCreate {
     }
 
     if (this.receiptTypeId === null || this.issueTypeId === null) {
-      this.toastService.show(this.languageService.t('stockAdjustment.error'));
+      this.toastService.error(this.languageService.t('stockAdjustment.error'));
       return;
     }
 
@@ -183,7 +183,8 @@ export class StockAdjustmentCreate {
           details: increaseLines.map((line) => ({
             productId: line.productId,
             quantity: line.quantity,
-            unitCost: line.unitCost,
+            // Ajuste: entra al costo promedio actual (precio y costo son lo mismo).
+            unitPrice: line.unitCost,
           })),
         });
       }
@@ -199,13 +200,13 @@ export class StockAdjustmentCreate {
         });
       }
 
-      this.toastService.show(this.languageService.t('stockAdjustment.success'));
+      this.toastService.success(this.languageService.t('stockAdjustment.success'));
       this.linesArray.clear();
       this.lineInfos.set([]);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('stockAdjustment.error'), message);
+      this.toastService.error(this.languageService.t('stockAdjustment.error'), message);
     } finally {
       this.saving.set(false);
     }

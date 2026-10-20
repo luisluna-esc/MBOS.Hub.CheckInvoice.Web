@@ -208,10 +208,10 @@ export class ChurchesList {
   private async deleteChurch(row: Church): Promise<void> {
     try {
       await this.churchService.delete(row.churchId);
-      this.toastService.show(this.languageService.t('churches.delete.success'));
+      this.toastService.success(this.languageService.t('churches.delete.success'));
       void this.load();
     } catch {
-      this.toastService.show(this.languageService.t('churches.delete.error'));
+      this.toastService.error(this.languageService.t('churches.delete.error'));
     }
   }
 }

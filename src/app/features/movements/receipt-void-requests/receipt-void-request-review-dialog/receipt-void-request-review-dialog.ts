@@ -63,14 +63,14 @@ export class ReceiptVoidRequestReviewDialog {
       } else {
         await this.receiptVoidRequestService.approve(this.data.receiptVoidRequestId, review);
       }
-      this.toastService.show(
+      this.toastService.success(
         this.languageService.t(this.isReject ? 'receiptVoidRequests.review.rejectSuccess' : 'receiptVoidRequests.review.approveSuccess')
       );
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('receiptVoidRequests.review.error'), message);
+      this.toastService.error(this.languageService.t('receiptVoidRequests.review.error'), message);
     } finally {
       this.saving.set(false);
     }

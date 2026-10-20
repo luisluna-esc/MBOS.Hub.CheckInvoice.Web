@@ -50,7 +50,7 @@ export class ReceiptVoidRequestDialog {
 
   protected async onSave(): Promise<void> {
     if (!this.form.controls.voidReasonId.value) {
-      this.toastService.show(this.languageService.t('receiptVoidRequests.dialog.reasonRequired'));
+      this.toastService.warning(this.languageService.t('receiptVoidRequests.dialog.reasonRequired'));
       return;
     }
 
@@ -61,12 +61,12 @@ export class ReceiptVoidRequestDialog {
         voidReasonId: Number(this.form.controls.voidReasonId.value),
         detail: this.form.controls.detail.value || null,
       });
-      this.toastService.show(this.languageService.t('receiptVoidRequests.dialog.success'));
+      this.toastService.success(this.languageService.t('receiptVoidRequests.dialog.success'));
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('receiptVoidRequests.dialog.error'), message);
+      this.toastService.error(this.languageService.t('receiptVoidRequests.dialog.error'), message);
     } finally {
       this.saving.set(false);
     }

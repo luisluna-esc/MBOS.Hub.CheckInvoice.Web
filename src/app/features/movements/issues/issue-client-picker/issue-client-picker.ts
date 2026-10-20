@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
@@ -22,6 +22,8 @@ export class IssueClientPicker {
   private readonly languageService = inject(LanguageService);
   private readonly dialogService = inject(DialogService);
   private readonly router = inject(Router);
+  /** Tipo de salida elegido en la tarjeta de motivos; pasa al formulario ya marcado. */
+  private readonly issueTypeId = Number(inject(ActivatedRoute).snapshot.queryParamMap.get('type')) || null;
 
   protected readonly rows = signal<Client[]>([]);
   protected readonly totalRecords = signal(0);
@@ -99,12 +101,12 @@ export class IssueClientPicker {
     });
     ref.closed.subscribe((clientId) => {
       if (clientId) {
-        void this.router.navigate(['/issues/new/details'], { state: { clientId } });
+        void this.router.navigate(['/issues/new/details'], { state: { clientId, issueTypeId: this.issueTypeId } });
       }
     });
   }
 
   protected selectClient(row: Client): void {
-    void this.router.navigate(['/issues/new/details'], { state: { clientId: row.clientId } });
+    void this.router.navigate(['/issues/new/details'], { state: { clientId: row.clientId, issueTypeId: this.issueTypeId } });
   }
 }

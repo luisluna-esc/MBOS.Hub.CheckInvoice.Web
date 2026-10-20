@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { SupplierFormDialog, SupplierFormDialogData } from '../../../catalogs/suppliers/supplier-form-dialog/supplier-form-dialog';
@@ -22,6 +22,10 @@ export class ReceiptSupplierPicker {
   private readonly languageService = inject(LanguageService);
   private readonly dialogService = inject(DialogService);
   private readonly router = inject(Router);
+
+  /** Donación: se elige quién dona (del mismo catálogo de proveedores). */
+  protected readonly isDonation = inject(ActivatedRoute).snapshot.data['motive'] === 'donation';
+  private readonly detailsRoute = this.isDonation ? '/receipts/donation/details' : '/receipts/new/details';
 
   protected readonly rows = signal<Supplier[]>([]);
   protected readonly totalRecords = signal(0);
@@ -99,12 +103,12 @@ export class ReceiptSupplierPicker {
     );
     ref.closed.subscribe((supplierId) => {
       if (supplierId) {
-        void this.router.navigate(['/receipts/new/details'], { state: { supplierId } });
+        void this.router.navigate([this.detailsRoute], { state: { supplierId } });
       }
     });
   }
 
   protected selectSupplier(row: Supplier): void {
-    void this.router.navigate(['/receipts/new/details'], { state: { supplierId: row.supplierId } });
+    void this.router.navigate([this.detailsRoute], { state: { supplierId: row.supplierId } });
   }
 }

@@ -1,0 +1,82 @@
+<div class="flex flex-col gap-6">
+  <div class="flex items-center gap-2">
+    <h1 class="text-xl font-semibold text-foreground">{{ texts() + '.title' | translate }}</h1>
+    <app-info-hint [title]="'reports.issuesAccounting.infoTitle' | translate">
+      {{ texts() + '.infoBody' | translate }}
+    </app-info-hint>
+  </div>
+
+  <div class="flex flex-col gap-3 rounded-md border border-border bg-surface p-3">
+    <p class="text-xs text-muted-foreground">{{ texts() + '.description' | translate }}</p>
+
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2" [class.lg:grid-cols-3]="kind() === 'issues'" [class.lg:grid-cols-4]="kind() === 'receipts'">
+      <app-select
+        [label]="'reports.filters.warehouse' | translate"
+        [options]="warehouses()"
+        [ngModel]="warehouseId()"
+        (ngModelChange)="warehouseId.set($event)"
+      />
+      @if (kind() === 'receipts') {
+        <app-select
+          [label]="'reports.receiptsAccounting.receiptType' | translate"
+          [options]="receiptTypes()"
+          [ngModel]="receiptTypeId()"
+          (ngModelChange)="receiptTypeId.set($event)"
+        />
+      }
+      <app-date-picker
+        [label]="'reports.receipts.dateFrom' | translate"
+        [ngModel]="dateFrom()"
+        (ngModelChange)="dateFrom.set($event)"
+      />
+      <app-date-picker
+        [label]="'reports.receipts.dateTo' | translate"
+        [ngModel]="dateTo()"
+        (ngModelChange)="dateTo.set($event)"
+      />
+    </div>
+  </div>
+
+  @if (departmentsWithoutCode().length > 0) {
+    <div class="flex items-start gap-2 rounded-md border border-danger bg-background p-3 text-sm text-danger">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mt-0.5 size-4 shrink-0">
+        <path d="M12 7.5V12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <circle cx="12" cy="16" r="1" fill="currentColor" />
+        <path
+          d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </svg>
+      <p>
+        {{ 'reports.issuesAccounting.missingCode' | translate }}
+        <span class="font-medium">{{ departmentsWithoutCode().join(', ') }}</span>.
+      </p>
+    </div>
+  }
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <p class="text-sm text-muted-foreground">
+      {{ texts() + '.summary' | translate: { rows: rows().length, documents: documentCount() } }}
+      <span class="ml-2 font-semibold text-foreground">{{ 'reports.issuesAccounting.total' | translate }} {{ total() }}</span>
+    </p>
+    <div class="flex flex-wrap gap-2">
+      <app-excel-download-button [loading]="exporting()" (download)="onExportExcel()" />
+      <app-txt-download-button [loading]="exportingTxt()" (download)="onExportTxt()" />
+    </div>
+  </div>
+
+  <app-table
+    [columns]="columns()"
+    [rows]="pageRows()"
+    [loading]="loading()"
+    [totalRecords]="rows().length"
+    [pageNumber]="pageNumber()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[20, 50, 100]"
+    [emptyMessage]="texts() + '.empty' | translate"
+    (pageChange)="pageNumber.set($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+  />
+</div>

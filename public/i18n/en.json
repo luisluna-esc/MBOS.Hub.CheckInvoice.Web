@@ -1,4 +1,320 @@
 {
+  "issueEdits": {
+    "title": "Issue Corrections",
+    "description": "Correcting a recorded issue goes through here: the requester explains the reason and the Accountant approves or rejects it.",
+    "statusFilter": "Status",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "loading": "Loading...",
+    "empty": "There are no corrections with this status.",
+    "note": "Issue {{note}}",
+    "requestedBy": "Requested by {{name}} on {{date}}",
+    "reviewedBy": "Reviewed by {{name}} on {{date}}",
+    "reason": "Reason",
+    "product": "Product",
+    "quantity": "Quantity",
+    "price": "Unit cost (Bs.)",
+    "added": "new",
+    "removed": "removed",
+    "notes": "Note (required to reject)",
+    "approve": "Approve correction",
+    "reject": "Reject",
+    "waiting": "Waiting for the Accountant review.",
+    "notesRequired": "Write why you reject it.",
+    "approved": "Correction approved. The issue becomes a new version and must be signed again.",
+    "rejected": "Correction rejected.",
+    "error": "The correction could not be reviewed.",
+    "fields": {
+      "issueDate": "Issue date",
+      "issueType": "Issue type",
+      "client": "Client",
+      "description": "Note"
+    }
+  },
+  "shortcuts": {
+    "keySpace": "Space",
+    "filterEnter": "In filters: search right away",
+    "switchToggle": "Switch (Yes / No): toggle it",
+    "dateOpen": "Date: open the calendar (move with arrows)",
+    "dateMonth": "Open calendar: previous or next month",
+    "dateDay": "Date: one day more or less",
+    "dateToday": "Date: today",
+    "dateType": "Date: type it (13102026, 13/10/26 or 13/10)",
+    "selectPick": "Open list: choose (Tab also moves to the next field)",
+    "selectMove": "Open list: move between options",
+    "selectType": "Option list: type the first letters to choose",
+    "selectOpen": "Option list: open it",
+    "prevField": "Go back to the previous field",
+    "nextField": "Go to the next field",
+    "groupFields": "Fields and filters",
+    "or": "or",
+    "title": "Keyboard shortcuts",
+    "onMac": "Mac keys",
+    "onWindows": "Windows keys",
+    "then": "then",
+    "footer": "Letter shortcuts do not work while typing in a field; Save, Esc and Ctrl/⌘ shortcuts do.",
+    "groupGeneral": "General",
+    "groupForms": "Forms",
+    "groupLists": "Lists",
+    "groupGoTo": "Go to",
+    "palette": "Search a screen and go to it",
+    "help": "Show this shortcut list",
+    "sidebar": "Show or hide the side menu",
+    "cancel": "Close the open window",
+    "save": "Save (or Continue, in the header)",
+    "new": "New record (product, issue, transfer...)",
+    "addLine": "Add a product line",
+    "enterPrice": "In the price: add another line",
+    "productArrows": "In the product: choose from the list",
+    "productTab": "In the product: confirm and move to the next field",
+    "search": "Go to the list search box",
+    "nextPage": "Next page",
+    "prevPage": "Previous page",
+    "goHome": "Home",
+    "goInbox": "Inbox",
+    "goReceipts": "Receipts",
+    "goIssues": "Issues",
+    "goTransfers": "Transfers",
+    "goProducts": "Products",
+    "paletteSearch": "Type the name of a screen...",
+    "paletteEmpty": "No screens with that name.",
+    "paletteHint": "↑ ↓ to choose, Enter to open, Esc to close"
+  },
+  "transferVoids": {
+    "title": "Transfer Voids",
+    "description": "Voiding a transfer returns its products from the destination warehouse to the source, at the same cost. If they were already used at the destination, it cannot be voided.",
+    "empty": "No requests with this status.",
+    "approve": "Approve void",
+    "approved": "Transfer voided. The products went back to the source warehouse.",
+    "rejected": "Request rejected.",
+    "error": "The void could not be completed.",
+    "dialog": {
+      "title": "Request transfer void",
+      "hint": "The Accountant must approve it. Once approved, the products go back to the source warehouse.",
+      "success": "Request sent. The Accountant must approve it."
+    }
+  },
+  "receiptEdits": {
+    "title": "Receipt Corrections",
+    "description": "Correcting a recorded receipt goes through here: the requester explains why and the Accountant approves or rejects it. If products from the receipt were already issued, the quantity cannot go below what was issued.",
+    "statusFilter": "Status",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "loading": "Loading...",
+    "empty": "No corrections with this status.",
+    "note": "Note {{note}}",
+    "requestedBy": "Requested by {{name}} on {{date}}",
+    "reviewedBy": "Reviewed by {{name}} on {{date}}",
+    "reason": "Reason",
+    "product": "Product",
+    "quantity": "Quantity",
+    "price": "Unit price (Bs.)",
+    "added": "new",
+    "removed": "removed",
+    "notes": "Note (required to reject)",
+    "approve": "Approve correction",
+    "reject": "Reject",
+    "waiting": "Waiting for the Accountant to review it.",
+    "notesRequired": "Write why you reject it.",
+    "approved": "Correction approved. The note becomes a new version and must be signed again.",
+    "rejected": "Correction rejected.",
+    "error": "The correction could not be reviewed.",
+    "fields": {
+      "issueDate": "Entry date",
+      "purchaseDate": "Purchase date",
+      "invoiceNumber": "Invoice or document No.",
+      "taxId": "Tax ID / ID card",
+      "invoiceTotal": "Purchase total",
+      "description": "Note"
+    }
+  },
+  "inbox": {
+    "toast": {
+      "unread": "You have {{count}} unread answer(s) in your Inbox",
+      "new": "{{count}} new answer(s) arrived in your Inbox",
+      "hint": "Check them in Inbox, Answers tab."
+    },
+    "alreadySeen": "Already seen",
+    "newMark": "New",
+    "emptyTabs": {
+      "signed": "You have not signed or authorized anything yet.",
+      "answers": "No answers to your requests yet.",
+      "pending": "Nothing pending.",
+      "unread": "You have no new answers.",
+      "seen": "No seen answers yet."
+    },
+    "actions": {
+      "open": "Open",
+      "markSeen": "Mark as seen",
+      "markAllSeen": "Mark all as seen"
+    },
+    "columns": {
+      "kind": "Type",
+      "document": "Document",
+      "detail": "Detail",
+      "date": "Date",
+      "result": "Result"
+    },
+    "documentTypes": {
+      "receipt": "Receipt",
+      "issue": "Issue",
+      "transfer": "Transfer"
+    },
+    "filters": {
+      "search": "No. or detail",
+      "kind": "Type",
+      "document": "Document",
+      "dateFrom": "From",
+      "dateTo": "To"
+    },
+    "tabHints": {
+      "signed": "What you verified, approved or rejected",
+      "answers": "How your requests and documents ended",
+      "pending": "To sign or authorize",
+      "unread": "New answers to your requests",
+      "seen": "Answers you already checked"
+    },
+    "tabs": {
+      "signed": "What I signed",
+      "answers": "Answers",
+      "pending": "Pending",
+      "unread": "Unread",
+      "seen": "Seen"
+    },
+    "title": "Inbox",
+    "description": "What you have to sign or authorize, and the answers to your requests.",
+    "loading": "Loading...",
+    "allDone": "You have nothing pending.",
+    "empty": "Nothing here.",
+    "more": "And {{count}} more.",
+    "sections": {
+      "toVerify": "To verify and sign",
+      "toApprove": "To approve and sign",
+      "voidRequests": "Voids to authorize",
+      "receiptEdits": "Corrections to authorize",
+      "myResults": "My requests (last 15 days)"
+    },
+    "kinds": {
+      "issueEdit": "Issue correction",
+      "reviewSigned": "Signature",
+      "reviewApproved": "Document approved",
+      "toVerify": "Entered, needs verification",
+      "toApprove": "Verified, needs approval",
+      "voidRequest": "Void",
+      "receiptEdit": "Receipt correction",
+      "reviewRejected": "Document rejected"
+    },
+    "results": {
+      "reabierto": "You reopened",
+      "rechazado": "You rejected",
+      "aprobado": "You approved",
+      "verificado": "You verified",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "documents": {
+      "receipt": "Note {{number}}",
+      "issue": "Issue {{number}}",
+      "transfer": "Transfer {{number}}"
+    }
+  },
+  "initialInventory": {
+    "title": "Initial Inventory",
+    "description": "Loaded once per warehouse from an Excel file. It is recorded as a receipt note of type \"Initial Inventory\".",
+    "step1": "Download the template: it lists every active product. Fill in QUANTITY and UNIT_COST for what is in the warehouse.",
+    "step2": "Pick the warehouse, upload the Excel file and review it before loading.",
+    "downloadTemplate": "Download template",
+    "warehouse": "Warehouse",
+    "file": "Excel file",
+    "chooseFile": "Choose file (.xlsx)",
+    "review": "Review file",
+    "confirm": "Load initial inventory",
+    "errorsTitle": "There are {{count}} problem(s) in the file. Fix them and review again:",
+    "summary": "{{count}} products",
+    "done": "Initial inventory loaded. Receipt note {{note}}.",
+    "missing": "Pick the warehouse and the file.",
+    "templateError": "The template could not be downloaded.",
+    "error": "The file could not be reviewed.",
+    "code": "Code",
+    "product": "Product",
+    "quantity": "Quantity",
+    "unitCost": "Unit cost (Bs.)",
+    "total": "Total (Bs.)"
+  },
+  "review": {
+    "signatureInvalid": "Invalid signature: the document changed after it was signed",
+    "signatureValid": "Valid signature",
+    "signConfirm": "Sign",
+    "notesOptional": "Note (optional)",
+    "passwordRequired": "Type your password to sign.",
+    "password": "Your password (digital signature)",
+    "done": {
+      "verify": "Document verified and signed.",
+      "approve": "Document approved and signed.",
+      "reject": "Document rejected.",
+      "reopen": "Document reopened."
+    },
+    "signHint": {
+      "verify": "You sign as the one who checked the document was entered correctly. The Accountant approves it next.",
+      "approve": "Your digital signature approves the document and replaces the paper signature.",
+      "reject": "The document goes back to whoever entered it to be corrected, as a new version. The reason stays in the history.",
+      "reopen": "The approved document goes back to entered as a new version. Earlier signatures stay in the history."
+    },
+    "sign": {
+      "verify": "Verify and sign",
+      "approve": "Approve and sign",
+      "reject": "Reject",
+      "reopen": "Reopen"
+    },
+    "title": "Review",
+    "column": "Review",
+    "open": "Review",
+    "actions": {
+      "corregido": "Corrected",
+      "rechazado": "Rejected",
+      "digitado": "Entered",
+      "verificado": "Verified",
+      "aprobado": "Approved",
+      "reabierto": "Reopened"
+    },
+    "loading": "Loading...",
+    "currentStatus": "Current status",
+    "voided": "Voided",
+    "status": {
+      "anterior": "Before digital signature",
+      "digitado": "Entered",
+      "verificado": "Verified",
+      "aprobado": "Approved"
+    },
+    "verify": "Verify",
+    "approve": "Approve",
+    "reopen": "Reopen",
+    "reopenHint": "Reopening sets the document back to entered and starts a new version. The reason stays in the history.",
+    "reason": "Reason",
+    "confirmReopen": "Reopen with this reason",
+    "reasonRequired": "Write the reason to reopen.",
+    "history": "Review history",
+    "empty": "No records.",
+    "verified": "Document verified.",
+    "approved": "Document approved.",
+    "reopened": "Document reopened.",
+    "error": "The review could not be completed."
+  },
+  "productPhoto": {
+    "enlarge": "View photo",
+    "none": "No photo"
+  },
+  "productSearch": {
+    "placeholder": "Name or code",
+    "loading": "Searching...",
+    "noResults": "No products with that name or code."
+  },
   "language": {
     "select": "Language",
     "es": "Spanish",
@@ -12,6 +328,16 @@
     "closeMenu": "Close menu"
   },
   "nav": {
+    "reportsIssueHistory": "Issue History",
+    "issueEditRequests": "Issue Corrections",
+    "reportsReceiptsAccounting": "Receipts for Accounting",
+    "reportsIssuesAccounting": "Issues for Accounting",
+    "transferVoidRequests": "Transfer Voids",
+    "receiptEditRequests": "Receipt Corrections",
+    "settingsInitialInventory": "Initial Inventory",
+    "reportsTransfers": "Warehouse Transfers",
+    "authorizations": "Authorizations",
+    "reportsReceiptHistory": "Receipt History",
     "home": "Home",
     "receipts": "Receipts",
     "issues": "Issues",
@@ -71,6 +397,7 @@
     "minChars": "Type at least {{count}} characters to search."
   },
   "productPicker": {
+    "keyboardHint": "Type the name or code, move with ↑ ↓ and choose with Enter. Products already on another line are marked.",
     "title": "Select product",
     "alreadyAdded": "already added",
     "filters": {
@@ -93,6 +420,7 @@
       "inactive": "Inactive"
     },
     "columns": {
+      "photo": "Photo",
       "code": "Code",
       "name": "Name",
       "department": "Department",
@@ -103,6 +431,15 @@
       "delete": "Delete"
     },
     "form": {
+      "photoError": "The product was saved, but the photo was not.",
+      "photoTooLarge": "The photo is larger than 5 MB.",
+      "photoInvalid": "The file is not an image.",
+      "photoHint": "JPG, PNG or WEBP up to 5 MB.",
+      "removePhoto": "Remove photo",
+      "changePhoto": "Change photo",
+      "choosePhoto": "Choose photo",
+      "noPhoto": "No photo",
+      "photo": "Product photo",
       "newTitle": "New product",
       "editTitle": "Edit product",
       "code": "Code",
@@ -245,7 +582,11 @@
     "issueTypes": { "title": "Issue Types" },
     "receiptTypes": { "title": "Receipt Types" },
     "mediaTypes": { "title": "Media Types" },
-    "departments": { "title": "Departments" },
+    "departments": {
+      "title": "Departments",
+      "code": "Accounting code",
+      "codeHint": "SubAccountCode of the accounting file (e.g. 106)."
+    },
     "subDepartments": { "title": "Sub-departments" },
     "missions": { "title": "Missions" },
     "provinces": { "title": "Provinces" },
@@ -419,6 +760,7 @@
     "confirm": "Confirm"
   },
   "table": {
+    "moreActions": "More options",
     "empty": "No data to display.",
     "previous": "Previous",
     "next": "Next",
@@ -460,34 +802,87 @@
     }
   },
   "receipts": {
+    "correction": {
+      "entryDateHint": "Only within the note month, up to today.",
+      "notFound": "The note to correct was not found.",
+      "title": "Correct note {{note}}",
+      "hint": "The correction is not saved directly: it goes to the Accountant with the reason. If products from this receipt were already issued, the quantity cannot go below what was issued.",
+      "reason": "Reason for the correction",
+      "send": "Send correction",
+      "sent": "Correction sent. The Accountant must approve it.",
+      "error": "The correction could not be sent."
+    },
+    "view": {
+      "pendingSignature": "Waiting for signature",
+      "signatures": "Digital signatures",
+      "title": "Receipt note No.",
+      "loading": "Loading...",
+      "registeredBy": "Entered by {{name}}",
+      "taxId": "Tax ID / ID card",
+      "document": "Invoice or document No.",
+      "price": "Price",
+      "cost": "Cost",
+      "total": "Total"
+    },
+    "history": {
+      "title": "Receipt History",
+      "description": "Find a receipt note by number, supplier or invoice to view or reprint it."
+    },
+    "motives": {
+      "question": "Why is the material coming into the warehouse?",
+      "soon": "Coming soon",
+      "purchases": {
+        "title": "Purchases",
+        "description": "Material bought from a supplier, with invoice or with withholding."
+      },
+      "transfers": {
+        "title": "Warehouse transfers",
+        "description": "Material moving from one of our warehouses to another."
+      },
+      "returns": {
+        "title": "Returns",
+        "description": "Material coming back from an issue already recorded."
+      },
+      "donations": {
+        "title": "Donations",
+        "description": "Material received as a donation. Pick the donor and the estimated value of each product."
+      },
+      "adjustments": {
+        "title": "Other / Adjustments",
+        "description": "Stock corrections, for example after a physical count."
+      }
+    },
     "title": "Receipts",
     "new": "New receipt",
     "supplierPicker": {
+      "donorDescription": "Search the donor by name or tax ID. If they are not listed, create them as a supplier.",
+      "donorTitle": "Who is donating?",
       "title": "Select supplier",
       "description": "Search for the supplier by name, legal name, or tax ID to continue registering the receipt.",
       "search": "Name, legal name, or tax ID",
-      "taxId": "Tax ID",
-      "fullName": "Full name",
+      "taxId": "Tax ID / ID card",
+      "fullName": "Legal name / Name",
       "createSupplier": "Create supplier"
     },
     "filters": {
+      "receiptNumber": "Note No. (e.g. MB 15-10-26)",
       "warehouse": "Warehouse",
       "supplier": "Supplier",
       "receiptType": "Receipt type",
-      "invoiceNumber": "Invoice #"
+      "invoiceNumber": "Invoice or document No."
     },
     "columns": {
       "rowNumber": "No.",
-      "voucherNumber": "Voucher Number",
-      "issueDate": "Issue Date",
+      "voucherNumber": "Note No.",
+      "issueDate": "Entry Date",
       "createdAt": "Registration Date",
-      "invoiceNumber": "Invoice #",
+      "invoiceNumber": "Invoice / Document No.",
       "warehouse": "Warehouse",
       "supplier": "Supplier",
-      "invoiceTotal": "Total (Bs.)",
+      "invoiceTotal": "Purchase Total (Bs.)",
       "createdBy": "User",
       "status": "Status",
-      "statusPending": "Pending Approval",
+      "statusPending": "Correction pending",
       "statusNormal": "Normal",
       "statusVoided": "Voided",
       "statusVoidPending": "Void pending",
@@ -495,6 +890,10 @@
       "statusVoidPendingTooltip": "Reason for the request: {{reason}}"
     },
     "actions": {
+      "correctionReturn": "A return cannot be corrected: void it and record it again",
+      "correctionPending": "There is already a pending correction for this receipt",
+      "requestCorrection": "Request correction",
+      "viewWithPhotos": "View with photos",
       "viewDetails": "View details",
       "print": "Print",
       "requestVoid": "Request void",
@@ -505,19 +904,38 @@
     },
     "printError": "The printable voucher could not be generated.",
     "form": {
-      "title": "New receipt",
+      "taxIdMissing": "The supplier has no tax ID registered: type it here.",
+      "taxIdFromSupplier": "Comes from the supplier record. If it is wrong, fix it in Suppliers.",
+      "estimatedValue": "Estimated Unit Value (Bs.)",
+      "donor": "Donor",
+      "donationTitle": "New donation",
+      "keyboardHint": "Type part of the name or code, pick with the arrows and move on with Tab. Enter on the price adds another line.",
+      "retentionNote": "Purchase with withholding: each product enters the inventory at its price times 0.92.",
+      "lineTotal": "Total (Bs.)",
+      "unitCostRetention": "Unit Cost x 0.92 (Bs.)",
+      "unitPrice": "Unit Price (Bs.)",
+      "entryDateHint": "From last month or this month, up to today.",
+      "entryDate": "Entry date",
+      "purchaseDate": "Purchase date",
+      "purchaseTotal": "Purchase total",
+      "ci": "ID card (CI)",
+      "documentNumber": "Document No. (optional)",
+      "withRetention": "With withholding (no invoice)",
+      "withInvoice": "With invoice",
+      "purchaseType": "Purchase type",
+      "title": "New purchase",
       "print": "Print",
       "warehouse": "Warehouse",
       "warehousePeriod": "Warehouse Period",
       "supplier": "Supplier",
       "receiptType": "Receipt type",
-      "invoiceNumber": "Invoice #",
-      "taxId": "Tax ID",
+      "invoiceNumber": "Invoice No.",
+      "taxId": "Tax ID (NIT)",
       "changeSupplier": "Change",
-      "supplierLocked": "Supplier selected.",
+      "supplierLocked": "Chosen in the previous step.",
       "invoiceTotal": "Invoice total",
       "issueDate": "Issue Date",
-      "description": "Description",
+      "description": "General note",
       "continue": "Continue",
       "lines": "Lines",
       "addLine": "Add line",
@@ -528,8 +946,8 @@
       "totalCost": "Total Cost (Bs.)",
       "detail": "Detail",
       "totalMismatch": "The sum of the lines must equal the Invoice total.",
-      "totalMismatchOver": "The lines add up to {{lines}} Bs. and the invoice total is {{invoice}} Bs.: {{difference}} Bs. over. Fix the quantities or costs, or the invoice total.",
-      "totalMismatchUnder": "The lines add up to {{lines}} Bs. and the invoice total is {{invoice}} Bs.: {{difference}} Bs. short. Fix the quantities or costs, or the invoice total.",
+      "totalMismatchOver": "The lines add up to {{lines}} Bs. and the purchase total is {{invoice}} Bs.: {{difference}} Bs. too much. Fix the quantities or prices, or the total.",
+      "totalMismatchUnder": "The lines add up to {{lines}} Bs. and the purchase total is {{invoice}} Bs.: {{difference}} Bs. missing. Fix the quantities or prices, or the total.",
       "linesTotal": "Lines total",
       "product": "Product",
       "quantity": "Quantity",
@@ -546,7 +964,7 @@
       "product": "Product",
       "quantity": "Quantity",
       "unitCost": "Unit cost (Bs.)",
-      "unitPrice": "Unit price (Bs.)",
+      "unitPrice": "Purchase price (Bs.)",
       "subtotal": "Subtotal (Bs.)",
       "workOrder": "Work order",
       "detail": "Detail",
@@ -556,6 +974,41 @@
     }
   },
   "issues": {
+    "correction": {
+      "title": "Correct issue {{note}}",
+      "issueDateHint": "Only within the month of the issue, up to today.",
+      "notFound": "The issue to correct was not found.",
+      "hint": "The correction is not saved directly: it goes to the Accountant with the reason. If the issue has a receivable with payments or returns, it cannot be corrected.",
+      "reason": "Reason for the correction",
+      "send": "Send correction",
+      "sent": "Correction sent. The Accountant must approve it.",
+      "error": "The correction could not be sent."
+    },
+    "view": {
+      "loading": "Loading issue...",
+      "title": "Issue",
+      "registeredBy": "Recorded by {{name}}",
+      "cost": "Cost",
+      "total": "Total",
+      "signatures": "Signatures"
+    },
+    "history": {
+      "title": "Issue History",
+      "description": "All recorded issues: view with photos, print, sign, request a correction or a void."
+    },
+    "motives": {
+      "question": "Why is the material going out? Choose the reason to record the issue.",
+      "loading": "Loading...",
+      "typeDescription": "Record an issue of type {{type}}.",
+      "transfers": {
+        "title": "Transfer",
+        "description": "Send products to another warehouse."
+      }
+    },
+    "correctHint": {
+      "title": "How is an issue corrected?",
+      "body": "An issue is not edited: request its void (the Accountant approves it and the stock goes back to the warehouse) and record it again correctly. This keeps receivables and payments in order."
+    },
     "title": "Issues",
     "new": "New issue",
     "clientPicker": {
@@ -568,11 +1021,13 @@
       "createClient": "Create client"
     },
     "filters": {
+      "noteNumber": "Issue No.",
       "warehouse": "Warehouse",
       "client": "Client",
       "issueType": "Issue type"
     },
     "columns": {
+      "statusCorrectionPending": "Correction pending",
       "rowNumber": "No.",
       "voucherNumber": "Voucher Number",
       "issueDate": "Issue Date",
@@ -590,6 +1045,9 @@
       "statusVoidPendingTooltip": "Reason for the request: {{reason}}"
     },
     "actions": {
+      "correctionPending": "There is already a pending correction for this issue",
+      "requestCorrection": "Request correction",
+      "viewWithPhotos": "View with photos",
       "viewDetails": "View details",
       "print": "Print",
       "requestVoid": "Request void",
@@ -603,6 +1061,8 @@
       "confirm": "Print"
     },
     "form": {
+      "keyboardHint": "Enter on the product button opens the list; once chosen, it moves to the quantity. Enter on the last line quantity adds another line.",
+      "issueDateHint": "From last month or this month, up to today.",
       "title": "New issue",
       "print": "Print",
       "warehouse": "Warehouse",
@@ -640,9 +1100,9 @@
       "exceedsStock": "The quantity exceeds the available stock.",
       "exceedsNotice": "There is not enough stock to save. Check the quantity of:",
       "exceedsNoticeItem": "{{name}} (requested {{requested}}, available {{available}})",
-      "reservedStock": "{{count}} units are reserved by a pending receipt void. They cannot be taken out until the Accountant approves or rejects it. The number shown already excludes them.",
+      "reservedStock": "{{count}} units are reserved by a pending receipt void or correction. They cannot be taken out until the Accountant approves or rejects it. The number shown already excludes them.",
       "reservedStockTitle": "Reserved stock",
-      "reservedNotice": "Some products have units reserved by pending receipt voids. The stock shown already excludes them, and they cannot be taken out until the Accountant resolves them:",
+      "reservedNotice": "Some products have units reserved by pending receipt voids or corrections. The stock shown already excludes them, and they cannot be taken out until the Accountant resolves them:",
       "sector": "Department",
       "stock": "Stock",
       "code": "Code",
@@ -745,6 +1205,7 @@
     "error": "The adjustment could not be registered."
   },
   "issueReturns": {
+    "returnDate": "Return date",
     "title": "Returns",
     "info": {
       "title": "What is a Return?",
@@ -862,7 +1323,7 @@
       "byProductHint": "Enter how much is deposited for each product. Leave blank the ones not paid now.",
       "product": "Product",
       "quantity": "Qty",
-      "lineTotal": "Value (Bs.)",
+      "lineTotal": "Total cost (Bs.)",
       "linePaid": "Paid (Bs.)",
       "lineRemaining": "Remaining (Bs.)",
       "lineAmount": "Amount to deposit (Bs.)",
@@ -915,7 +1376,7 @@
       "columns": {
         "product": "Product",
         "quantity": "Qty",
-        "value": "Value (Bs.)",
+        "value": "Total cost (Bs.)",
         "paid": "You paid (Bs.)",
         "owed": "You owe (Bs.)"
       },
@@ -926,6 +1387,41 @@
     }
   },
   "reports": {
+    "txt": {
+      "download": "Download TXT",
+      "downloading": "Downloading...",
+      "error": "The TXT could not be generated."
+    },
+    "receiptsAccounting": {
+      "title": "Receipts for Accounting",
+      "description": "One row per product of each receipt, in the format imported into the accounting system, with a positive value. Voided receipts are not included.",
+      "infoBody": "AccountCode 4121565, SubAccountCode = accounting code of the product department, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = line total as a positive number, SendMemo False and Description \"note N° - Invoice N° (if any) - quantity Uds. product\".",
+      "receiptType": "Receipt type",
+      "allTypes": "All types",
+      "summary": "{{rows}} rows from {{documents}} receipt notes.",
+      "empty": "No receipts in that range.",
+      "error": "The report could not be loaded."
+    },
+    "issuesAccounting": {
+      "title": "Issues for Accounting",
+      "description": "One row per product of each issue, in the format imported into the accounting system. Voided issues are not included.",
+      "infoTitle": "How each row is built",
+      "infoBody": "AccountCode 4121565, SubAccountCode = accounting code of the product department, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = line total as a negative number, SendMemo False and Description \"S-issue N° - quantity Uds. product\".",
+      "missingCode": "Some products belong to departments without an accounting code; they will have no SubAccountCode in the file. Set it in System Settings / Departments:",
+      "summary": "{{rows}} rows from {{documents}} issues.",
+      "total": "Total:",
+      "empty": "No issues in that range.",
+      "error": "The report could not be loaded.",
+      "noDepartment": "Products without department"
+    },
+    "transfers": {
+      "title": "Warehouse Transfers",
+      "description": "Transfers between our own warehouses: quantity, product and cost, grouped by transfer.",
+      "source": "Source warehouse",
+      "destination": "Destination warehouse",
+      "selectPrompt": "Pick the filters to generate the report.",
+      "error": "The transfers report could not be generated."
+    },
     "pdf": {
       "download": "Download PDF"
     },
@@ -936,6 +1432,7 @@
     },
     "title": "Reports",
     "filters": {
+      "warehouse": "Warehouse",
       "allWarehouses": "General (all warehouses)"
     },
     "stock": {
@@ -1045,6 +1542,10 @@
     }
   },
   "transfers": {
+    "correctHint": {
+      "title": "How is a transfer corrected?",
+      "body": "A transfer is not edited: request its void (the Accountant approves it and the products go back to the source warehouse) and record it again correctly."
+    },
     "titleSent": "Transfers Sent",
     "titleReceived": "Transfers Received",
     "new": "New transfer",
@@ -1066,6 +1567,9 @@
       "dateTo": "To"
     },
     "columns": {
+      "statusNormal": "Normal",
+      "statusVoidPending": "Void pending",
+      "statusVoided": "Voided",
       "rowNumber": "No.",
       "voucherNumber": "Transfer No.",
       "sourceWarehouse": "Source warehouse",
@@ -1079,6 +1583,9 @@
       "statusPending": "Pending approval"
     },
     "actions": {
+      "requestVoidDisabledPending": "There is already a pending void request",
+      "requestVoidDisabledVoided": "This transfer is already voided",
+      "requestVoid": "Request void",
       "viewDetails": "View details",
       "print": "Print",
       "approve": "Approve",
@@ -1089,6 +1596,7 @@
     },
     "printError": "The printable voucher could not be generated.",
     "form": {
+      "unitCost": "Unit Cost (Bs.)",
       "title": "New transfer",
       "print": "Print",
       "sourceWarehouse": "Source warehouse",
@@ -1112,9 +1620,9 @@
       "exceedsStock": "The quantity exceeds the available stock.",
       "exceedsNotice": "There is not enough stock to save. Check the quantity of:",
       "exceedsNoticeItem": "{{name}} (requested {{requested}}, available {{available}})",
-      "reservedStock": "{{count}} units are reserved by a pending receipt void. They cannot be taken out until the Accountant approves or rejects it. The number shown already excludes them.",
+      "reservedStock": "{{count}} units are reserved by a pending receipt void or correction. They cannot be taken out until the Accountant approves or rejects it. The number shown already excludes them.",
       "reservedStockTitle": "Reserved stock",
-      "reservedNotice": "Some products have units reserved by pending receipt voids. The stock shown already excludes them, and they cannot be taken out until the Accountant resolves them:",
+      "reservedNotice": "Some products have units reserved by pending receipt voids or corrections. The stock shown already excludes them, and they cannot be taken out until the Accountant resolves them:",
       "unitPrice": "Unit Price (Bs.)",
       "total": "Total (Bs.)",
       "success": "Transfer created successfully.",
@@ -1137,7 +1645,7 @@
       "product": "Product",
       "quantity": "Quantity",
       "unitCost": "Unit cost (Bs.)",
-      "unitPrice": "Unit price (Bs.)",
+      "unitPrice": "Unit cost (Bs.)",
       "subtotal": "Subtotal (Bs.)",
       "workOrder": "Work order",
       "detail": "Detail",
@@ -1271,9 +1779,23 @@
       "delete": "Delete"
     },
     "form": {
+      "alreadyClientHint": "Already registered in Clients as \"{{name}}\".",
+      "clientHint": "If you choose Yes, they are also registered in Clients with the same name, tax ID, email and mobile, so issues can be made to them. It does not depend on the church question.",
+      "clientQuestion": "Do we also issue material to them (client)?",
+      "clientSectionTitle": "Client",
+      "churchHint": "Only records the district and church this supplier belongs to. It does not register them as a client.",
+      "churchQuestion": "Is a member of the Adventist Church?",
+      "churchSectionTitle": "Church",
+      "alreadyClient": "Already registered as a Client",
+      "alsoClientHint": "Also registered as a Client with the same Name, Tax ID, Email, Phone and church.",
+      "alsoClientQuestion": "Also a client?",
+      "isAdventistHint": "Their district and church are saved on the supplier.",
+      "no": "No",
+      "yes": "Yes",
+      "isAdventist": "Adventist?",
       "newTitle": "New supplier",
       "editTitle": "Edit supplier",
-      "name": "Full name",
+      "name": "Contact name",
       "code": "Code",
       "legalName": "Legal name",
       "taxId": "Tax ID",
@@ -1291,17 +1813,17 @@
       "continue": "Continue",
       "editDecisions": "Edit",
       "choiceNew": "New supplier",
-      "choiceLink": "Already exists as a Client",
+      "choiceLink": "Copy data from a Client",
       "back": "Back",
-      "linkSectionTitle": "Is this also a Client?",
-      "linkSectionHint": "A Client and a Supplier can be the same person or company. If you link or register them here, they share the same Name, Tax ID, Email and Phone: editing one side updates the other too.",
+      "linkSectionTitle": "Church and client",
+      "linkSectionHint": "If they are Adventist, their district and church are recorded. They are also registered as a Client with the same Name, Tax ID, Email and Phone.",
       "linkExistingClient": "Already exists as a Client? Select to link",
       "linkedToClient": "This will link to Client \"{{name}}\": same Name, Tax ID, Email and Phone.",
       "unlink": "Remove link",
       "alsoClient": "Also registered as Client: \"{{name}}\"",
       "alsoRegisterAsClient": "Also register as Client",
-      "clientDistrict": "District (Client)",
-      "clientChurch": "Church (Client)"
+      "clientDistrict": "District",
+      "clientChurch": "Church"
     },
     "delete": {
       "title": "Delete supplier",

@@ -10,6 +10,10 @@ export interface Transfer extends Record<string, unknown> {
   isApproved: boolean;
   approvedById: number | null;
   approvedAt: string | null;
+  /** Revisión del Contador: digitado, verificado o aprobado. */
+  reviewStatus: string | null;
+  isVoided: boolean;
+  hasPendingVoidRequest: boolean;
 }
 
 export interface TransferDetail {
@@ -17,6 +21,7 @@ export interface TransferDetail {
   transferId: number;
   productId: number;
   quantity: number;
+  /** Costo unitario con el que salió del almacén de origen (antes se guardaba un precio de venta). */
   unitPrice: number | null;
   totalSalePrice: number | null;
 }

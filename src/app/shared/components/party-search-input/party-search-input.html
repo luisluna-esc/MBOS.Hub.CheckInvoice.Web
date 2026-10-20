@@ -12,6 +12,7 @@
     [value]="query()"
     (input)="onInput($event)"
     (focus)="open.set(true)"
+    (keydown)="onKeydown($event)"
     class="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
   />
 
@@ -35,10 +36,13 @@
         } @else if (loading()) {
           <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'partySearch.loading' | translate }}</li>
         } @else {
-          @for (row of results(); track row.partyId) {
+          @for (row of results(); track row.partyId; let i = $index) {
             <li
               role="option"
+              [attr.aria-selected]="i === activeIndex()"
               class="cursor-pointer px-3 py-2 text-sm text-foreground transition-colors hover:bg-brand-300"
+              [class.bg-brand-300]="i === activeIndex()"
+              (mouseenter)="activeIndex.set(i)"
               (click)="select(row)"
             >
               <div>{{ row.name }}</div>

@@ -216,7 +216,7 @@ export class AccountReceivablesList {
       showPdf(blob, `cuenta-por-cobrar-${String(row.accountReceivableId).padStart(5, '0')}.pdf`, newTab);
     } catch {
       newTab?.close();
-      this.toastService.show(this.languageService.t('accountReceivables.detailError'));
+      this.toastService.error(this.languageService.t('accountReceivables.detailError'));
     }
   }
 

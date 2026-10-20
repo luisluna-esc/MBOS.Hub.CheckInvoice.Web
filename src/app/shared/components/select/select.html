@@ -7,6 +7,7 @@
 
   <button
     #origin="cdkOverlayOrigin"
+    #trigger
     cdkOverlayOrigin
     type="button"
     [id]="selectId"
@@ -19,6 +20,7 @@
     [class.border-border]="!showError"
     [class.border-danger]="showError"
     (click)="toggle()"
+    (keydown)="onTriggerKeydown($event)"
   >
     <span class="min-w-0 truncate" [class.text-muted-foreground]="!selectedOption()">
       {{ (selectedOption()?.label ?? placeholder()) || ' ' }}
@@ -47,7 +49,11 @@
     (backdropClick)="close()"
     (detach)="close()"
   >
-    <div class="min-w-[12rem] overflow-hidden rounded-md border border-border bg-surface shadow-lg">
+    <div
+      #panel
+      class="min-w-[12rem] overflow-hidden rounded-md border border-border bg-surface shadow-lg"
+      (keydown)="onPanelKeydown($event)"
+    >
       @if (showSearch()) {
         <div class="border-b border-border p-1.5">
           <input
@@ -60,16 +66,20 @@
           />
         </div>
       }
-      <ul role="listbox" class="max-h-60 overflow-auto py-1">
-        @for (option of filteredOptions(); track option.value) {
+      <ul role="listbox" tabindex="-1" class="max-h-60 overflow-auto py-1 focus:outline-none">
+        @for (option of filteredOptions(); track option.value; let i = $index) {
           <li
             role="option"
+            [attr.data-index]="i"
             [attr.aria-selected]="option.value === value()"
             class="cursor-pointer px-3 py-2 text-sm transition-colors"
             [class.bg-primary]="option.value === value()"
             [class.text-primary-foreground]="option.value === value()"
             [class.text-foreground]="option.value !== value()"
             [class.hover:bg-brand-300]="option.value !== value()"
+            [class.bg-brand-300]="i === activeIndex() && option.value !== value()"
+            [class.underline]="i === activeIndex() && option.value === value()"
+            (mouseenter)="activeIndex.set(i)"
             (click)="selectOption(option)"
           >
             {{ option.label }}

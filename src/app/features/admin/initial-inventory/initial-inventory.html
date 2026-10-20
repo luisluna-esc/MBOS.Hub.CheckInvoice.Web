@@ -1,0 +1,118 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-1">
+    <h1 class="text-xl font-semibold text-foreground">{{ 'initialInventory.title' | translate }}</h1>
+    <p class="text-sm text-muted-foreground">{{ 'initialInventory.description' | translate }}</p>
+  </div>
+
+  <ol class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
+    <li class="flex flex-col gap-2">
+      <span class="text-sm font-semibold text-foreground">1. {{ 'initialInventory.step1' | translate }}</span>
+      <button
+        type="button"
+        class="w-fit rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-background"
+        (click)="onDownloadTemplate()"
+      >
+        {{ 'initialInventory.downloadTemplate' | translate }}
+      </button>
+    </li>
+
+    <li class="flex flex-col gap-2">
+      <span class="text-sm font-semibold text-foreground">2. {{ 'initialInventory.step2' | translate }}</span>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <app-select
+          [label]="'initialInventory.warehouse' | translate"
+          [options]="warehouseOptions()"
+          [required]="true"
+          [ngModel]="warehouseId()"
+          (ngModelChange)="onWarehouseChange($event)"
+        />
+        <div class="flex flex-col gap-1">
+          <span class="text-sm font-medium text-foreground">{{ 'initialInventory.file' | translate }}</span>
+          <label
+            class="flex cursor-pointer items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground focus-within:ring-2 focus-within:ring-primary"
+          >
+            <span class="min-w-0 truncate">{{ file()?.name ?? ('initialInventory.chooseFile' | translate) }}</span>
+            <input
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              class="sr-only"
+              (change)="onFileChosen($event)"
+            />
+          </label>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="w-fit rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="working() || !file() || !warehouseId()"
+        (click)="onReview()"
+      >
+        {{ 'initialInventory.review' | translate }}
+      </button>
+    </li>
+  </ol>
+
+  @if (result(); as current) {
+    @if (current.errors.length > 0) {
+      <div class="flex flex-col gap-1 rounded-lg border border-danger bg-surface p-4 text-sm">
+        <span class="font-semibold text-danger">{{ 'initialInventory.errorsTitle' | translate: { count: current.errors.length } }}</span>
+        <ul class="list-disc pl-5 text-danger">
+          @for (error of current.errors; track $index) {
+            <li>{{ error }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (current.receiptId) {
+      <div class="rounded-lg border border-border bg-surface p-4 text-sm text-foreground">
+        {{ 'initialInventory.done' | translate: { note: current.noteNumber ?? '' } }}
+      </div>
+    }
+
+    @if (current.lines.length > 0) {
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="text-sm text-foreground">
+            {{ 'initialInventory.summary' | translate: { count: current.lines.length } }} ·
+            {{ current.totalQuantity | number: '1.0-2' }} u. · {{ current.totalCost | number: '1.2-2' }} Bs.
+          </span>
+          @if (canConfirm()) {
+            <button
+              type="button"
+              class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:opacity-50"
+              [disabled]="working()"
+              (click)="onConfirm()"
+            >
+              {{ 'initialInventory.confirm' | translate }}
+            </button>
+          }
+        </div>
+        <div class="max-h-[60vh] overflow-auto rounded-md border border-border">
+          <table class="w-full divide-y divide-border text-sm">
+            <thead class="sticky top-0 bg-background">
+              <tr>
+                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'initialInventory.code' | translate }}</th>
+                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'initialInventory.product' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'initialInventory.quantity' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'initialInventory.unitCost' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'initialInventory.total' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (line of current.lines; track line.productId) {
+                <tr>
+                  <td class="px-3 py-1.5 text-foreground">{{ line.code }}</td>
+                  <td class="px-3 py-1.5 text-foreground">{{ line.name }}</td>
+                  <td class="px-3 py-1.5 text-right tabular-nums text-foreground">{{ line.quantity | number: '1.0-2' }}</td>
+                  <td class="px-3 py-1.5 text-right tabular-nums text-foreground">{{ line.unitCost | number: '1.2-2' }}</td>
+                  <td class="px-3 py-1.5 text-right tabular-nums text-foreground">{{ line.quantity * line.unitCost | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -83,12 +83,12 @@ export class LookupCatalogFormDialog {
       } else {
         await this.catalogService.create(this.config.resource, request);
       }
-      this.toastService.show(this.languageService.t('lookupCatalogs.form.success'));
+      this.toastService.success(this.languageService.t('lookupCatalogs.form.success'));
       this.dialogRef.close(true);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('lookupCatalogs.form.error'), message);
+      this.toastService.error(this.languageService.t('lookupCatalogs.form.error'), message);
     } finally {
       this.saving.set(false);
     }

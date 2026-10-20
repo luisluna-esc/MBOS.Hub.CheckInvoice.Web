@@ -190,10 +190,10 @@ export class SuppliersList {
   private async deleteSupplier(row: Supplier): Promise<void> {
     try {
       await this.supplierService.delete(row.supplierId);
-      this.toastService.show(this.languageService.t('suppliers.delete.success'));
+      this.toastService.success(this.languageService.t('suppliers.delete.success'));
       void this.load();
     } catch {
-      this.toastService.show(this.languageService.t('suppliers.delete.error'));
+      this.toastService.error(this.languageService.t('suppliers.delete.error'));
     }
   }
 }

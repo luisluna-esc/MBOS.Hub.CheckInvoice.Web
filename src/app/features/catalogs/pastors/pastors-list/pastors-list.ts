@@ -174,7 +174,7 @@ export class PastorsList {
       void this.load();
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]?.description;
-      this.toastService.show(this.languageService.t('clients.portalAccess.error'), message);
+      this.toastService.error(this.languageService.t('clients.portalAccess.error'), message);
     } finally {
       this.busyId.set(null);
     }
@@ -209,7 +209,7 @@ export class PastorsList {
       });
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]?.description;
-      this.toastService.show(this.languageService.t('pastors.resetError'), message);
+      this.toastService.error(this.languageService.t('pastors.resetError'), message);
     } finally {
       this.busyId.set(null);
     }

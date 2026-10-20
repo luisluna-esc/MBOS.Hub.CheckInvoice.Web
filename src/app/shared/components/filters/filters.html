@@ -19,6 +19,7 @@
         />
       } @else {
         <app-input
+          [appShortcut]="field.key === firstTextKey() ? 'search' : null"
           [label]="field.label"
           [placeholder]="field.placeholder ?? ''"
           [ngModel]="getValue(field.key)"

@@ -385,12 +385,12 @@ export class ClientFormDialog {
         }
       }
 
-      this.toastService.show(this.languageService.t(successKey));
+      this.toastService.success(this.languageService.t(successKey));
       this.dialogRef.close(clientId);
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
-      this.toastService.show(this.languageService.t('clients.form.error'), message);
+      this.toastService.error(this.languageService.t('clients.form.error'), message);
     } finally {
       this.saving.set(false);
     }

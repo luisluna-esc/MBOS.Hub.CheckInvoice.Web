@@ -10,7 +10,16 @@
         <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     </button>
-    <h1 class="text-xl font-semibold text-foreground">{{ 'issues.form.title' | translate }}</h1>
+    <h1 class="text-xl font-semibold text-foreground">
+      @if (isCorrection) {
+        {{ 'issues.correction.title' | translate: { note: correctionNote() ?? '' } }}
+      } @else {
+        {{ 'issues.form.title' | translate }}
+        @if (presetIssueTypeName(); as typeName) {
+          <span class="font-normal text-muted-foreground">· {{ typeName }}</span>
+        }
+      }
+    </h1>
   </div>
 
   <form [formGroup]="headerForm" class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
@@ -19,12 +28,6 @@
         formControlName="warehouseId"
         [label]="'issues.form.warehouse' | translate"
         [options]="warehouseOptions()"
-        [required]="true"
-      />
-      <app-select
-        formControlName="warehousePeriodId"
-        [label]="'issues.form.warehousePeriod' | translate"
-        [options]="warehousePeriodOptions()"
         [required]="true"
       />
       <div class="flex flex-col gap-1">
@@ -51,26 +54,31 @@
           }
         }
       </div>
-      <app-select
-        formControlName="issueTypeId"
-        [label]="'issues.form.issueType' | translate"
-        [options]="issueTypeOptions()"
-      />
-      <app-select
-        formControlName="printTypeId"
-        [label]="'issues.form.printType' | translate"
-        [options]="printTypeOptions()"
-      />
+      @if (!presetIssueTypeId()) {
+        <app-select
+          formControlName="issueTypeId"
+          [label]="'issues.form.issueType' | translate"
+          [options]="issueTypeOptions()"
+        />
+      }
+      @if (!isCorrection) {
+        <app-select
+          formControlName="printTypeId"
+          [label]="'issues.form.printType' | translate"
+          [options]="printTypeOptions()"
+        />
+      }
       <app-date-picker
         formControlName="issueDate"
         [label]="'issues.form.issueDate' | translate"
         [required]="true"
-        [min]="issueDateRange().min"
-        [max]="issueDateRange().max"
+        [min]="minIssueDate()"
+        [max]="maxIssueDate()"
+        [hint]="(isCorrection ? 'issues.correction.issueDateHint' : 'issues.form.issueDateHint') | translate"
       />
     </div>
 
-    @if (clientLocked() && lockedClient(); as client) {
+    @if (!isCorrection && clientLocked() && lockedClient(); as client) {
       <div class="grid grid-cols-1 gap-3 rounded-md border border-border bg-background p-3 text-sm text-foreground sm:grid-cols-2 lg:grid-cols-4">
         @if (client.documentTypeId) {
           <div>
@@ -101,6 +109,7 @@
 
     <app-input formControlName="description" [label]="'issues.form.description' | translate" [maxLength]="255" />
 
+    @if (!isCorrection) {
     <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
       <app-checkbox formControlName="sendToAccountsReceivable">
         {{ 'issues.form.sendToAccountsReceivable' | translate }}
@@ -125,9 +134,13 @@
         </div>
       }
     </div>
+    }
 
-    @if (!headerConfirmed()) {
+    @if (isCorrection) {
+      <!-- Al corregir, el encabezado y los productos se cambian a la vez. -->
+    } @else if (!headerConfirmed()) {
       <button
+        appShortcut="save"
         type="button"
         class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
         [class.cursor-not-allowed]="continueDisabled()"
@@ -160,6 +173,7 @@
         </button>
       </div>
 
+      <p class="text-xs text-muted-foreground">{{ 'issues.form.keyboardHint' | translate }}</p>
       @if (detailsArray.length === 0) {
         <p class="text-xs text-muted-foreground">{{ 'issues.form.noLines' | translate }}</p>
       } @else {
@@ -234,21 +248,29 @@
                           {{ 'issues.form.reservedStock' | translate: { count: lineStock()[i]!.reservedQuantity } }}
                         </app-info-hint>
                       }
-                      {{ lineStock()[i] ? lineStock()[i]!.availableQuantity : '—' }}
+                      {{ lineAvailable(i) ?? '—' }}
                     </span>
                   </td>
                   <td class="px-3 py-2 align-middle">
-                    <button
-                      type="button"
-                      class="w-full rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background"
-                      (click)="pickProduct(i)"
-                    >
-                      @if (lineProducts()[i]; as product) {
-                        {{ product.name }}
-                      } @else {
-                        <span class="text-muted-foreground">{{ 'issues.form.selectProduct' | translate }}</span>
-                      }
-                    </button>
+                    <div class="flex items-center gap-2">
+                      <app-product-photo
+                        [productId]="lineProducts()[i]?.productId ?? null"
+                        [version]="lineProducts()[i]?.imageVersion"
+                        [name]="lineProducts()[i]?.name ?? ''"
+                      />
+                      <button
+                        #productButton
+                        type="button"
+                        class="min-w-0 flex-1 truncate rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                        (click)="pickProduct(i)"
+                      >
+                        @if (lineProducts()[i]; as product) {
+                          {{ product.name }}
+                        } @else {
+                          <span class="text-muted-foreground">{{ 'issues.form.selectProduct' | translate }}</span>
+                        }
+                      </button>
+                    </div>
                   </td>
                   <td class="w-32 px-3 py-2 align-middle">
                     <app-input
@@ -259,6 +281,7 @@
                       [min]="1"
                       [decimals]="0"
                       [externalError]="lineExceedsStock(i) ? ('issues.form.exceedsStock' | translate) : null"
+                      (keydown.enter)="onQuantityEnter(i, $event)"
                     />
                   </td>
                   <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
@@ -301,6 +324,14 @@
     </div>
   }
 
+  @if (isCorrection) {
+    <!-- La corrección no se guarda directo: va al Contador con su motivo. -->
+    <div class="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4">
+      <p class="text-xs text-muted-foreground">{{ 'issues.correction.hint' | translate }}</p>
+      <app-input [formControl]="reasonControl" [label]="'issues.correction.reason' | translate" [required]="true" [maxLength]="255" />
+    </div>
+  }
+
   <div class="flex justify-end gap-2">
     <button
       type="button"
@@ -309,7 +340,19 @@
     >
       {{ 'dialog.cancel' | translate }}
     </button>
+    @if (isCorrection) {
+      <button
+        appShortcut="save"
+        type="button"
+        class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="saveDisabled()"
+        (click)="onSave()"
+      >
+        {{ 'issues.correction.send' | translate }}
+      </button>
+    } @else {
     <button
+      appShortcut="save"
       type="button"
       class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:bg-brand-300/20"
       [disabled]="saveDisabled()"
@@ -325,5 +368,6 @@
     >
       {{ 'issues.form.print' | translate }}
     </button>
+    }
   </div>
 </div>

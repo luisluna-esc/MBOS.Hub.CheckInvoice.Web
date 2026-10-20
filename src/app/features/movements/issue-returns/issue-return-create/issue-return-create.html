@@ -46,6 +46,16 @@
       </button>
     </div>
 
+    <div class="w-full sm:w-64">
+      <app-date-picker
+        [formControl]="returnDateControl"
+        [label]="'issueReturns.returnDate' | translate"
+        [required]="true"
+        [min]="minReturnDateIso()"
+        [max]="todayIso"
+      />
+    </div>
+
     @if (formLoading()) {
       <p class="text-sm text-muted-foreground">{{ 'issueReturns.loading' | translate }}</p>
     } @else if (lineRows().length === 0) {
@@ -81,6 +91,7 @@
 
       <div class="flex justify-end">
         <button
+          appShortcut="save"
           type="button"
           class="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           [disabled]="saveDisabled()"

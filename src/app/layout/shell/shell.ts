@@ -1,12 +1,18 @@
+import { Overlay } from '@angular/cdk/overlay';
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { DialogService } from '../../core/dialog/dialog.service';
+import { InboxService } from '../../core/inbox/inbox.service';
 import { LanguageService } from '../../core/i18n/language.service';
 import { MenuTreeItem } from '../../core/menu/menu.models';
 import { MenuService } from '../../core/menu/menu.service';
+import { GO_TO_SHORTCUTS, ShortcutService } from '../../core/shortcuts/shortcut.service';
 import { ThemeService } from '../../core/theme/theme.service';
+import { CommandPalette, CommandPaletteData, CommandPaletteEntry } from '../../shared/components/command-palette/command-palette';
+import { ShortcutsHelp, ShortcutsHelpData } from '../../shared/components/shortcuts-help/shortcuts-help';
 import { Icon } from '../../shared/components/icon/icon';
 import { LanguageSwitcher } from '../../shared/components/language-switcher/language-switcher';
 import { Select, SelectOption } from '../../shared/components/select/select';
@@ -39,6 +45,13 @@ export class Shell {
   private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
   protected readonly themeService = inject(ThemeService);
+  /** Buzón de pendientes: acceso arriba del menú con el número de cosas por hacer. */
+  protected readonly inboxService = inject(InboxService);
+  protected readonly shortcuts = inject(ShortcutService);
+  private readonly dialogService = inject(DialogService);
+  private readonly overlay = inject(Overlay);
+  private paletteOpen = false;
+  private helpOpen = false;
 
   protected readonly mobileNavOpen = signal(false);
   protected readonly collapsed = signal(localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true');
@@ -86,6 +99,85 @@ export class Shell {
     });
 
     void this.menuService.loadMyMenu();
+
+    // Al cambiar de rol cambia lo que hay por hacer: se vuelve a contar.
+    effect(() => {
+      this.authService.activeRole();
+      void this.inboxService.refresh();
+    });
+    this.inboxService.start();
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        void this.inboxService.refresh();
+      }
+    });
+
+    this.shortcuts.onApp('palette', () => this.openPalette());
+    this.shortcuts.onApp('help', () => this.openShortcutsHelp());
+    this.shortcuts.onApp('sidebar', () => this.toggleCollapsed());
+    this.shortcuts.onGoTo((route) => {
+      if (this.canGoTo(route)) {
+        void this.router.navigateByUrl(route);
+      }
+    });
+  }
+
+  /** "G + letra" solo lleva a pantallas que el rol activo tiene en su menú (Inicio siempre). */
+  private canGoTo(route: string): boolean {
+    if (route === '/') {
+      return true;
+    }
+    if (route === '/inbox') {
+      return this.inboxService.enabled();
+    }
+    return this.allVisibleRoutes().includes(route);
+  }
+
+  /** Pantallas del menú del rol activo, para la paleta "Ir a…". */
+  private paletteEntries(): CommandPaletteEntry[] {
+    const entries: CommandPaletteEntry[] = [];
+    if (this.inboxService.enabled()) {
+      entries.push({ label: this.languageService.t('inbox.title'), group: null, route: '/inbox' });
+    }
+    for (const item of this.visibleNavItems()) {
+      if (item.route) {
+        entries.push({ label: this.displayName(item), group: null, route: item.route });
+      }
+      for (const child of item.children) {
+        if (child.route) {
+          entries.push({ label: this.displayName(child), group: this.displayName(item), route: child.route });
+        }
+      }
+    }
+    return entries.filter((entry, index) => entries.findIndex((other) => other.route === entry.route) === index);
+  }
+
+  protected openPalette(): void {
+    if (this.paletteOpen) {
+      return;
+    }
+    this.paletteOpen = true;
+    const ref = this.dialogService.open<string, CommandPaletteData>(CommandPalette, {
+      data: { entries: this.paletteEntries() },
+      positionStrategy: this.overlay.position().global().centerHorizontally().top('12vh'),
+    });
+    ref.closed.subscribe((route) => {
+      this.paletteOpen = false;
+      if (route) {
+        void this.router.navigateByUrl(route);
+      }
+    });
+  }
+
+  protected openShortcutsHelp(): void {
+    if (this.helpOpen) {
+      return;
+    }
+    this.helpOpen = true;
+    this.accountMenuOpen.set(false);
+    const goTo = GO_TO_SHORTCUTS.filter((item) => this.canGoTo(item.route));
+    const ref = this.dialogService.open<void, ShortcutsHelpData>(ShortcutsHelp, { data: { goTo } });
+    ref.closed.subscribe(() => (this.helpOpen = false));
   }
 
   private filterByActiveRole(items: MenuTreeItem[]): MenuTreeItem[] {

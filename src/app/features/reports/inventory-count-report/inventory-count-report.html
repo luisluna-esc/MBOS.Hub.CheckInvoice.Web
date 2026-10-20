@@ -57,6 +57,7 @@
       <app-pdf-download-button (download)="onDownloadPdf()" />
       @if (mode() !== 'template') {
         <app-excel-download-button [loading]="exporting()" (download)="onExportExcel()" />
+        <app-txt-download-button [loading]="exportingTxt()" (download)="onExportTxt()" />
       }
     </div>
     @if (canPreviewPdf) {

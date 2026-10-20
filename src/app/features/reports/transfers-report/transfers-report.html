@@ -1,0 +1,51 @@
+<div class="flex flex-col gap-6">
+  <h1 class="text-xl font-semibold text-foreground">{{ 'reports.transfers.title' | translate }}</h1>
+
+  <div class="flex flex-col gap-3 rounded-md border border-border bg-surface p-3">
+    <p class="text-xs text-muted-foreground">{{ 'reports.transfers.description' | translate }}</p>
+
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <app-select
+        [label]="'reports.transfers.source' | translate"
+        [options]="warehouses()"
+        [ngModel]="sourceWarehouseId()"
+        (ngModelChange)="sourceWarehouseId.set($event)"
+      />
+      <app-select
+        [label]="'reports.transfers.destination' | translate"
+        [options]="warehouses()"
+        [ngModel]="destinationWarehouseId()"
+        (ngModelChange)="destinationWarehouseId.set($event)"
+      />
+      <app-date-picker
+        [label]="'reports.receipts.dateFrom' | translate"
+        [ngModel]="dateFrom()"
+        (ngModelChange)="dateFrom.set($event)"
+      />
+      <app-date-picker
+        [label]="'reports.receipts.dateTo' | translate"
+        [ngModel]="dateTo()"
+        (ngModelChange)="dateTo.set($event)"
+      />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="flex flex-col gap-2 rounded-md border border-border p-4">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <app-skeleton height="1.25rem" width="100%" />
+      }
+    </div>
+  } @else if (previewUrl(); as url) {
+    <div class="flex flex-wrap justify-end gap-2">
+      <app-pdf-download-button (download)="onDownloadPdf()" />
+      <app-excel-download-button [loading]="exporting()" (download)="onExportExcel()" />
+      <app-txt-download-button [loading]="exportingTxt()" (download)="onExportTxt()" />
+    </div>
+    @if (canPreviewPdf) {
+      <iframe [src]="url" class="w-full rounded-md border border-border" style="height: 80vh"></iframe>
+    }
+  } @else {
+    <p class="text-sm text-muted-foreground">{{ 'reports.transfers.selectPrompt' | translate }}</p>
+  }
+</div>

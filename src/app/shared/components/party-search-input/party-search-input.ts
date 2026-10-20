@@ -44,6 +44,8 @@ export class PartySearchInput {
   protected readonly results = signal<(Client | Supplier)[]>([]);
   protected readonly loading = signal(false);
   protected readonly open = signal(false);
+  /** Resultado resaltado con el teclado. */
+  protected readonly activeIndex = signal(0);
 
   protected readonly overlayPositions: ConnectionPositionPair[] = [
     { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
@@ -80,6 +82,7 @@ export class PartySearchInput {
           : await this.clientService.list(1, 8, { searchCriteria: term });
       if (token === this.requestToken) {
         this.results.set(result.items);
+        this.activeIndex.set(0);
       }
     } finally {
       if (token === this.requestToken) {
@@ -107,5 +110,39 @@ export class PartySearchInput {
 
   protected close(): void {
     this.open.set(false);
+  }
+
+  /** ↑ ↓ para moverse entre los resultados, Enter o Tab para elegir, Esc para cerrar la lista. */
+  protected onKeydown(event: KeyboardEvent): void {
+    const items = this.results();
+    if (event.key === 'Escape' && this.open()) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.close();
+      return;
+    }
+    if (!this.open() || items.length === 0) {
+      return;
+    }
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.activeIndex.set((this.activeIndex() + 1) % items.length);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.activeIndex.set((this.activeIndex() - 1 + items.length) % items.length);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        this.select(items[this.activeIndex()]);
+        break;
+      case 'Tab':
+        // Sin preventDefault: toma el resultado y el foco sigue al próximo campo.
+        if (!event.shiftKey) {
+          this.select(items[this.activeIndex()]);
+        }
+        break;
+    }
   }
 }

@@ -1,0 +1,127 @@
+<app-dialog
+  [title]="('review.title' | translate) + ' · ' + data.title"
+  [saveLabel]="'dialog.close' | translate"
+  [saveDisabled]="false"
+  [showCancel]="false"
+  (save)="close()"
+  (cancel)="close()"
+>
+  @if (loading() && !review()) {
+    <p class="text-sm text-muted-foreground">{{ 'review.loading' | translate }}</p>
+  } @else if (review(); as current) {
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface p-3">
+        <div class="flex flex-col gap-0.5">
+          <span class="text-xs text-muted-foreground">{{ 'review.currentStatus' | translate }}</span>
+          <span class="text-sm font-semibold text-foreground">
+            {{ 'review.status.' + current.status | translate }} · V.{{ current.version }}
+            @if (current.isVoided) {
+              · {{ 'review.voided' | translate }}
+            }
+          </span>
+        </div>
+
+        @if (!signing() && availableActions().length > 0) {
+          <div class="flex flex-wrap gap-2">
+            @for (action of availableActions(); track action) {
+              <button
+                type="button"
+                class="rounded-md px-3 py-1.5 text-sm transition-colors disabled:opacity-50"
+                [class.bg-primary]="action === 'verify' || action === 'approve'"
+                [class.text-primary-foreground]="action === 'verify' || action === 'approve'"
+                [class.border]="action === 'reject' || action === 'reopen'"
+                [class.border-danger]="action === 'reject' || action === 'reopen'"
+                [class.text-danger]="action === 'reject' || action === 'reopen'"
+                [disabled]="working()"
+                (click)="startSigning(action)"
+              >
+                {{ 'review.sign.' + action | translate }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      @if (signing(); as action) {
+        <!-- La contraseña es la firma: reemplaza a la firma en papel. -->
+        <div class="flex flex-col gap-3 rounded-lg border border-border bg-surface p-3">
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-semibold text-foreground">{{ 'review.sign.' + action | translate }}</span>
+            <span class="text-xs text-muted-foreground">{{ 'review.signHint.' + action | translate }}</span>
+          </div>
+          @if (needsReason()) {
+            <app-input [formControl]="reasonControl" [label]="'review.reason' | translate" [required]="true" [maxLength]="255" />
+          } @else if (action === 'approve') {
+            <app-input [formControl]="reasonControl" [label]="'review.notesOptional' | translate" [maxLength]="255" />
+          }
+          <app-input
+            [formControl]="passwordControl"
+            type="password"
+            [label]="'review.password' | translate"
+            [required]="true"
+            (keydown.enter)="onConfirmSign()"
+          />
+          <div class="flex justify-end gap-2">
+            <button
+              type="button"
+              class="rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-background"
+              (click)="cancelSigning()"
+            >
+              {{ 'dialog.cancel' | translate }}
+            </button>
+            <button
+              type="button"
+              class="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground transition-colors disabled:opacity-50"
+              [disabled]="working()"
+              (click)="onConfirmSign()"
+            >
+              {{ 'review.signConfirm' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
+      <div class="flex flex-col gap-3">
+        <h3 class="text-sm font-semibold text-foreground">{{ 'review.history' | translate }}</h3>
+        @for (group of versions(); track group.version) {
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-semibold text-muted-foreground">V.{{ group.version }}</span>
+            <div class="overflow-x-auto rounded-md border border-border">
+              <table class="w-full divide-y divide-border text-sm">
+                <tbody class="divide-y divide-border">
+                  @for (entry of group.items; track $index) {
+                    <tr>
+                      <td class="whitespace-nowrap px-3 py-2 align-top font-medium text-foreground">{{ 'review.actions.' + entry.action | translate }}</td>
+                      <td class="px-3 py-2 align-top text-foreground">
+                        {{ entry.userName ?? '—' }}
+                        @if (entry.userEmail) {
+                          <span class="block text-xs text-muted-foreground">{{ entry.userEmail }}</span>
+                        }
+                      </td>
+                      <td class="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">{{ formatDate(entry.at) }}</td>
+                      <td class="px-3 py-2 align-top text-xs">
+                        @if (entry.signatureCode) {
+                          <span class="block font-mono text-foreground">{{ entry.signatureCode }}</span>
+                          @if (entry.signatureValid === true) {
+                            <span class="text-success">{{ 'review.signatureValid' | translate }}</span>
+                          } @else if (entry.signatureValid === false) {
+                            <span class="font-medium text-danger">{{ 'review.signatureInvalid' | translate }}</span>
+                          }
+                        }
+                        @if (entry.reason) {
+                          <span class="block text-muted-foreground">{{ entry.reason }}</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        } @empty {
+          <p class="text-sm text-muted-foreground">{{ 'review.empty' | translate }}</p>
+        }
+      </div>
+    </div>
+  }
+</app-dialog>

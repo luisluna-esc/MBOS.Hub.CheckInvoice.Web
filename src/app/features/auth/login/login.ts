@@ -47,12 +47,14 @@ export class Login {
     this.authService.login({ usernameOrEmail: usernameOrEmail ?? '', password: password ?? '' }).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigateByUrl('/');
+        // Solo rutas internas ("/..."), nunca una dirección de otro sitio.
+        const returnUrl = this.router.parseUrl(this.router.url).queryParams['returnUrl'] as string | undefined;
+        this.router.navigateByUrl(returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/');
       },
       error: (error: { error?: { messages?: { description: string }[] } }) => {
         this.loading.set(false);
         const message = error.error?.messages?.[0]?.description;
-        this.toastService.show(this.languageService.t('login.error'), message);
+        this.toastService.error(this.languageService.t('login.error'), message);
       },
     });
   }
