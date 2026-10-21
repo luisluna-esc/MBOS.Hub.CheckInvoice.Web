@@ -16,21 +16,21 @@
         <div class="grid w-full grid-cols-1 gap-3 py-2 sm:grid-cols-3">
           <button
             type="button"
-            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-accent hover:bg-brand-300/10"
             (click)="chooseNew()"
           >
             {{ 'clients.form.choiceNew' | translate }}
           </button>
           <button
             type="button"
-            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-accent hover:bg-brand-300/10"
             (click)="chooseSpecial()"
           >
             {{ 'clients.form.choiceSpecial' | translate }}
           </button>
           <button
             type="button"
-            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+            class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-accent hover:bg-brand-300/10"
             (click)="chooseLink()"
           >
             {{ 'clients.form.choiceLink' | translate }}
@@ -43,7 +43,7 @@
           <app-tooltip class="self-start" [text]="'clients.form.back' | translate" position="right">
             <button
               type="button"
-              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-primary hover:bg-brand-300"
+              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-accent hover:bg-brand-300"
               [attr.aria-label]="'clients.form.back' | translate"
               (click)="backToChoose()"
             >
@@ -75,7 +75,7 @@
           <app-tooltip class="self-start" [text]="'clients.form.back' | translate" position="right">
             <button
               type="button"
-              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-primary hover:bg-brand-300"
+              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-accent hover:bg-brand-300"
               [attr.aria-label]="'clients.form.back' | translate"
               (click)="backToChoose()"
             >
@@ -121,7 +121,7 @@
             <span>{{ 'clients.form.linkedToSupplier' | translate: { name: linked.name } }}</span>
           }
         </div>
-        <button type="button" class="text-xs font-medium text-primary hover:underline" (click)="onEditDecisions()">
+        <button type="button" class="text-xs font-medium text-accent hover:underline" (click)="onEditDecisions()">
           {{ 'clients.form.editDecisions' | translate }}
         </button>
       </div>
@@ -150,7 +150,7 @@
                 type="text"
                 maxlength="5"
                 autocomplete="off"
-                class="w-full rounded-md border border-border bg-surface px-2 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                class="w-full rounded-md border border-border bg-surface px-2 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
               />
               <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
             </div>

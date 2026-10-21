@@ -14,7 +14,7 @@
   </div>
 
   @if (loading()) {
-    <p class="text-sm text-muted-foreground">{{ 'receiptEdits.loading' | translate }}</p>
+    <app-loading-skeleton [count]="5" />
   } @else {
     <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
       @for (request of requests(); track request.transferVoidRequestId) {
@@ -61,7 +61,7 @@
                   <input
                     type="text"
                     maxlength="255"
-                    class="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                     [ngModel]="notes()[request.transferVoidRequestId] ?? ''"
                     (ngModelChange)="setNotes(request.transferVoidRequestId, $event)"
                   />

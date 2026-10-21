@@ -24,14 +24,14 @@
           <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
             <button
               type="button"
-              class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+              class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-accent hover:bg-brand-300/10"
               (click)="chooseNew()"
             >
               {{ 'suppliers.form.choiceNew' | translate }}
             </button>
             <button
               type="button"
-              class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-primary hover:bg-brand-300/10"
+              class="rounded-lg border-2 border-border bg-surface px-4 py-6 text-center text-base font-semibold text-foreground transition-colors hover:border-accent hover:bg-brand-300/10"
               (click)="chooseLink()"
             >
               {{ 'suppliers.form.choiceLink' | translate }}
@@ -45,7 +45,7 @@
           <app-tooltip class="self-start" [text]="'suppliers.form.back' | translate" position="right">
             <button
               type="button"
-              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-primary hover:bg-brand-300"
+              class="flex items-center justify-center rounded-md border border-border p-1.5 text-foreground transition-colors hover:border-accent hover:bg-brand-300"
               [attr.aria-label]="'suppliers.form.back' | translate"
               (click)="backToChoose()"
             >
@@ -76,7 +76,7 @@
     @if (!isEdit && decisionsConfirmed() && linkedParty(); as linked) {
       <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-background p-3 text-sm">
         <span class="text-foreground">{{ 'suppliers.form.linkedToClient' | translate: { name: linked.name } }}</span>
-        <button type="button" class="text-xs font-medium text-primary hover:underline" (click)="onEditDecisions()">
+        <button type="button" class="text-xs font-medium text-accent hover:underline" (click)="onEditDecisions()">
           {{ 'suppliers.form.editDecisions' | translate }}
         </button>
       </div>
@@ -126,7 +126,7 @@
               <button
                 type="button"
                 role="radio"
-                class="px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 [attr.aria-checked]="isAdventist()"
                 [class.bg-primary]="isAdventist()"
                 [class.text-primary-foreground]="isAdventist()"
@@ -139,7 +139,7 @@
               <button
                 type="button"
                 role="radio"
-                class="border-l border-border px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="border-l border-border px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 [attr.aria-checked]="!isAdventist()"
                 [class.bg-primary]="!isAdventist()"
                 [class.text-primary-foreground]="!isAdventist()"
@@ -182,7 +182,7 @@
               <button
                 type="button"
                 role="radio"
-                class="px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 [attr.aria-checked]="alsoClient()"
                 [class.bg-primary]="alsoClient()"
                 [class.text-primary-foreground]="alsoClient()"
@@ -195,7 +195,7 @@
               <button
                 type="button"
                 role="radio"
-                class="border-l border-border px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="border-l border-border px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 [attr.aria-checked]="!alsoClient()"
                 [class.bg-primary]="!alsoClient()"
                 [class.text-primary-foreground]="!alsoClient()"

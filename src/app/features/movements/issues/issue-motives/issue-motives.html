@@ -5,24 +5,23 @@
   </div>
 
   @if (loading()) {
-    <p class="text-sm text-muted-foreground">{{ 'issues.motives.loading' | translate }}</p>
+    <app-loading-skeleton variant="cards" [count]="6" />
   } @else {
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       @for (motive of motives(); track motive.key) {
         <a
           [routerLink]="motive.route"
           [queryParams]="motive.queryParams"
-          class="flex items-start gap-3 rounded-lg border border-border bg-surface p-4 transition-colors hover:border-primary hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+          class="flex items-start gap-3 rounded-lg border border-border bg-surface p-4 transition-colors hover:border-accent hover:bg-background focus:outline-none focus:ring-2 focus:ring-accent"
         >
-          <span class="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-accent">
             <app-icon [name]="motive.icon" />
           </span>
           <span class="flex flex-col gap-0.5">
-            @if (motive.key === 'transfers') {
-              <span class="text-sm font-semibold text-foreground">{{ 'issues.motives.transfers.title' | translate }}</span>
-              <span class="text-xs text-muted-foreground">{{ 'issues.motives.transfers.description' | translate }}</span>
+            <span class="text-sm font-semibold text-foreground">{{ motive.title }}</span>
+            @if (motive.key === 'batch') {
+              <span class="text-xs text-muted-foreground">{{ 'issues.motives.batch.description' | translate }}</span>
             } @else {
-              <span class="text-sm font-semibold text-foreground">{{ motive.title }}</span>
               <span class="text-xs text-muted-foreground">{{ 'issues.motives.typeDescription' | translate: { type: motive.title } }}</span>
             }
           </span>

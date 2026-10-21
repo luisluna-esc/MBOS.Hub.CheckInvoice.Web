@@ -10,6 +10,7 @@ import { Role } from '../../roles/role.models';
 import { RoleService } from '../../roles/role.service';
 import { AppUser } from '../app-user.models';
 import { AppUserService } from '../app-user.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 export interface UserRolesDialogData {
   user: AppUser;
@@ -17,7 +18,7 @@ export interface UserRolesDialogData {
 
 @Component({
   selector: 'app-user-roles-dialog',
-  imports: [FormsModule, Dialog, Checkbox, TranslatePipe],
+  imports: [LoadingSkeleton, FormsModule, Dialog, Checkbox, TranslatePipe],
   templateUrl: './user-roles-dialog.html',
 })
 export class UserRolesDialog {

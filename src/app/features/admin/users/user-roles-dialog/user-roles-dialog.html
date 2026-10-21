@@ -7,7 +7,7 @@
   (cancel)="close()"
 >
   @if (loading()) {
-    <p class="text-sm text-muted-foreground">{{ 'users.roles.loading' | translate }}</p>
+    <app-loading-skeleton [count]="4" />
   } @else if (allRoles().length === 0) {
     <p class="text-sm text-muted-foreground">{{ 'users.roles.empty' | translate }}</p>
   } @else {

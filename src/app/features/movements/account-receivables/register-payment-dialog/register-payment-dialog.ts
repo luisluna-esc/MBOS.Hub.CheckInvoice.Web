@@ -12,6 +12,7 @@ import { Select, SelectOption } from '../../../../shared/components/select/selec
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { PaymentLine } from '../account-receivable.models';
 import { AccountReceivableService } from '../account-receivable.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 export interface RegisterPaymentDialogData {
   accountReceivableId: number;
@@ -23,7 +24,7 @@ export interface RegisterPaymentDialogData {
 // otro depósito. Si la cuenta no tiene salida (creada a mano), se registra un monto general.
 @Component({
   selector: 'app-register-payment-dialog',
-  imports: [ReactiveFormsModule, Dialog, AppInput, Select, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, ReactiveFormsModule, Dialog, AppInput, Select, TranslatePipe, DecimalPipe],
   templateUrl: './register-payment-dialog.html',
 })
 export class RegisterPaymentDialog {

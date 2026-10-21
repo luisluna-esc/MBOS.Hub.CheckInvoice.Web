@@ -8,6 +8,7 @@ import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { Permission, Role } from '../role.models';
 import { RoleService } from '../role.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 export interface RolePermissionsDialogData {
   role: Role;
@@ -20,7 +21,7 @@ interface PermissionGroup {
 
 @Component({
   selector: 'app-role-permissions-dialog',
-  imports: [FormsModule, Dialog, Checkbox, TranslatePipe],
+  imports: [LoadingSkeleton, FormsModule, Dialog, Checkbox, TranslatePipe],
   templateUrl: './role-permissions-dialog.html',
 })
 export class RolePermissionsDialog {

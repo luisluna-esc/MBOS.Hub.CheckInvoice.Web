@@ -27,4 +27,6 @@ export interface ProductFilters {
   isActive?: boolean;
   searchCriteria?: string;
   warehouseId?: number;
+  /** Solo productos con stock (en warehouseId o, sin almacén, en alguno). */
+  inStock?: boolean;
 }

@@ -15,6 +15,9 @@
         {{ 'receipts.correction.title' | translate: { note: correctionNote() ?? '' } }}
       } @else {
         {{ (isDonation() ? 'receipts.form.donationTitle' : 'receipts.form.title') | translate }}
+        @if (presetReceiptTypeName(); as typeName) {
+          <span class="font-normal text-muted-foreground">· {{ typeName }}</span>
+        }
       }
     </h1>
   </div>
@@ -35,12 +38,14 @@
         [required]="true"
       />
       @if (!isDonation()) {
-        <app-select
-          formControlName="receiptTypeId"
-          [label]="'receipts.form.purchaseType' | translate"
-          [options]="purchaseTypeOptions()"
-          [required]="true"
-        />
+        @if (!presetReceiptTypeId()) {
+          <app-select
+            formControlName="receiptTypeId"
+            [label]="'receipts.form.purchaseType' | translate"
+            [options]="purchaseTypeOptions()"
+            [required]="true"
+          />
+        }
         <app-input
           formControlName="invoiceNumber"
           [label]="(withRetention() ? 'receipts.form.documentNumber' : 'receipts.form.invoiceNumber') | translate"
@@ -58,6 +63,7 @@
           formControlName="invoiceTotal"
           type="number"
           [label]="'receipts.form.purchaseTotal' | translate"
+          [hint]="retentionBaseHint()"
           [required]="true"
           [min]="0"
           [decimals]="2"
@@ -105,9 +111,9 @@
         <button
           type="button"
           class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-background"
-          (click)="addLine()"
+          (click)="addProduct()"
         >
-          {{ 'receipts.form.addLine' | translate }}
+          {{ 'receipts.form.addProduct' | translate }}
         </button>
       </div>
 
@@ -148,7 +154,7 @@
                     <button
                       #productButton
                       type="button"
-                      class="min-w-0 flex-1 truncate rounded-md border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                      class="min-w-0 flex-1 truncate rounded-md border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-accent"
                       [class.border-border]="!(line.controls.productId.touched && line.controls.productId.invalid)"
                       [class.border-danger]="line.controls.productId.touched && line.controls.productId.invalid"
                       (click)="pickProduct(i)"

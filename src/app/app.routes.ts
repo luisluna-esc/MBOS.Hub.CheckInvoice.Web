@@ -138,6 +138,16 @@ export const routes: Routes = [
           import('./features/movements/issues/issue-create/issue-create').then((m) => m.IssueCreate),
       },
       {
+        path: 'issues/batch',
+        loadComponent: () =>
+          import('./features/movements/issues/issue-batch-pastors/issue-batch-pastors').then((m) => m.IssueBatchPastors),
+      },
+      {
+        path: 'issues/batch/details',
+        loadComponent: () =>
+          import('./features/movements/issues/issue-batch-create/issue-batch-create').then((m) => m.IssueBatchCreate),
+      },
+      {
         path: 'issues/void-requests',
         loadComponent: () =>
           import('./features/movements/issue-void-requests/issue-void-requests-list/issue-void-requests-list').then(

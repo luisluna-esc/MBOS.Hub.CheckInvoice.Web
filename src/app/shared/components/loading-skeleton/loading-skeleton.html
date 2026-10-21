@@ -1,0 +1,53 @@
+<div role="status" aria-live="polite" class="w-full">
+  <span class="sr-only">{{ 'common.loading' | translate }}</span>
+
+  @switch (variant()) {
+    @case ('cards') {
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+        @for (i of items(); track i) {
+          <div class="flex items-start gap-3 rounded-lg border border-border bg-surface p-4">
+            <app-skeleton width="2.5rem" height="2.5rem" tone="muted" />
+            <div class="flex flex-1 flex-col gap-2">
+              <app-skeleton width="55%" height="0.875rem" tone="muted" />
+              <app-skeleton width="85%" height="0.75rem" tone="muted" />
+            </div>
+          </div>
+        }
+      </div>
+    }
+    @case ('detail') {
+      <div class="flex flex-col gap-4" aria-hidden="true">
+        <div class="flex flex-col gap-2">
+          <app-skeleton width="35%" height="1.5rem" [tone]="tone()" />
+          <app-skeleton width="22%" height="0.875rem" [tone]="tone()" />
+        </div>
+        <div class="grid grid-cols-1 gap-3 rounded-lg border border-border bg-surface p-4 sm:grid-cols-3">
+          @for (i of [0, 1, 2]; track i) {
+            <div class="flex flex-col gap-2">
+              <app-skeleton width="40%" height="0.75rem" tone="muted" />
+              <app-skeleton width="75%" height="1rem" tone="muted" />
+            </div>
+          }
+        </div>
+        <div class="flex flex-col gap-2">
+          @for (i of items(); track i) {
+            <div class="flex items-center gap-3 rounded-lg border border-border bg-surface p-3">
+              <app-skeleton width="2.5rem" height="2.5rem" tone="muted" />
+              <div class="flex flex-1 flex-col gap-2">
+                <app-skeleton width="45%" height="0.875rem" tone="muted" />
+                <app-skeleton width="30%" height="0.75rem" tone="muted" />
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+    @default {
+      <div class="flex flex-col gap-2" aria-hidden="true">
+        @for (i of items(); track i) {
+          <app-skeleton height="1.25rem" [width]="i % 3 === 2 ? '70%' : '100%'" [tone]="tone()" />
+        }
+      </div>
+    }
+  }
+</div>

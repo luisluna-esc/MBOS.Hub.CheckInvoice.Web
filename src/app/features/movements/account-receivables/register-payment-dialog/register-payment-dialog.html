@@ -11,7 +11,7 @@
     </p>
 
     @if (loadingLines()) {
-      <p class="text-sm text-muted-foreground">{{ 'accountReceivables.payment.loadingLines' | translate }}</p>
+      <app-loading-skeleton [count]="3" />
     } @else if (hasProducts()) {
       <p class="text-xs text-muted-foreground">{{ 'accountReceivables.payment.byProductHint' | translate }}</p>
 
@@ -56,7 +56,7 @@
                       </div>
                       <button
                         type="button"
-                        class="shrink-0 text-xs font-medium text-primary hover:underline"
+                        class="shrink-0 text-xs font-medium text-accent hover:underline"
                         (click)="fillRemaining(i)"
                       >
                         {{ 'accountReceivables.payment.fillRemaining' | translate }}

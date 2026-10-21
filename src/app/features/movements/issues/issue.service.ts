@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiMessage } from '../../../core/auth/auth.models';
 import { PagedResult } from '../../../core/http/paged-result';
-import { Issue, IssueDetail, IssueEdit, IssueEditRequest, IssueFilters, IssueRequest, IssueSummary } from './issue.models';
+import { Issue, IssueDetail, IssueEdit, IssueEditRequest, IssueFilters, IssueRequest, IssueSummary, IssueBatchRequest } from './issue.models';
 
 interface CreateResponse {
   id: number;
@@ -59,6 +59,18 @@ export class IssueService {
 
   create(request: IssueRequest): Promise<CreateResponse> {
     return firstValueFrom(this.http.post<CreateResponse>(`${environment.apiUrl}/Issues`, request));
+  }
+
+  /** Salida por lote: devuelve el id del lote. */
+  createBatch(request: IssueBatchRequest): Promise<CreateResponse> {
+    return firstValueFrom(this.http.post<CreateResponse>(`${environment.apiUrl}/IssueBatches`, request));
+  }
+
+  /** Hoja de firmas de una salida por lote: una fila por pastor y la columna Firma para firmar a mano. */
+  getBatchPdf(issueBatchId: number): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/issue-batch/${issueBatchId}/pdf`, { responseType: 'blob' })
+    );
   }
 
   private cleanFilters(filters: IssueFilters): Record<string, string | number> {

@@ -87,7 +87,7 @@ export class IssueVoidRequestsList {
     {
       key: 'issueId',
       header: this.languageService.t('issueVoidRequests.columns.issue'),
-      format: (value) => String(value).padStart(5, '0'),
+      format: (value, row) => row.noteNumber ?? String(value).padStart(5, '0'),
     },
     {
       key: 'issueDate',

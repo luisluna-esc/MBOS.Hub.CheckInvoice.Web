@@ -19,7 +19,7 @@
       [disabled]="disabled()"
       [attr.aria-invalid]="showError"
       [attr.aria-describedby]="errorDisplay() === 'icon' ? null : showError ? inputId + '-error' : hint() ? inputId + '-hint' : null"
-      class="w-full rounded-md border bg-surface px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+      class="w-full rounded-md border bg-surface px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-60"
       [class.border-border]="!showError"
       [class.border-danger]="showError"
       [class.pr-10]="type() === 'password'"

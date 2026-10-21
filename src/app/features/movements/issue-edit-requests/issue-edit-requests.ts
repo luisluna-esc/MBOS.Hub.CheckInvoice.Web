@@ -10,6 +10,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ReceiptEditLineChange as IssueEditLineChange } from '../receipts/receipt.models';
 import { IssueEdit } from '../issues/issue.models';
 import { IssueService } from '../issues/issue.service';
+import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton';
 
 /**
  * Correcciones de Salidas (Autorizaciones): como las anulaciones, las pide quien trabaja en
@@ -17,7 +18,7 @@ import { IssueService } from '../issues/issue.service';
  */
 @Component({
   selector: 'app-issue-edit-requests',
-  imports: [FormsModule, Select, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, FormsModule, Select, TranslatePipe, DecimalPipe],
   templateUrl: './issue-edit-requests.html',
 })
 export class IssueEditRequests {

@@ -6,6 +6,7 @@ import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ReceiptDetail } from '../receipt.models';
 import { ReceiptService } from '../receipt.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 export interface ReceiptDetailsDialogData {
   receiptId: number;
@@ -13,7 +14,7 @@ export interface ReceiptDetailsDialogData {
 
 @Component({
   selector: 'app-receipt-details-dialog',
-  imports: [Dialog, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, Dialog, TranslatePipe, DecimalPipe],
   templateUrl: './receipt-details-dialog.html',
 })
 export class ReceiptDetailsDialog {
@@ -27,7 +28,7 @@ export class ReceiptDetailsDialog {
   protected readonly loading = signal(true);
   protected readonly totalQuantity = computed(() => this.lines().reduce((sum, line) => sum + line.quantity, 0));
   protected readonly grandTotal = computed(() => this.lines().reduce((sum, line) => sum + (line.totalCost ?? 0), 0));
-  /** Compras con retención: el precio de compra difiere del costo (precio x 0,92), se muestran ambos. */
+  /** Compras con retención: el precio de compra difiere del costo (precio / 0,92), se muestran ambos. */
   protected readonly hasPrices = computed(() =>
     this.lines().some((line) => line.unitPrice != null && line.unitPrice !== line.unitCost)
   );

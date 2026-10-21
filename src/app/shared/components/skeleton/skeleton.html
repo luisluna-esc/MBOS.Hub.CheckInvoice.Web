@@ -1,5 +1,7 @@
 <span
-  class="block animate-pulse bg-surface"
+  class="block animate-pulse"
+  [class.bg-surface]="tone() === 'surface'"
+  [class.bg-border/50]="tone() === 'muted'"
   [class.rounded-sm]="rounded() === 'sm'"
   [class.rounded-md]="rounded() === 'md'"
   [class.rounded-lg]="rounded() === 'lg'"

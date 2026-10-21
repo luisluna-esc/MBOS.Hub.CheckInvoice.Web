@@ -41,7 +41,7 @@ const PURCHASE_WITH_INVOICE = 'Compras con Factura';
 const PURCHASE_WITH_RETENTION = 'Compras con Retencion';
 const DONATION = 'Donacion';
 
-/** Con retención (sin factura) el costo unitario es el precio por este factor. Igual que ReceiptCosting en el backend. */
+/** Con retención (sin factura) el costo unitario es el precio dividido entre este factor. Igual que ReceiptCosting en el backend. */
 const RETENTION_COST_FACTOR = 0.92;
 
 @Component({
@@ -103,6 +103,13 @@ export class ReceiptCreate {
     this.warehouses().map((item) => ({ value: String(item.id), label: item.name }))
   );
 
+  /** Tipo elegido en la tarjeta de Entradas (null si se entró sin tarjeta: se elige en el formulario). */
+  protected readonly presetReceiptTypeId = signal<number | null>(null);
+  protected readonly presetReceiptTypeName = computed(() => {
+    const id = this.presetReceiptTypeId();
+    return id ? (this.receiptTypes().find((item) => item.id === id)?.name ?? null) : null;
+  });
+
   protected readonly purchaseTypeOptions = computed<SelectOption[]>(() =>
     this.receiptTypes().flatMap((item) => {
       if (item.name === PURCHASE_WITH_INVOICE) {
@@ -137,7 +144,7 @@ export class ReceiptCreate {
     { initialValue: '' }
   );
 
-  /** Con retención cambian los nombres de los campos (N° de documento, CI) y el costo es precio x 0,92. */
+  /** Con retención cambian los nombres de los campos (N° de documento, CI) y el costo es precio / 0,92. */
   protected readonly withRetention = computed(() => {
     const typeId = Number(this.receiptTypeIdValue());
     return this.receiptTypes().find((item) => item.id === typeId)?.name === PURCHASE_WITH_RETENTION;
@@ -175,12 +182,25 @@ export class ReceiptCreate {
     { initialValue: '' }
   );
 
-  /** Suma de cantidad x precio: es lo que debe coincidir con el Valor total de la compra. */
+  /**
+   * El 100% de la compra. Con factura es el Valor total de la compra; con retención es ese valor
+   * dividido entre 0,92, porque las líneas se comparan por costo (precio / 0,92).
+   */
+  protected readonly baseTotal = computed(() => {
+    const total = Number(this.invoiceTotalValue()) || 0;
+    return this.withRetention() ? total / RETENTION_COST_FACTOR : total;
+  });
+
+  /** Debajo del Valor total, con retención: cuánto es el 100% (valor total / 0,92). */
+  protected readonly retentionBaseHint = computed(() =>
+    this.withRetention() && this.baseTotal()
+      ? this.languageService.t('receipts.form.retentionBase', { total: formatNumber(this.baseTotal(), this.locale, '1.2-2') })
+      : ''
+  );
+
+  /** Suma de los totales de línea: es lo que debe coincidir con el 100% de la compra. */
   protected readonly linesTotalSum = computed(() =>
-    (this.detailsValues() ?? []).reduce(
-      (sum, line) => sum + (Number(line?.quantity) || 0) * (Number(line?.unitPrice) || 0),
-      0
-    )
+    (this.detailsValues() ?? []).reduce((sum, _line, index) => sum + this.lineTotal(index), 0)
   );
 
   // La suma de las líneas debe coincidir exactamente con el Valor total de la compra (ni más ni
@@ -189,7 +209,7 @@ export class ReceiptCreate {
     if (this.isDonation()) {
       return false;
     }
-    const total = Number(this.invoiceTotalValue());
+    const total = this.baseTotal();
     if (!total) {
       return false;
     }
@@ -198,12 +218,12 @@ export class ReceiptCreate {
 
   /** Porcentaje que representa la suma de las líneas sobre el Valor total de la compra (100% = cuadra). */
   protected readonly linesTotalPercentage = computed(() => {
-    const total = Number(this.invoiceTotalValue());
+    const total = this.baseTotal();
     return total ? (this.linesTotalSum() / total) * 100 : null;
   });
 
   /** Lo que sobra (positivo) o falta (negativo) en las líneas respecto del Valor total de la compra. */
-  protected readonly totalDifference = computed(() => this.linesTotalSum() - (Number(this.invoiceTotalValue()) || 0));
+  protected readonly totalDifference = computed(() => this.linesTotalSum() - this.baseTotal());
 
   /** Dice cuánto suman las líneas, cuánto la compra y cuánto sobra o falta, en vez de solo "no cuadra". */
   protected readonly totalMismatchMessage = computed(() => {
@@ -213,7 +233,7 @@ export class ReceiptCreate {
       difference > 0 ? 'receipts.form.totalMismatchOver' : 'receipts.form.totalMismatchUnder',
       {
         lines: format(this.linesTotalSum()),
-        invoice: format(Number(this.invoiceTotalValue()) || 0),
+        invoice: format(this.baseTotal()),
         difference: format(Math.abs(difference)),
       }
     );
@@ -234,9 +254,14 @@ export class ReceiptCreate {
       void this.loadForCorrection(this.correctionId);
     } else {
       void this.loadCatalogs();
-      const state = history.state as { supplierId?: number };
+      const state = history.state as { supplierId?: number; receiptTypeId?: number | null };
       if (state.supplierId) {
         void this.lockSupplier(state.supplierId);
+      }
+      // El tipo viene de la tarjeta elegida en Entradas: ya no se vuelve a preguntar.
+      if (state.receiptTypeId) {
+        this.headerForm.controls.receiptTypeId.setValue(String(state.receiptTypeId));
+        this.presetReceiptTypeId.set(state.receiptTypeId);
       }
     }
 
@@ -391,8 +416,14 @@ export class ReceiptCreate {
     this.headerForm.disable();
     this.headerConfirmed.set(true);
     if (this.detailsArray.length === 0) {
-      this.addLine();
+      this.addProduct();
     }
+  }
+
+  /** "Agregar producto": abre la ventana de productos y lo elegido entra como una línea nueva. */
+  protected addProduct(): void {
+    this.addLine();
+    void this.pickProduct(this.detailsArray.length - 1, true);
   }
 
   protected addLine(): void {
@@ -413,7 +444,7 @@ export class ReceiptCreate {
   protected onPriceEnter(index: number, event: Event): void {
     event.preventDefault();
     if (index === this.detailsArray.length - 1 && this.detailsArray.at(index).valid) {
-      this.addLine();
+      this.addProduct();
     }
   }
 
@@ -427,7 +458,7 @@ export class ReceiptCreate {
   }
 
   /** Ventana para elegir el producto: muestra los ya elegidos en otras líneas sin dejar repetirlos. */
-  protected pickProduct(index: number): void {
+  protected pickProduct(index: number, isNew = false): void {
     const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(ProductPickerDialog, {
       data: { excludedProductIds: this.excludedFor(index) },
     });
@@ -436,6 +467,9 @@ export class ReceiptCreate {
         this.onProductPicked(index, result);
         // Elegido el producto, el cursor pasa a la cantidad de esa línea.
         setTimeout(() => this.host.querySelectorAll('tbody tr')[index]?.querySelector<HTMLInputElement>('app-input input')?.focus());
+      } else if (isNew) {
+        // Se cerró la ventana sin elegir: la línea nueva no queda vacía.
+        this.removeLine(index);
       } else {
         setTimeout(() => this.productButtons()[index]?.nativeElement.focus());
       }
@@ -456,17 +490,19 @@ export class ReceiptCreate {
     if (!line) {
       return 0;
     }
-    return (Number(line.quantity) || 0) * (Number(line.unitPrice) || 0);
+    // Con retención el total de la línea va a costo (precio / 0,92), como entra al inventario.
+    const total = (Number(line.quantity) || 0) * (Number(line.unitPrice) || 0);
+    return this.withRetention() ? total / RETENTION_COST_FACTOR : total;
   }
 
-  /** Costo con el que entra al inventario: con retención, precio x 0,92. */
+  /** Costo con el que entra al inventario: con retención, precio / 0,92. */
   protected lineUnitCost(index: number): number {
     const price = Number((this.detailsValues() ?? [])[index]?.unitPrice) || 0;
-    return this.withRetention() ? Math.round(price * RETENTION_COST_FACTOR * 100) / 100 : price;
+    return this.withRetention() ? Math.round((price / RETENTION_COST_FACTOR) * 100) / 100 : price;
   }
 
   protected linePercentage(index: number): number | null {
-    const total = Number(this.invoiceTotalValue());
+    const total = this.baseTotal();
     if (!total) {
       return null;
     }

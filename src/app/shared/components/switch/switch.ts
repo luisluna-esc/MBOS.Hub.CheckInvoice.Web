@@ -11,13 +11,13 @@ let nextId = 0;
       role="switch"
       [id]="switchId"
       [attr.aria-checked]="checked()"
-      class="inline-flex items-center gap-2 rounded-md text-sm font-medium text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      class="inline-flex items-center gap-2 rounded-md text-sm font-medium text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       (click)="checked.set(!checked())"
     >
       <span
         class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-colors"
         [class.bg-primary]="checked()"
-        [class.border-primary]="checked()"
+        [class.border-accent]="checked()"
         [class.bg-background]="!checked()"
         [class.border-border]="!checked()"
       >

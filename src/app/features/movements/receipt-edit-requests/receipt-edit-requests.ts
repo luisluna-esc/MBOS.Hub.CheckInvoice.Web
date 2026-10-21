@@ -9,6 +9,7 @@ import { Select, SelectOption } from '../../../shared/components/select/select';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ReceiptEdit, ReceiptEditLineChange } from '../receipts/receipt.models';
 import { ReceiptService } from '../receipts/receipt.service';
+import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton';
 
 /**
  * Correcciones de Entradas (Autorizaciones): como las anulaciones, las pide quien trabaja en
@@ -16,7 +17,7 @@ import { ReceiptService } from '../receipts/receipt.service';
  */
 @Component({
   selector: 'app-receipt-edit-requests',
-  imports: [FormsModule, Select, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, FormsModule, Select, TranslatePipe, DecimalPipe],
   templateUrl: './receipt-edit-requests.html',
 })
 export class ReceiptEditRequests {

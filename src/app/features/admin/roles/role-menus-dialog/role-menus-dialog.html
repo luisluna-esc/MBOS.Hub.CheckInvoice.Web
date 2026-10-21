@@ -10,7 +10,7 @@
   <p class="mb-3 text-sm text-muted-foreground">{{ 'roles.menus.hint' | translate }}</p>
 
   @if (loading()) {
-    <p class="text-sm text-muted-foreground">{{ 'roles.menus.loading' | translate }}</p>
+    <app-loading-skeleton [count]="6" />
   } @else if (groups().length === 0) {
     <p class="text-sm text-muted-foreground">{{ 'roles.menus.empty' | translate }}</p>
   } @else {

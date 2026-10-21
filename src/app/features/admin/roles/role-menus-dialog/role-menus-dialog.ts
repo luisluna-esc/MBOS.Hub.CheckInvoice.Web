@@ -8,6 +8,7 @@ import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { Menu, Role } from '../role.models';
 import { RoleService } from '../role.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 export interface RoleMenusDialogData {
   role: Role;
@@ -20,7 +21,7 @@ interface MenuGroup {
 
 @Component({
   selector: 'app-role-menus-dialog',
-  imports: [FormsModule, Dialog, Checkbox, TranslatePipe],
+  imports: [LoadingSkeleton, FormsModule, Dialog, Checkbox, TranslatePipe],
   templateUrl: './role-menus-dialog.html',
 })
 export class RoleMenusDialog {
@@ -37,14 +38,22 @@ export class RoleMenusDialog {
 
   protected readonly groups = computed<MenuGroup[]>(() => {
     const menus = this.allMenus();
-    const nameById = new Map(menus.map((m) => [m.menuId, m.name]));
+    const byId = new Map(menus.map((m) => [m.menuId, m]));
+    // Nombre del grupo con todos sus niveles: "Reportes / Contabilidad".
+    const groupPath = (menuId: number): string => {
+      const menu = byId.get(menuId);
+      if (!menu) {
+        return '—';
+      }
+      return menu.parentMenuId ? `${groupPath(menu.parentMenuId)} / ${menu.name}` : menu.name;
+    };
     // Solo se listan los items con ruta propia (hojas): un grupo sin hijos
     // visibles se oculta solo en el sidebar, no hace falta marcarlo aparte.
     const leaves = menus.filter((m) => !!m.route);
 
     const byGroup = new Map<string, Menu[]>();
     for (const leaf of leaves) {
-      const label = leaf.parentMenuId ? (nameById.get(leaf.parentMenuId) ?? '—') : this.languageService.t('roles.menus.general');
+      const label = leaf.parentMenuId ? groupPath(leaf.parentMenuId) : this.languageService.t('roles.menus.general');
       const list = byGroup.get(label) ?? [];
       list.push(leaf);
       byGroup.set(label, list);

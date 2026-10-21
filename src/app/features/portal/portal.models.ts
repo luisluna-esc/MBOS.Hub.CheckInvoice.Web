@@ -47,6 +47,8 @@ export interface PortalStatementPayment {
 export interface PortalStatementAccount {
   accountReceivableId: number;
   issueId: number | null;
+  /** N° de la salida como se imprime ("S 5-10-26"). */
+  noteNumber?: string | null;
   issueDate: string | null;
   dueDate: string | null;
   status: 'pending' | 'late' | 'paid';

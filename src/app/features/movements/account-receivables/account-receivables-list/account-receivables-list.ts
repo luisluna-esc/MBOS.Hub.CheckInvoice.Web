@@ -71,7 +71,7 @@ export class AccountReceivablesList {
       {
         key: 'issueId',
         header: this.languageService.t('accountReceivables.columns.issue'),
-        format: (value) => (value != null ? String(value).padStart(5, '0') : '—'),
+        format: (value, row) => row.noteNumber ?? (value != null ? String(value).padStart(5, '0') : '—'),
       },
       {
         key: 'issueDate',

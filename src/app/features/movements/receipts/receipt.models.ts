@@ -64,7 +64,7 @@ export interface ReceiptDetail {
   receiptId: number;
   productId: number;
   quantity: number;
-  /** Precio de compra. Con retención el costo unitario es menor (precio x 0,92). */
+  /** Precio de compra. Con retención el costo unitario es menor (precio / 0,92). */
   unitPrice: number | null;
   unitCost: number;
   totalCost: number;

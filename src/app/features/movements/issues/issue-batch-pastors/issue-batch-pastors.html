@@ -1,0 +1,122 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+      [attr.aria-label]="'dialog.cancel' | translate"
+      (click)="onCancel()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+        <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <h1 class="text-xl font-semibold text-foreground">{{ 'issues.batch.pastorsTitle' | translate }}</h1>
+  </div>
+
+  <p class="text-sm text-muted-foreground">{{ 'issues.batch.pastorsDescription' | translate }}</p>
+
+  @if (errorCode()) {
+    <div class="rounded-lg border border-border">
+      <app-error-state [code]="errorCode()!" />
+    </div>
+  } @else {
+    <div class="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
+          {{ 'issues.batch.search' | translate }}
+          <input
+            type="search"
+            class="rounded-md border border-border bg-surface px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+            [value]="search()"
+            (input)="onSearch($event)"
+          />
+        </label>
+        <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
+          {{ 'issues.batch.district' | translate }}
+          <select
+            class="rounded-md border border-border bg-surface px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+            [value]="district()"
+            (change)="onDistrict($event)"
+          >
+            <option value="">{{ 'issues.batch.allDistricts' | translate }}</option>
+            @for (name of districts(); track name) {
+              <option [value]="name">{{ name }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground">
+          <input
+            type="checkbox"
+            class="size-4 accent-accent"
+            [checked]="allVisibleSelected()"
+            [disabled]="visible().length === 0"
+            (change)="toggleAllVisible()"
+          />
+          {{ (search() || district() ? 'issues.batch.selectAllFiltered' : 'issues.batch.selectAll') | translate: { count: visible().length } }}
+        </label>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="text-muted-foreground">{{ 'issues.batch.selectedCount' | translate: { count: selectedCount() } }}</span>
+          @if (selectedCount() > 0) {
+            <button type="button" class="text-xs font-medium text-danger hover:underline" (click)="clearSelection()">
+              {{ 'issues.batch.clearSelection' | translate }}
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (loading()) {
+        <app-loading-skeleton [count]="6" [onSurface]="true" />
+      } @else if (visible().length === 0) {
+        <p class="text-sm text-muted-foreground">{{ 'issues.batch.noPastors' | translate }}</p>
+      } @else {
+        <div class="max-h-[55vh] overflow-auto rounded-md border border-border">
+          <table class="w-full text-sm">
+            <thead class="sticky top-0 bg-background">
+              <tr>
+                <th class="w-10 px-3 py-2"></th>
+                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.batch.pastor' | translate }}</th>
+                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.batch.district' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (pastor of visible(); track pastor.clientId) {
+                <tr
+                  class="cursor-pointer transition-colors hover:bg-background"
+                  [class.bg-primary/5]="isSelected(pastor.clientId)"
+                  (click)="toggle(pastor.clientId)"
+                >
+                  <td class="px-3 py-2">
+                    <input
+                      type="checkbox"
+                      class="size-4 accent-accent"
+                      [checked]="isSelected(pastor.clientId)"
+                      [attr.aria-label]="pastor.name"
+                      (click)="$event.stopPropagation()"
+                      (change)="toggle(pastor.clientId)"
+                    />
+                  </td>
+                  <td class="px-3 py-2 text-foreground">{{ pastor.name }}</td>
+                  <td class="px-3 py-2 text-muted-foreground">{{ pastor.districtName ?? '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <button
+        type="button"
+        class="self-end rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
+        [class.cursor-not-allowed]="selectedCount() === 0"
+        [class.opacity-50]="selectedCount() === 0"
+        [disabled]="selectedCount() === 0"
+        (click)="onContinue()"
+      >
+        {{ 'issues.batch.continueWith' | translate: { count: selectedCount() } }}
+      </button>
+    </div>
+  }
+</div>

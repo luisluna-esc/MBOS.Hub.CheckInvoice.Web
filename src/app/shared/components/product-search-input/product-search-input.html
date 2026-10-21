@@ -14,7 +14,7 @@
   (keydown)="onKeydown($event)"
   (focus)="$any($event.target).select()"
   (blur)="onBlur()"
-  class="w-full min-w-56 rounded-md border bg-surface px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+  class="w-full min-w-56 rounded-md border bg-surface px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
   [class.border-border]="!invalid()"
   [class.border-danger]="invalid()"
 />

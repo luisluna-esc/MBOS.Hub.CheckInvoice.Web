@@ -20,6 +20,7 @@ import { ReceiptService } from '../../receipts/receipt.service';
 import { formatCalendarDate, localDateIso } from '../../../../core/dates/calendar-date';
 import { DatePicker } from '../../../../shared/components/date-picker/date-picker';
 import { ShortcutDirective } from '../../../../shared/directives/shortcut.directive';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 interface ReturnLineRow {
   productId: number;
@@ -32,7 +33,7 @@ interface ReturnLineRow {
 
 @Component({
   selector: 'app-issue-return-create',
-  imports: [ShortcutDirective, Filters, Table, ErrorState, ReactiveFormsModule, AppInput, DatePicker, TranslatePipe, InfoHint],
+  imports: [LoadingSkeleton, ShortcutDirective, Filters, Table, ErrorState, ReactiveFormsModule, AppInput, DatePicker, TranslatePipe, InfoHint],
   templateUrl: './issue-return-create.html',
 })
 export class IssueReturnCreate {
@@ -45,7 +46,7 @@ export class IssueReturnCreate {
   protected readonly selectedIssue = signal<Issue | null>(null);
   protected readonly selectedIssueVoucher = computed(() => {
     const issue = this.selectedIssue();
-    return issue ? String(issue.issueId).padStart(5, '0') : '';
+    return issue ? (issue.noteNumber ?? String(issue.issueId).padStart(5, '0')) : '';
   });
   protected readonly selectedIssueDetail = computed(() => {
     const issue = this.selectedIssue();

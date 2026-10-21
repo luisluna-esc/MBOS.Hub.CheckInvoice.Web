@@ -26,6 +26,8 @@ export class ReceiptSupplierPicker {
   /** Donación: se elige quién dona (del mismo catálogo de proveedores). */
   protected readonly isDonation = inject(ActivatedRoute).snapshot.data['motive'] === 'donation';
   private readonly detailsRoute = this.isDonation ? '/receipts/donation/details' : '/receipts/new/details';
+  /** Tipo de entrada elegido en la tarjeta (ej. Compras con Retención); pasa al formulario ya marcado. */
+  private readonly receiptTypeId = Number(inject(ActivatedRoute).snapshot.queryParamMap.get('type')) || null;
 
   protected readonly rows = signal<Supplier[]>([]);
   protected readonly totalRecords = signal(0);
@@ -103,12 +105,12 @@ export class ReceiptSupplierPicker {
     );
     ref.closed.subscribe((supplierId) => {
       if (supplierId) {
-        void this.router.navigate([this.detailsRoute], { state: { supplierId } });
+        void this.router.navigate([this.detailsRoute], { state: { supplierId, receiptTypeId: this.receiptTypeId } });
       }
     });
   }
 
   protected selectSupplier(row: Supplier): void {
-    void this.router.navigate([this.detailsRoute], { state: { supplierId: row.supplierId } });
+    void this.router.navigate([this.detailsRoute], { state: { supplierId: row.supplierId, receiptTypeId: this.receiptTypeId } });
   }
 }

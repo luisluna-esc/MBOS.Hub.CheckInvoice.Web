@@ -10,7 +10,7 @@
     },
     "loading": "Loading...",
     "empty": "There are no corrections with this status.",
-    "note": "Issue {{note}}",
+    "note": "No. {{note}}",
     "requestedBy": "Requested by {{name}} on {{date}}",
     "reviewedBy": "Reviewed by {{name}} on {{date}}",
     "reason": "Reason",
@@ -66,7 +66,7 @@
     "cancel": "Close the open window",
     "save": "Save (or Continue, in the header)",
     "new": "New record (product, issue, transfer...)",
-    "addLine": "Add a product line",
+    "addLine": "Add a product",
     "enterPrice": "In the price: add another line",
     "productArrows": "In the product: choose from the list",
     "productTab": "In the product: confirm and move to the next field",
@@ -220,7 +220,7 @@
     },
     "documents": {
       "receipt": "Note {{number}}",
-      "issue": "Issue {{number}}",
+      "issue": "No. {{number}}",
       "transfer": "Transfer {{number}}"
     }
   },
@@ -330,6 +330,7 @@
   "nav": {
     "reportsIssueHistory": "Issue History",
     "issueEditRequests": "Issue Corrections",
+    "reportsAccounting": "Accounting",
     "reportsReceiptsAccounting": "Receipts for Accounting",
     "reportsIssuesAccounting": "Issues for Accounting",
     "transferVoidRequests": "Transfer Voids",
@@ -829,7 +830,16 @@
       "description": "Find a receipt note by number, supplier or invoice to view or reprint it."
     },
     "motives": {
-      "question": "Why is the material coming into the warehouse?",
+      "byType": {
+        "invoice": "Material bought from a supplier, with an invoice.",
+        "retention": "Material bought without an invoice: the cost is the price divided by 0.92.",
+        "return": "Material coming back from an issue already recorded.",
+        "adjustment": "Stock corrections, for example after a physical count.",
+        "donation": "Material received as a donation. Choose the donor and the estimated value of each product.",
+        "initial": "Load of the inventory the system starts with."
+      },
+      "typeDescription": "Record a receipt of type {{type}}.",
+      "question": "Why is the material coming in? Choose the receipt type.",
       "soon": "Coming soon",
       "purchases": {
         "title": "Purchases",
@@ -865,7 +875,7 @@
       "createSupplier": "Create supplier"
     },
     "filters": {
-      "receiptNumber": "Note No. (e.g. MB 15-10-26)",
+      "receiptNumber": "Note No. (e.g. I 15-10-26)",
       "warehouse": "Warehouse",
       "supplier": "Supplier",
       "receiptType": "Receipt type",
@@ -904,15 +914,17 @@
     },
     "printError": "The printable voucher could not be generated.",
     "form": {
+      "addProduct": "Add product",
       "taxIdMissing": "The supplier has no tax ID registered: type it here.",
       "taxIdFromSupplier": "Comes from the supplier record. If it is wrong, fix it in Suppliers.",
       "estimatedValue": "Estimated Unit Value (Bs.)",
       "donor": "Donor",
       "donationTitle": "New donation",
-      "keyboardHint": "Type part of the name or code, pick with the arrows and move on with Tab. Enter on the price adds another line.",
-      "retentionNote": "Purchase with withholding: each product enters the inventory at its price times 0.92.",
+      "keyboardHint": "Type part of the name or code, pick with the arrows and move on with Tab. Enter on the price of the last line opens the window to add another product.",
+      "retentionNote": "Purchase with withholding: each product enters the inventory at its price divided by 0.92, and 100% of the purchase is the total value divided by 0.92.",
+      "retentionBase": "100% with withholding: {{total}} Bs. (total value ÷ 0.92)",
       "lineTotal": "Total (Bs.)",
-      "unitCostRetention": "Unit Cost x 0.92 (Bs.)",
+      "unitCostRetention": "Unit Cost ÷ 0.92 (Bs.)",
       "unitPrice": "Unit Price (Bs.)",
       "entryDateHint": "From last month or this month, up to today.",
       "entryDate": "Entry date",
@@ -974,8 +986,55 @@
     }
   },
   "issues": {
+    "batch": {
+      "pdfError": "The batch signature sheet could not be generated.",
+      "printSheet": "Print signature sheet",
+      "pastorsTitle": "Batch issue: choose the pastors",
+      "pastorsDescription": "Check all pastors, some or just one. The search and the district only filter the list; checked pastors stay checked.",
+      "search": "Search pastor",
+      "district": "District",
+      "allDistricts": "All districts",
+      "selectAll": "Select all ({{count}})",
+      "selectAllFiltered": "Select the listed ones ({{count}})",
+      "selectedCount": "{{count}} selected",
+      "clearSelection": "Clear selection",
+      "loadingPastors": "Loading pastors...",
+      "noPastors": "No pastors match this filter.",
+      "pastor": "Pastor",
+      "continueWith": "Continue with {{count}} pastors",
+      "title": "Batch issue",
+      "pastorCount": "{{count}} pastors",
+      "headerHint": "These details and the payment terms apply to every pastor in the batch.",
+      "description": "Batch note",
+      "sendToAccountsReceivable": "Send to Accounts Receivable (each pastor gets their own account)",
+      "sheetTitle": "Materials and quantity per pastor",
+      "addMaterial": "Add material",
+      "sheetHint": "Each column is a material. \"Same for all\" fills the whole column; then fix only who takes a different quantity. Enter moves to the next pastor. Empty or 0: that pastor does not take that material.",
+      "sameForAll": "Same for all",
+      "allPlaceholder": "Qty",
+      "removeMaterial": "Remove material",
+      "removePastor": "Remove pastor from the batch",
+      "cost": "Cost (Bs.)",
+      "total": "Total",
+      "available": "Available:",
+      "exceeds": "The batch total exceeds the available stock of:",
+      "noMaterials": "Add the first material of the batch.",
+      "emptyPastors": "{{count}} pastors have no quantity: no issue is recorded for them.",
+      "willCreate": "{{count}} issues will be recorded, one per pastor.",
+      "save": "Save batch",
+      "saving": "Saving...",
+      "saved": "Batch recorded.",
+      "error": "The batch could not be recorded.",
+      "loading": "Loading batch...",
+      "viewTitle": "Batch {{number}}",
+      "issueNumber": "No.",
+      "toHistory": "Issue History",
+      "downloadExcel": "Download Excel",
+      "excelError": "The batch Excel could not be downloaded.",
+      "viewHint": "The signature sheet is printed so each pastor signs by hand on receipt. Each pastor also has their own issue: open it by its number."
+    },
     "correction": {
-      "title": "Correct issue {{note}}",
+      "title": "Correct No. {{note}}",
       "issueDateHint": "Only within the month of the issue, up to today.",
       "notFound": "The issue to correct was not found.",
       "hint": "The correction is not saved directly: it goes to the Accountant with the reason. If the issue has a receivable with payments or returns, it cannot be corrected.",
@@ -986,7 +1045,7 @@
     },
     "view": {
       "loading": "Loading issue...",
-      "title": "Issue",
+      "title": "No.",
       "registeredBy": "Recorded by {{name}}",
       "cost": "Cost",
       "total": "Total",
@@ -997,7 +1056,11 @@
       "description": "All recorded issues: view with photos, print, sign, request a correction or a void."
     },
     "motives": {
-      "question": "Why is the material going out? Choose the reason to record the issue.",
+      "batch": {
+        "title": "Batch issue",
+        "description": "Material for several pastors at once: all, some or one."
+      },
+      "question": "Why is the material going out? Choose the issue type.",
       "loading": "Loading...",
       "typeDescription": "Record an issue of type {{type}}.",
       "transfers": {
@@ -1021,7 +1084,7 @@
       "createClient": "Create client"
     },
     "filters": {
-      "noteNumber": "Issue No.",
+      "noteNumber": "No.",
       "warehouse": "Warehouse",
       "client": "Client",
       "issueType": "Issue type"
@@ -1045,6 +1108,8 @@
       "statusVoidPendingTooltip": "Reason for the request: {{reason}}"
     },
     "actions": {
+      "notInBatch": "This issue is not part of a batch",
+      "viewBatch": "View batch",
       "correctionPending": "There is already a pending correction for this issue",
       "requestCorrection": "Request correction",
       "viewWithPhotos": "View with photos",
@@ -1061,7 +1126,8 @@
       "confirm": "Print"
     },
     "form": {
-      "keyboardHint": "Enter on the product button opens the list; once chosen, it moves to the quantity. Enter on the last line quantity adds another line.",
+      "addProduct": "Add product",
+      "keyboardHint": "Enter on the product button opens the list; once chosen, it moves to the quantity. Enter on the last line quantity opens the window to add another product.",
       "issueDateHint": "From last month or this month, up to today.",
       "title": "New issue",
       "print": "Print",
@@ -1149,7 +1215,7 @@
       "rejected": "Rejected"
     },
     "columns": {
-      "issue": "Issue",
+      "issue": "No.",
       "issueDate": "Issue date",
       "client": "Client",
       "reason": "Reason",
@@ -1184,6 +1250,7 @@
     }
   },
   "stockAdjustment": {
+    "addProduct": "Add product",
     "title": "Stock Adjustment",
     "info": {
       "title": "What is a Stock Adjustment?",
@@ -1213,7 +1280,7 @@
     },
     "select": "Select",
     "selectDisabledVoided": "This issue is already voided",
-    "selectedIssue": "Issue No.",
+    "selectedIssue": "No.",
     "changeIssue": "Change issue",
     "loading": "Loading...",
     "empty": "This issue has no lines.",
@@ -1298,7 +1365,7 @@
       "installments": "Installments"
     },
     "columns": {
-      "issue": "Issue",
+      "issue": "No.",
       "issueDate": "Issue date",
       "client": "Client",
       "paymentType": "Payment type",
@@ -1367,7 +1434,7 @@
         "all": "You have no registered accounts."
       },
       "account": {
-        "title": "Issue No. {{number}}",
+        "title": "No. {{number}}",
         "issueDate": "Received on {{date}}",
         "dueDate": "pay by {{date}}",
         "noDueDate": "no due date",
@@ -1395,7 +1462,7 @@
     "receiptsAccounting": {
       "title": "Receipts for Accounting",
       "description": "One row per product of each receipt, in the format imported into the accounting system, with a positive value. Voided receipts are not included.",
-      "infoBody": "AccountCode 4121565, SubAccountCode = accounting code of the product department, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = line total as a positive number, SendMemo False and Description \"note N° - Invoice N° (if any) - quantity Uds. product\".",
+      "infoBody": "AccountCode 1146002, SubAccountCode = accounting code of the product department, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = line total as a positive number, SendMemo False and Description \"Invoice N° (if any) - quantity Uds. product\" (the note N° has its own column).",
       "receiptType": "Receipt type",
       "allTypes": "All types",
       "summary": "{{rows}} rows from {{documents}} receipt notes.",
@@ -1406,7 +1473,7 @@
       "title": "Issues for Accounting",
       "description": "One row per product of each issue, in the format imported into the accounting system. Voided issues are not included.",
       "infoTitle": "How each row is built",
-      "infoBody": "AccountCode 4121565, SubAccountCode = accounting code of the product department, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = line total as a negative number, SendMemo False and Description \"S-issue N° - quantity Uds. product\".",
+      "infoBody": "AccountCode 1146002, SubAccountCode = accounting code of the product department, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = line total as a negative number, SendMemo False and Description \"issue N° - quantity Uds. product\" (e.g. S 3-10-26 - 58 Uds. product).",
       "missingCode": "Some products belong to departments without an accounting code; they will have no SubAccountCode in the file. Set it in System Settings / Departments:",
       "summary": "{{rows}} rows from {{documents}} issues.",
       "total": "Total:",
@@ -1502,6 +1569,7 @@
       "error": "Could not generate the report. Please try again."
     },
     "kardexByProduct": {
+      "allProducts": "All products",
       "title": "Kardex by Item",
       "description": "Kardex ledger for one product: every Receipt and Issue with its running balance.",
       "hint": "Does not include Transfers. The opening balance and every row are explained only by Receipts and Issues of the product in the selected warehouse.",
@@ -1596,6 +1664,7 @@
     },
     "printError": "The printable voucher could not be generated.",
     "form": {
+      "addProduct": "Add product",
       "unitCost": "Unit Cost (Bs.)",
       "title": "New transfer",
       "print": "Print",

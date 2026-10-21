@@ -167,9 +167,9 @@
         <button
           type="button"
           class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-background"
-          (click)="addLine()"
+          (click)="addProduct()"
         >
-          {{ 'issues.form.addLine' | translate }}
+          {{ 'issues.form.addProduct' | translate }}
         </button>
       </div>
 
@@ -261,7 +261,7 @@
                       <button
                         #productButton
                         type="button"
-                        class="min-w-0 flex-1 truncate rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                        class="min-w-0 flex-1 truncate rounded-md border border-border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-accent"
                         (click)="pickProduct(i)"
                       >
                         @if (lineProducts()[i]; as product) {

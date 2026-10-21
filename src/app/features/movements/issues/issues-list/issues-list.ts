@@ -25,7 +25,7 @@ import { IssuePrintDialog, IssuePrintDialogResult } from '../issue-print-dialog/
 import { Issue, IssueFilters } from '../issue.models';
 import { IssueService } from '../issue.service';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
-import { showPdf } from '../../../../core/files/pdf';
+import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 @Component({
   selector: 'app-issues-list',
@@ -162,6 +162,13 @@ export class IssuesList {
       label: this.languageService.t('issues.actions.viewDetails'),
       icon: 'view',
       onClick: (row) => this.openDetails(row),
+    },
+    {
+      label: this.languageService.t('issues.batch.printSheet'),
+      icon: 'print',
+      disabled: (row) => !row.issueBatchId,
+      disabledReason: (row) => (row.issueBatchId ? null : this.languageService.t('issues.actions.notInBatch')),
+      onClick: (row) => void this.printBatchSheet(row),
     },
     {
       label: this.languageService.t('issues.actions.viewWithPhotos'),
@@ -310,6 +317,21 @@ export class IssuesList {
     try {
       const blob = await this.reportService.getIssueVoucherPdfBlob(row.issueId, printTypeId);
       showPdf(blob, `salida-${(row.noteNumber ?? String(row.issueId)).replace(/[^0-9A-Za-z-]/g, '-')}.pdf`, newTab);
+    } catch {
+      newTab?.close();
+      this.toastService.error(this.languageService.t('issues.printError'));
+    }
+  }
+
+  /** Salida por lote: la hoja con todos sus pastores, para firmar a mano. */
+  protected async printBatchSheet(row: Issue): Promise<void> {
+    if (!row.issueBatchId) {
+      return;
+    }
+    const newTab = openPdfTab();
+    try {
+      const blob = await this.issueService.getBatchPdf(row.issueBatchId);
+      showPdf(blob, `salida-${(row.noteNumber ?? String(row.issueId)).replace(/[^0-9A-Za-z-]/g, '-')}-lote.pdf`, newTab);
     } catch {
       newTab?.close();
       this.toastService.error(this.languageService.t('issues.printError'));

@@ -102,19 +102,25 @@ export class StockAdjustmentCreate {
     return (Number(line.countedQuantity) || 0) - info.currentQuantity;
   }
 
-  protected async pickProduct(index: number): Promise<void> {
+  protected async pickProduct(index: number, isNew = false): Promise<void> {
     const warehouseId = Number(this.warehouseControl.value);
     if (!warehouseId) {
+      if (isNew) {
+        this.removeLine(index);
+      }
       return;
     }
 
     const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(
       ProductPickerDialog,
-      { data: { warehouseId, excludedProductIds: this.lineInfos().flatMap((info, i) => (info.product && i !== index ? [info.product.productId] : [])) } }
+      { data: { warehouseId, inStockOnly: true, excludedProductIds: this.lineInfos().flatMap((info, i) => (info.product && i !== index ? [info.product.productId] : [])) } }
     );
     ref.closed.subscribe((result) => {
       if (result) {
         void this.applyPickedProduct(index, warehouseId, result);
+      } else if (isNew) {
+        // Se cerró la ventana sin elegir: la línea nueva no queda vacía.
+        this.removeLine(index);
       }
     });
   }
@@ -128,6 +134,12 @@ export class StockAdjustmentCreate {
       next[index] = { product, currentQuantity: stock.quantity, averageCost: stock.averageCost };
       return next;
     });
+  }
+
+  /** "Agregar producto": abre la ventana de productos y lo elegido entra como una línea nueva. */
+  protected addProduct(): void {
+    this.addLine();
+    void this.pickProduct(this.linesArray.length - 1, true);
   }
 
   protected addLine(): void {

@@ -10,7 +10,7 @@
     },
     "loading": "Carregando...",
     "empty": "Não há correções com este status.",
-    "note": "Saída {{note}}",
+    "note": "N° {{note}}",
     "requestedBy": "Pedida por {{name}} em {{date}}",
     "reviewedBy": "Revisada por {{name}} em {{date}}",
     "reason": "Motivo",
@@ -66,7 +66,7 @@
     "cancel": "Fechar a janela aberta",
     "save": "Salvar (ou Continuar, no cabeçalho)",
     "new": "Novo registro (produto, saída, transferência...)",
-    "addLine": "Adicionar uma linha de produto",
+    "addLine": "Adicionar um produto",
     "enterPrice": "No preço: adicionar outra linha",
     "productArrows": "No produto: escolher da lista",
     "productTab": "No produto: confirmar e passar ao próximo campo",
@@ -220,7 +220,7 @@
     },
     "documents": {
       "receipt": "Nota {{number}}",
-      "issue": "Saída {{number}}",
+      "issue": "N° {{number}}",
       "transfer": "Transferência {{number}}"
     }
   },
@@ -330,6 +330,7 @@
   "nav": {
     "reportsIssueHistory": "Histórico de Saídas",
     "issueEditRequests": "Correções de Saídas",
+    "reportsAccounting": "Contabilidade",
     "reportsReceiptsAccounting": "Entradas para Contabilidade",
     "reportsIssuesAccounting": "Saídas para Contabilidade",
     "transferVoidRequests": "Anulações de Transferências",
@@ -829,7 +830,16 @@
       "description": "Procure uma nota de entrada pelo número, fornecedor ou nota fiscal para vê-la ou reimprimi-la."
     },
     "motives": {
-      "question": "Por que o material está entrando no almoxarifado?",
+      "byType": {
+        "invoice": "Material comprado de um fornecedor, com nota fiscal.",
+        "retention": "Material comprado sem nota fiscal: o custo é o preço dividido por 0,92.",
+        "return": "Material que volta de uma saída já registrada.",
+        "adjustment": "Correções de estoque, por exemplo depois de uma contagem física.",
+        "donation": "Material recebido em doação. Escolhe-se quem doa e o valor estimado de cada produto.",
+        "initial": "Carga do estoque com o qual o sistema começa."
+      },
+      "typeDescription": "Registrar uma entrada do tipo {{type}}.",
+      "question": "Por que o material está entrando no almoxarifado? Escolha o tipo de entrada.",
       "soon": "Em breve",
       "purchases": {
         "title": "Compras",
@@ -865,7 +875,7 @@
       "createSupplier": "Criar fornecedor"
     },
     "filters": {
-      "receiptNumber": "N° da nota (ex. MB 15-10-26)",
+      "receiptNumber": "N° da nota (ex. I 15-10-26)",
       "warehouse": "Armazém",
       "supplier": "Fornecedor",
       "receiptType": "Tipo de entrada",
@@ -904,15 +914,17 @@
     },
     "printError": "Não foi possível gerar o comprovante de impressão.",
     "form": {
+      "addProduct": "Adicionar produto",
       "taxIdMissing": "O fornecedor não tem NIT nem CI cadastrado: digite aqui.",
       "taxIdFromSupplier": "Vem do cadastro do fornecedor. Se estiver errado, corrija em Fornecedores.",
       "estimatedValue": "Valor Unit. Estimado (Bs.)",
       "donor": "Doador",
       "donationTitle": "Nova doação",
-      "keyboardHint": "Digite parte do nome ou do código, escolha com as setas e avance com Tab. Enter no preço adiciona outra linha.",
-      "retentionNote": "Compra com retenção: cada produto entra no estoque pelo preço vezes 0,92.",
+      "keyboardHint": "Digite parte do nome ou do código, escolha com as setas e avance com Tab. Enter no preço da última linha abre a janela para adicionar outro produto.",
+      "retentionNote": "Compra com retenção: cada produto entra no estoque pelo preço dividido por 0,92, e 100% da compra é o valor total dividido por 0,92.",
+      "retentionBase": "100% com retenção: {{total}} Bs. (valor total ÷ 0,92)",
       "lineTotal": "Total (Bs.)",
-      "unitCostRetention": "Custo Unitário x 0,92 (Bs.)",
+      "unitCostRetention": "Custo Unitário ÷ 0,92 (Bs.)",
       "unitPrice": "Preço Unitário (Bs.)",
       "entryDateHint": "Do mês anterior ou do atual, até hoje.",
       "entryDate": "Data de entrada",
@@ -974,8 +986,55 @@
     }
   },
   "issues": {
+    "batch": {
+      "pdfError": "Não foi possível gerar a folha de assinaturas do lote.",
+      "printSheet": "Imprimir folha de assinaturas",
+      "pastorsTitle": "Saída por lote: escolha os pastores",
+      "pastorsDescription": "Marque todos os pastores, alguns ou apenas um. A busca e o distrito só filtram a lista; o que foi marcado continua marcado.",
+      "search": "Buscar pastor",
+      "district": "Distrito",
+      "allDistricts": "Todos os distritos",
+      "selectAll": "Selecionar todos ({{count}})",
+      "selectAllFiltered": "Selecionar os da lista ({{count}})",
+      "selectedCount": "{{count}} selecionados",
+      "clearSelection": "Limpar seleção",
+      "loadingPastors": "Carregando pastores...",
+      "noPastors": "Não há pastores com este filtro.",
+      "pastor": "Pastor",
+      "continueWith": "Continuar com {{count}} pastores",
+      "title": "Saída por lote",
+      "pastorCount": "{{count}} pastores",
+      "headerHint": "Estes dados e a cobrança valem igual para todos os pastores do lote.",
+      "description": "Observação do lote",
+      "sendToAccountsReceivable": "Enviar para Contas a Receber (cada pastor fica com sua própria conta)",
+      "sheetTitle": "Materiais e quantidade por pastor",
+      "addMaterial": "Adicionar material",
+      "sheetHint": "Cada coluna é um material. \"Igual para todos\" preenche a coluna inteira; depois corrija só quem leva outra quantidade. Enter desce para o pastor seguinte. Vazio ou 0: esse pastor não leva esse material.",
+      "sameForAll": "Igual para todos",
+      "allPlaceholder": "Qtd.",
+      "removeMaterial": "Remover material",
+      "removePastor": "Remover pastor do lote",
+      "cost": "Custo (Bs.)",
+      "total": "Total",
+      "available": "Disponível:",
+      "exceeds": "O total do lote passa o estoque disponível de:",
+      "noMaterials": "Adicione o primeiro material do lote.",
+      "emptyPastors": "{{count}} pastores não têm nenhuma quantidade: não se registra saída para eles.",
+      "willCreate": "Serão registradas {{count}} saídas, uma por pastor.",
+      "save": "Salvar lote",
+      "saving": "Salvando...",
+      "saved": "Lote registrado.",
+      "error": "Não foi possível registrar o lote.",
+      "loading": "Carregando lote...",
+      "viewTitle": "Lote {{number}}",
+      "issueNumber": "N°",
+      "toHistory": "Histórico de Saídas",
+      "downloadExcel": "Baixar Excel",
+      "excelError": "Não foi possível baixar o Excel do lote.",
+      "viewHint": "A folha de assinaturas é impressa para que cada pastor assine à mão ao receber. Cada pastor também tem sua própria saída: abra-a pelo número."
+    },
     "correction": {
-      "title": "Corrigir saída {{note}}",
+      "title": "Corrigir N° {{note}}",
       "issueDateHint": "Somente dentro do mês da saída, até hoje.",
       "notFound": "A saída a corrigir não foi encontrada.",
       "hint": "A correção não é salva diretamente: vai para o Contador com o motivo. Se a saída tiver conta a receber com pagamentos ou devoluções, não pode ser corrigida.",
@@ -986,7 +1045,7 @@
     },
     "view": {
       "loading": "Carregando saída...",
-      "title": "Saída",
+      "title": "N°",
       "registeredBy": "Registrada por {{name}}",
       "cost": "Custo",
       "total": "Total",
@@ -997,7 +1056,11 @@
       "description": "Todas as saídas registradas: ver com fotos, imprimir, assinar, pedir correção ou anulação."
     },
     "motives": {
-      "question": "Por que o material está saindo? Escolha o motivo para registrar a saída.",
+      "batch": {
+        "title": "Saída por lote",
+        "description": "Material para vários pastores de uma vez: todos, alguns ou um."
+      },
+      "question": "Por que o material está saindo? Escolha o tipo de saída.",
       "loading": "Carregando...",
       "typeDescription": "Registrar uma saída do tipo {{type}}.",
       "transfers": {
@@ -1021,7 +1084,7 @@
       "createClient": "Criar cliente"
     },
     "filters": {
-      "noteNumber": "N° da saída",
+      "noteNumber": "N°",
       "warehouse": "Armazém",
       "client": "Cliente",
       "issueType": "Tipo de saída"
@@ -1045,6 +1108,8 @@
       "statusVoidPendingTooltip": "Motivo da solicitação: {{reason}}"
     },
     "actions": {
+      "notInBatch": "Esta saída não é de um lote",
+      "viewBatch": "Ver lote",
       "correctionPending": "Já existe uma correção pendente para esta saída",
       "requestCorrection": "Solicitar correção",
       "viewWithPhotos": "Ver com fotos",
@@ -1061,7 +1126,8 @@
       "confirm": "Imprimir"
     },
     "form": {
-      "keyboardHint": "Enter no botão de produto abre a lista; escolhido, passa para a quantidade. Enter na quantidade da última linha adiciona outra.",
+      "addProduct": "Adicionar produto",
+      "keyboardHint": "Enter no botão de produto abre a lista; escolhido, passa para a quantidade. Enter na quantidade da última linha abre a janela para adicionar outro produto.",
       "issueDateHint": "Do mês anterior ou do atual, até hoje.",
       "title": "Nova saída",
       "print": "Imprimir",
@@ -1149,7 +1215,7 @@
       "rejected": "Rejeitada"
     },
     "columns": {
-      "issue": "Saída",
+      "issue": "N°",
       "issueDate": "Data da saída",
       "client": "Cliente",
       "reason": "Motivo",
@@ -1184,6 +1250,7 @@
     }
   },
   "stockAdjustment": {
+    "addProduct": "Adicionar produto",
     "title": "Ajuste de Estoque",
     "info": {
       "title": "O que é um Ajuste de Estoque?",
@@ -1213,7 +1280,7 @@
     },
     "select": "Selecionar",
     "selectDisabledVoided": "Esta saída já está anulada",
-    "selectedIssue": "Saída N°",
+    "selectedIssue": "N°",
     "changeIssue": "Trocar saída",
     "loading": "Carregando...",
     "empty": "Esta saída não tem linhas.",
@@ -1298,7 +1365,7 @@
       "installments": "Parcelado"
     },
     "columns": {
-      "issue": "Saída",
+      "issue": "N°",
       "issueDate": "Data da saída",
       "client": "Cliente",
       "paymentType": "Tipo de pagamento",
@@ -1367,7 +1434,7 @@
         "all": "Você não tem contas registradas."
       },
       "account": {
-        "title": "Saída Nº {{number}}",
+        "title": "N° {{number}}",
         "issueDate": "Recebida em {{date}}",
         "dueDate": "pagar até {{date}}",
         "noDueDate": "sem data limite",
@@ -1395,7 +1462,7 @@
     "receiptsAccounting": {
       "title": "Entradas para Contabilidade",
       "description": "Uma linha por produto de cada entrada, no formato importado no sistema contábil, com o valor positivo. As anuladas não são incluídas.",
-      "infoBody": "AccountCode 4121565, SubAccountCode = código contábil do departamento do produto, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = total da linha em positivo, SendMemo False e Description \"N° da nota - Fat. N° (se houver) - quantidade Uds. produto\".",
+      "infoBody": "AccountCode 1146002, SubAccountCode = código contábil do departamento do produto, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = total da linha em positivo, SendMemo False e Description \"Fat. N° (se houver) - quantidade Uds. produto\" (o N° da nota vai em sua própria coluna).",
       "receiptType": "Tipo de entrada",
       "allTypes": "Todos os tipos",
       "summary": "{{rows}} linhas de {{documents}} notas de entrada.",
@@ -1406,7 +1473,7 @@
       "title": "Saídas para Contabilidade",
       "description": "Uma linha por produto de cada saída, no formato importado no sistema contábil. As anuladas não são incluídas.",
       "infoTitle": "Como cada linha é montada",
-      "infoBody": "AccountCode 4121565, SubAccountCode = código contábil do departamento do produto, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = total da linha em negativo, SendMemo False e Description \"S-N° da saída - quantidade Uds. produto\".",
+      "infoBody": "AccountCode 1146002, SubAccountCode = código contábil do departamento do produto, FundCode 10, FunctionCode 0000, RestrictionCode 0A, EntityValue = total da linha em negativo, SendMemo False e Description \"N° da saída - quantidade Uds. produto\" (ex. S 3-10-26 - 58 Uds. produto).",
       "missingCode": "Há produtos de departamentos sem código contábil; no arquivo sairão sem SubAccountCode. Cadastre-o em Configuração do Sistema / Departamentos:",
       "summary": "{{rows}} linhas de {{documents}} saídas.",
       "total": "Total:",
@@ -1502,6 +1569,7 @@
       "error": "Não foi possível gerar o relatório. Tente novamente."
     },
     "kardexByProduct": {
+      "allProducts": "Todos os produtos",
       "title": "Kardex por Material",
       "description": "Ficha kardex de um produto: cada Entrada e Saída com seu saldo acumulado.",
       "hint": "Não inclui Transferências. O saldo inicial e cada linha se explicam somente por Entradas e Saídas do produto no armazém selecionado.",
@@ -1596,6 +1664,7 @@
     },
     "printError": "Não foi possível gerar o comprovante de impressão.",
     "form": {
+      "addProduct": "Adicionar produto",
       "unitCost": "Custo Unit. (Bs.)",
       "title": "Nova transferência",
       "print": "Imprimir",

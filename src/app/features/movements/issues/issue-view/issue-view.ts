@@ -8,6 +8,7 @@ import { ProductPhoto } from '../../../../shared/components/product-photo/produc
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { IssueSummary } from '../issue.models';
 import { IssueService } from '../issue.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 /**
  * Página que abre el QR impreso en el comprobante de salida: todo el detalle de la salida, con
@@ -15,7 +16,7 @@ import { IssueService } from '../issue.service';
  */
 @Component({
   selector: 'app-issue-view',
-  imports: [ErrorState, ProductPhoto, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, ErrorState, ProductPhoto, TranslatePipe, DecimalPipe],
   templateUrl: './issue-view.html',
 })
 export class IssueView {

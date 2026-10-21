@@ -115,6 +115,52 @@
         @if (!isCollapsed && isExpanded(item.menuId)) {
           <div class="ml-4 flex flex-col gap-1 border-l border-border pl-4">
             @for (child of item.children; track child.menuId) {
+              @if (child.children.length) {
+                <!-- Subgrupo (ej. Reportes / Contabilidad): se despliega igual que un grupo. -->
+                <button
+                  type="button"
+                  class="flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  [attr.aria-expanded]="isExpanded(child.menuId)"
+                  (click)="toggleExpanded(child.menuId)"
+                >
+                  <span class="size-1.5 shrink-0" aria-hidden="true"></span>
+                  <span class="flex-1">{{ displayName(child) }}</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="size-3.5 shrink-0 transition-transform"
+                    [class.rotate-180]="isExpanded(child.menuId)"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                @if (isExpanded(child.menuId)) {
+                  <div class="ml-2 flex flex-col gap-1 border-l border-border pl-3">
+                    @for (leaf of child.children; track leaf.menuId) {
+                      <a
+                        [routerLink]="leaf.route"
+                        routerLinkActive
+                        #leafLink="routerLinkActive"
+                        [routerLinkActiveOptions]="{ exact: isExactMatch(leaf.route) }"
+                        (click)="mobileNavOpen.set(false)"
+                        class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        [class.text-foreground]="leafLink.isActive"
+                        [class.font-medium]="leafLink.isActive"
+                      >
+                        <span
+                          class="size-1.5 shrink-0 rounded-full bg-primary"
+                          [class.opacity-0]="!leafLink.isActive"
+                        ></span>
+                        {{ displayName(leaf) }}
+                      </a>
+                    }
+                  </div>
+                }
+              } @else {
               <a
                 [routerLink]="child.route"
                 routerLinkActive
@@ -131,6 +177,7 @@
                 ></span>
                 {{ displayName(child) }}
               </a>
+              }
             }
           </div>
         }

@@ -9,7 +9,7 @@
       <app-error-state [code]="errorCode()!" />
     </div>
   } @else if (loading()) {
-    <p class="text-sm text-muted-foreground">{{ 'portal.myAccount.loading' | translate }}</p>
+    <app-loading-skeleton variant="detail" [count]="2" />
   } @else {
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
       <div class="rounded-md border border-border bg-surface p-4">
@@ -37,7 +37,7 @@
         <button
           type="button"
           class="rounded-full border px-3 py-1.5 text-sm font-medium transition-colors"
-          [class.border-primary]="filter() === option"
+          [class.border-accent]="filter() === option"
           [class.bg-primary]="filter() === option"
           [class.text-primary-foreground]="filter() === option"
           [class.border-border]="filter() !== option"
@@ -81,8 +81,8 @@
             class="rounded-full border px-2.5 py-0.5 text-xs font-semibold"
             [class.border-danger]="account.status === 'late'"
             [class.text-danger]="account.status === 'late'"
-            [class.border-primary]="account.status === 'pending'"
-            [class.text-primary]="account.status === 'pending'"
+            [class.border-accent]="account.status === 'pending'"
+            [class.text-accent]="account.status === 'pending'"
             [class.border-border]="account.status === 'paid'"
             [class.text-muted-foreground]="account.status === 'paid'"
           >

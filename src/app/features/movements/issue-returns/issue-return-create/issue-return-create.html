@@ -57,7 +57,7 @@
     </div>
 
     @if (formLoading()) {
-      <p class="text-sm text-muted-foreground">{{ 'issueReturns.loading' | translate }}</p>
+      <app-loading-skeleton [count]="3" />
     } @else if (lineRows().length === 0) {
       <p class="text-sm text-muted-foreground">{{ 'issueReturns.empty' | translate }}</p>
     } @else {

@@ -6,6 +6,7 @@ import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { IssueDetail } from '../issue.models';
 import { IssueService } from '../issue.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 export interface IssueDetailsDialogData {
   issueId: number;
@@ -13,7 +14,7 @@ export interface IssueDetailsDialogData {
 
 @Component({
   selector: 'app-issue-details-dialog',
-  imports: [Dialog, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, Dialog, TranslatePipe, DecimalPipe],
   templateUrl: './issue-details-dialog.html',
 })
 export class IssueDetailsDialog {

@@ -77,12 +77,12 @@ export class Shell {
    * es prefijo de otra (ej. "/issues" lo es de "/issues/void-requests"): en ese caso hace falta
    * match exacto o los dos items del menú se pintan activos a la vez al estar en la ruta hija.
    */
-  private readonly allVisibleRoutes = computed<string[]>(() =>
-    this.visibleNavItems().flatMap((item) => [
-      ...(item.route ? [item.route] : []),
-      ...item.children.map((child) => child.route).filter((route): route is string => !!route),
-    ])
-  );
+  private readonly allVisibleRoutes = computed<string[]>(() => {
+    // Recorre todos los niveles (grupo, subgrupo como Reportes / Contabilidad, pantalla).
+    const collect = (items: MenuTreeItem[]): string[] =>
+      items.flatMap((item) => [...(item.route ? [item.route] : []), ...collect(item.children)]);
+    return collect(this.visibleNavItems());
+  });
 
   protected readonly logoSrc = computed(() =>
     this.themeService.theme() === 'dark' ? 'img/inven-track-blanco.png' : 'img/inven-track-negro.png'
@@ -146,6 +146,11 @@ export class Shell {
       for (const child of item.children) {
         if (child.route) {
           entries.push({ label: this.displayName(child), group: this.displayName(item), route: child.route });
+        }
+        for (const leaf of child.children) {
+          if (leaf.route) {
+            entries.push({ label: this.displayName(leaf), group: `${this.displayName(item)} / ${this.displayName(child)}`, route: leaf.route });
+          }
         }
       }
     }

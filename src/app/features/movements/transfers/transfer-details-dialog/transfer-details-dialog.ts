@@ -6,6 +6,7 @@ import { Dialog } from '../../../../shared/components/dialog/dialog';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TransferDetail } from '../transfer.models';
 import { TransferService } from '../transfer.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 export interface TransferDetailsDialogData {
   transferId: number;
@@ -14,7 +15,7 @@ export interface TransferDetailsDialogData {
 
 @Component({
   selector: 'app-transfer-details-dialog',
-  imports: [Dialog, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, Dialog, TranslatePipe, DecimalPipe],
   templateUrl: './transfer-details-dialog.html',
 })
 export class TransferDetailsDialog {

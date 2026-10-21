@@ -7,6 +7,17 @@
 @import "./styles/theme";
 @import "@angular/cdk/overlay-prebuilt.css";
 
+/* Color de texto por defecto: todo lo que no indica uno propio usa el del tema. Sin esto el
+   navegador ponía negro, que en modo oscuro no se leía. */
+body {
+  color: var(--color-foreground);
+}
+
+/* Modo oscuro: los controles nativos (listas desplegables, casillas, calendario) también oscuros. */
+.dark {
+  color-scheme: dark;
+}
+
 .app-dialog-backdrop {
   background-color: color-mix(in srgb, var(--color-brand-900) 60%, transparent);
 }

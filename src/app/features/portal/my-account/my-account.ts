@@ -7,6 +7,7 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { PortalStatementAccount } from '../portal.models';
 import { PortalService } from '../portal.service';
+import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton';
 
 type StatementFilter = 'open' | 'paid' | 'all';
 
@@ -15,7 +16,7 @@ type StatementFilter = 'open' | 'paid' | 'all';
 // que registró Caja. Las cuentas que debe van primero (el backend ya las ordena).
 @Component({
   selector: 'app-my-account',
-  imports: [ErrorState, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, ErrorState, TranslatePipe, DecimalPipe],
   templateUrl: './my-account.html',
 })
 export class MyAccount {
@@ -62,7 +63,7 @@ export class MyAccount {
   }
 
   protected issueNumber(account: PortalStatementAccount): string {
-    return account.issueId != null ? String(account.issueId).padStart(5, '0') : '—';
+    return account.noteNumber ?? (account.issueId != null ? String(account.issueId).padStart(5, '0') : '—');
   }
 
   protected calendarDate(value: string | null): string {

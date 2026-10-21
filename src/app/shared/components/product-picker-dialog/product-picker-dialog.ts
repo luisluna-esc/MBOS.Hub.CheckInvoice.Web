@@ -23,6 +23,11 @@ export interface ProductPickerResult {
 
 export interface ProductPickerData {
   warehouseId?: number | null;
+  /**
+   * Solo productos con stock (cantidad mayor a 0): en el almacén indicado o, si todavía no se
+   * eligió, en alguno. Para salidas, transferencias y ajustes; las compras muestran todos.
+   */
+  inStockOnly?: boolean;
   /** Productos que ya están en otra línea del documento: se muestran pero no se pueden elegir. */
   excludedProductIds?: number[];
 }
@@ -39,6 +44,7 @@ export class ProductPickerDialog {
   private readonly languageService = inject(LanguageService);
 
   private readonly warehouseId = this.data?.warehouseId ?? undefined;
+  private readonly inStock = this.data?.inStockOnly ? true : undefined;
   private readonly excludedProductIds = new Set(this.data?.excludedProductIds ?? []);
   private readonly alreadyAddedLabel = this.languageService.t('productPicker.alreadyAdded');
 
@@ -55,7 +61,7 @@ export class ProductPickerDialog {
   protected readonly activeIndex = signal(0);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
-  private currentFilters: ProductFilters = { warehouseId: this.warehouseId };
+  private currentFilters: ProductFilters = { warehouseId: this.warehouseId, inStock: this.inStock };
 
   protected readonly filterFields = computed<FilterField[]>(() => [
     {
@@ -140,13 +146,14 @@ export class ProductPickerDialog {
       searchCriteria: values['searchCriteria'] ?? undefined,
       code: values['code'] ?? undefined,
       warehouseId: this.warehouseId,
+      inStock: this.inStock,
     };
     this.pageNumber.set(1);
     void this.load();
   }
 
   protected onClear(): void {
-    this.currentFilters = { warehouseId: this.warehouseId };
+    this.currentFilters = { warehouseId: this.warehouseId, inStock: this.inStock };
     this.pageNumber.set(1);
     void this.load();
   }

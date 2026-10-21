@@ -16,7 +16,7 @@
     [attr.aria-expanded]="open()"
     [attr.aria-labelledby]="label() ? selectId + '-label' : null"
     [attr.aria-invalid]="showError"
-    class="flex w-full items-center justify-between rounded-md border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+    class="flex w-full items-center justify-between rounded-md border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-60"
     [class.border-border]="!showError"
     [class.border-danger]="showError"
     (click)="toggle()"
@@ -62,7 +62,7 @@
             (input)="onSearchInput($event)"
             placeholder="Buscar..."
             autocomplete="off"
-            class="w-full rounded border border-border bg-background px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            class="w-full rounded border border-border bg-background px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
       }

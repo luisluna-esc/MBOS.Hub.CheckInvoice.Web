@@ -8,6 +8,7 @@ import { ProductPhoto } from '../../../../shared/components/product-photo/produc
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ReceiptSummary } from '../receipt.models';
 import { ReceiptService } from '../receipt.service';
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 /**
  * Página que abre el QR impreso en la nota de ingreso: todo el detalle de la entrada, con la
@@ -15,7 +16,7 @@ import { ReceiptService } from '../receipt.service';
  */
 @Component({
   selector: 'app-receipt-view',
-  imports: [ErrorState, ProductPhoto, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, ErrorState, ProductPhoto, TranslatePipe, DecimalPipe],
   templateUrl: './receipt-view.html',
 })
 export class ReceiptView {

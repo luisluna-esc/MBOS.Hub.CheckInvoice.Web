@@ -14,6 +14,7 @@ import { Dialog } from '../../../shared/components/dialog/dialog';
 import { Input as AppInput } from '../../../shared/components/input/input';
 import { Select, SelectOption } from '../../../shared/components/select/select';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton';
 
 export interface TransferVoidRequest {
   transferVoidRequestId: number;
@@ -129,7 +130,7 @@ export class TransferVoidRequestDialog {
 /** Anulaciones de Transferencias (Autorizaciones): el Contador aprueba o rechaza. */
 @Component({
   selector: 'app-transfer-void-requests',
-  imports: [FormsModule, Select, TranslatePipe, DecimalPipe],
+  imports: [LoadingSkeleton, FormsModule, Select, TranslatePipe, DecimalPipe],
   templateUrl: './transfer-void-requests.html',
 })
 export class TransferVoidRequests {

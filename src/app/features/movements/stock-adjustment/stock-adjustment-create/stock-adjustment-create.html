@@ -23,9 +23,9 @@
         <button
           type="button"
           class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-background"
-          (click)="addLine()"
+          (click)="addProduct()"
         >
-          {{ 'stockAdjustment.addLine' | translate }}
+          {{ 'stockAdjustment.addProduct' | translate }}
         </button>
       </div>
 
@@ -63,7 +63,7 @@
                   <td class="w-32 px-3 py-2 align-middle">
                     <app-input formControlName="countedQuantity" errorDisplay="icon" type="number" [min]="0" [decimals]="2" />
                   </td>
-                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle font-medium tabular-nums" [class.text-danger]="difference(i) < 0" [class.text-primary]="difference(i) > 0">
+                  <td class="whitespace-nowrap px-3 py-2 text-right align-middle font-medium tabular-nums" [class.text-danger]="difference(i) < 0" [class.text-accent]="difference(i) > 0">
                     {{ difference(i) > 0 ? '+' : '' }}{{ difference(i) }}
                   </td>
                   <td class="px-3 py-2 text-center align-middle">

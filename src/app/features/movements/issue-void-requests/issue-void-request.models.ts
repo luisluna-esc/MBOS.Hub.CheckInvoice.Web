@@ -1,6 +1,8 @@
 export interface IssueVoidRequest extends Record<string, unknown> {
   issueVoidRequestId: number;
   issueId: number;
+  /** N° de la salida como se imprime ("S 5-10-26"). */
+  noteNumber?: string | null;
   issueDate: string;
   clientName: string | null;
   warehouseName: string | null;

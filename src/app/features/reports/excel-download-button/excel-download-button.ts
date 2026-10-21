@@ -12,7 +12,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
       [disabled]="loading()"
       (click)="download.emit()"
     >
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4 text-primary" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4 text-accent" aria-hidden="true">
         <path d="M4 4.5C4 3.67 4.67 3 5.5 3H14L20 9V19.5C20 20.33 19.33 21 18.5 21H5.5C4.67 21 4 20.33 4 19.5V4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
         <path d="M14 3V9H20" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
         <path d="M8.5 12.5L12 17M12 12.5L8.5 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />

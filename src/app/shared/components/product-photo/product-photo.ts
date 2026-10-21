@@ -50,7 +50,7 @@ export class PhotoPreviewDialog {
     @if (url(); as src) {
       <button
         type="button"
-        class="block shrink-0 overflow-hidden rounded-md border border-border bg-background transition-opacity hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-primary"
+        class="block shrink-0 overflow-hidden rounded-md border border-border bg-background transition-opacity hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-accent"
         [class]="sizeClass()"
         [attr.aria-label]="'productPhoto.enlarge' | translate"
         [title]="'productPhoto.enlarge' | translate"

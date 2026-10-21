@@ -176,7 +176,7 @@ export class TransferCreate {
     this.headerForm.disable();
     this.headerConfirmed.set(true);
     if (this.detailsArray.length === 0) {
-      this.addLine();
+      this.addProduct();
     } else {
       this.lineProducts().forEach((product, index) => {
         if (product) {
@@ -189,6 +189,12 @@ export class TransferCreate {
   protected onEditHeader(): void {
     this.headerForm.enable();
     this.headerConfirmed.set(false);
+  }
+
+  /** "Agregar producto": abre la ventana de productos y lo elegido entra como una línea nueva. */
+  protected addProduct(): void {
+    this.addLine();
+    void this.pickProduct(this.detailsArray.length - 1, true);
   }
 
   protected addLine(): void {
@@ -237,11 +243,11 @@ export class TransferCreate {
     (this.detailsValues() ?? []).reduce((sum, _line, index) => sum + this.lineTotal(index), 0)
   );
 
-  protected async pickProduct(index: number): Promise<void> {
+  protected async pickProduct(index: number, isNew = false): Promise<void> {
     const warehouseId = Number(this.headerForm.getRawValue().sourceWarehouseId) || null;
     const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(
       ProductPickerDialog,
-      { data: { warehouseId, excludedProductIds: this.lineProducts().flatMap((product, i) => (product && i !== index ? [product.productId] : [])) } }
+      { data: { warehouseId, inStockOnly: true, excludedProductIds: this.lineProducts().flatMap((product, i) => (product && i !== index ? [product.productId] : [])) } }
     );
     ref.closed.subscribe((result) => {
       if (result) {
@@ -254,6 +260,9 @@ export class TransferCreate {
           return next;
         });
         void this.loadStock(index, result.productId);
+      } else if (isNew) {
+        // Se cerró la ventana sin elegir: la línea nueva no queda vacía.
+        this.removeLine(index);
       }
     });
   }

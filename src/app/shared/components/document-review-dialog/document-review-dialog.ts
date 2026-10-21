@@ -15,11 +15,12 @@ import { ToastService } from '../../../core/toast/toast.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Dialog } from '../dialog/dialog';
 import { Input as AppInput } from '../input/input';
+import { LoadingSkeleton } from '../loading-skeleton/loading-skeleton';
 
 export interface DocumentReviewDialogData {
   type: ReviewDocumentType;
   id: number;
-  /** Cómo se llama el documento en pantalla (ej. "N° de Nota MB 15-10-26"). */
+  /** Cómo se llama el documento en pantalla (ej. "N° de Nota I 15-10-26"). */
   title: string;
 }
 
@@ -31,7 +32,7 @@ export interface DocumentReviewDialogData {
  */
 @Component({
   selector: 'app-document-review-dialog',
-  imports: [Dialog, AppInput, ReactiveFormsModule, TranslatePipe],
+  imports: [LoadingSkeleton, Dialog, AppInput, ReactiveFormsModule, TranslatePipe],
   templateUrl: './document-review-dialog.html',
 })
 export class DocumentReviewDialog {

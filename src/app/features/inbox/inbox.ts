@@ -220,7 +220,7 @@ export class Inbox {
     }
   }
 
-  /** "Nota MB 4-10-26", "Salida 00019" o "Transferencia 00009". */
+  /** "Nota I 4-10-26", "Salida 00019" o "Transferencia 00009". */
   protected documentLabel(row: InboxRow): string {
     return this.languageService.t(`inbox.documents.${row.documentType}`, { number: row.number });
   }

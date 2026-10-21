@@ -12,6 +12,7 @@ import {
 } from '../../../shared/components/product-picker-dialog/product-picker-dialog';
 import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
+import { Switch } from '../../../shared/components/switch/switch';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { firstDayOfCurrentMonthIso } from '../report-date.util';
@@ -22,7 +23,7 @@ import { canPreviewPdf } from '../../../core/files/pdf';
 
 @Component({
   selector: 'app-kardex-by-product-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton],
+  imports: [FormsModule, Select, DatePicker, Skeleton, Switch, Tooltip, TranslatePipe, ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton],
   templateUrl: './kardex-by-product-report.html',
 })
 export class KardexByProductReport {
@@ -34,6 +35,8 @@ export class KardexByProductReport {
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialogService = inject(DialogService);
 
+  /** "Todos los productos": el kardex de cada producto del almacén, sin elegir uno. */
+  protected readonly allProducts = signal(false);
   protected readonly selectedProduct = signal<ProductPickerResult | null>(null);
   protected readonly productId = signal<string | null>(null);
   protected readonly warehouses = signal<SelectOption[]>([]);
@@ -63,6 +66,7 @@ export class KardexByProductReport {
     });
 
     effect(() => {
+      this.allProducts();
       this.productId();
       this.warehouseId();
       this.dateFrom();
@@ -99,7 +103,7 @@ export class KardexByProductReport {
   }
 
   private async onGenerate(): Promise<void> {
-    if (!this.productId() || !this.warehouseId()) {
+    if ((!this.allProducts() && !this.productId()) || !this.warehouseId()) {
       this.previewUrl.set(null);
       return;
     }
@@ -120,7 +124,7 @@ export class KardexByProductReport {
 
   private currentFilters(): KardexByProductReportFilters {
     return {
-      productId: Number(this.productId()),
+      productId: !this.allProducts() && this.productId() ? Number(this.productId()) : undefined,
       warehouseId: Number(this.warehouseId()),
       dateFrom: this.dateFrom() ?? undefined,
       dateTo: this.dateTo() ?? undefined

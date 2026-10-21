@@ -23,7 +23,7 @@
         role="tab"
         [attr.aria-selected]="tab() === item.key"
         class="flex items-center justify-between gap-3 rounded-lg border p-4 text-left transition-colors"
-        [class.border-primary]="tab() === item.key"
+        [class.border-accent]="tab() === item.key"
         [class.bg-surface]="tab() === item.key"
         [class.border-border]="tab() !== item.key"
         [class.hover:bg-surface]="tab() !== item.key"
@@ -52,7 +52,7 @@
         <button
           type="button"
           class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors"
-          [class.border-primary]="kind() === chip.kind"
+          [class.border-accent]="kind() === chip.kind"
           [class.bg-primary]="kind() === chip.kind"
           [class.text-primary-foreground]="kind() === chip.kind"
           [class.border-border]="kind() !== chip.kind"

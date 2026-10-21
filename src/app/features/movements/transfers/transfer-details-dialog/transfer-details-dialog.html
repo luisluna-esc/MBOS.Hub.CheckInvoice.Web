@@ -12,7 +12,7 @@
     </div>
   }
   @if (loading()) {
-    <p class="text-sm text-muted-foreground">{{ 'transfers.details.loading' | translate }}</p>
+    <app-loading-skeleton [count]="4" />
   } @else if (lines().length === 0) {
     <p class="text-sm text-muted-foreground">{{ 'transfers.details.empty' | translate }}</p>
   } @else {

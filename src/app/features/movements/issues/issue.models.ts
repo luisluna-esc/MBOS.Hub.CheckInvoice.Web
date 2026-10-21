@@ -23,6 +23,8 @@ export interface Issue extends Record<string, unknown> {
   noteNumber: string | null;
   /** Revisión del Contador: digitado, verificado o aprobado. */
   reviewStatus: string | null;
+  /** Salida por lote: el lote al que pertenece (null si es una salida suelta). */
+  issueBatchId?: number | null;
 }
 
 /** Salida completa con fotos (página del QR y carga de la corrección). */
@@ -95,4 +97,18 @@ export interface IssueFilters {
   clientName?: string;
   /** N° de salida tal como sale impreso: "S 15-10-26". */
   noteNumber?: string;
+}
+
+/** Salida por lote: lo mismo para todos los pastores y la cantidad de cada uno. */
+export interface IssueBatchRequest {
+  issueTypeId: number | null;
+  warehouseId: number;
+  issueDate: string | null;
+  printTypeId: number | null;
+  description: string | null;
+  sendToAccountsReceivable: boolean;
+  paymentType: string | null;
+  paymentDetail: string | null;
+  dueDate: string | null;
+  pastors: { clientId: number; details: { productId: number; quantity: number }[] }[];
 }

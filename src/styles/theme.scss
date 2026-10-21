@@ -25,6 +25,9 @@
   --color-border: var(--color-brand-300);
   --color-primary: var(--color-brand-500);
   --color-primary-foreground: #ffffff;
+  /* Primary usado como texto, borde o anillo de foco (enlaces, íconos, selección). En modo
+     claro es el mismo azul; en oscuro primary es un gris de fondo y como texto se perdía. */
+  --color-accent: var(--color-primary);
 
   /* Excepción: color fuera de la paleta, solo para errores de validación de formularios */
   --color-danger: #b91c1c;
@@ -51,6 +54,7 @@
   --color-border: var(--color-dark-300);
   --color-primary: var(--color-dark-300);
   --color-primary-foreground: var(--color-dark-100);
+  --color-accent: var(--color-dark-100);
   --color-danger: #f87171;
   --color-success: #4ade80;
   --color-warning: #fbbf24;
