@@ -32,14 +32,15 @@
         (ngModelChange)="departmentId.set($event)"
       />
       <app-date-picker
-        [label]="'reports.stockByDepartment.dateFrom' | translate"
-        [ngModel]="dateFrom()"
-        (ngModelChange)="dateFrom.set($event)"
-      />
-      <app-date-picker
         [label]="'reports.stockByDepartment.dateTo' | translate"
         [ngModel]="dateTo()"
         (ngModelChange)="dateTo.set($event)"
+      />
+      <app-select
+        [label]="'review.state.label' | translate"
+        [options]="reviewStates()"
+        [ngModel]="reviewState()"
+        (ngModelChange)="reviewState.set($event)"
       />
     </div>
   </div>

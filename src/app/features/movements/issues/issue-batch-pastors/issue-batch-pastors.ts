@@ -81,7 +81,8 @@ export class IssueBatchPastors {
             name: client.name,
             districtName: client.districtId ? (districtNames.get(client.districtId) ?? null) : null,
           }))
-          .sort((a, b) => a.name.localeCompare(b.name))
+          // Por distrito y, dentro de cada uno, por apellido.
+          .sort((a, b) => (a.districtName ?? '').localeCompare(b.districtName ?? '') || a.name.localeCompare(b.name))
       );
     } catch (error) {
       this.errorCode.set(error instanceof HttpErrorResponse ? error.status : 500);

@@ -106,52 +106,88 @@
       @if (materials().length === 0) {
         <p class="text-xs text-muted-foreground">{{ 'issues.batch.noMaterials' | translate }}</p>
       } @else {
-        <div class="max-h-[65vh] overflow-auto rounded-md border border-border">
+        <!-- Buscador: solo filtra las filas para llegar rápido a un pastor; las cantidades se mantienen. -->
+        <div class="flex flex-wrap items-end justify-between gap-3">
+          <label class="flex w-full flex-col gap-1 text-sm font-medium text-foreground sm:w-96">
+            {{ 'issues.batch.searchInSheet' | translate }}
+            <input
+              type="search"
+              class="rounded-md border border-border bg-background px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+              [placeholder]="'issues.batch.searchInSheetPlaceholder' | translate"
+              [value]="pastorSearch()"
+              (input)="onPastorSearch($event)"
+            />
+          </label>
+          @if (pastorSearch()) {
+            <span class="text-xs text-muted-foreground">
+              {{ 'issues.batch.showing' | translate: { shown: visiblePastors().length, total: pastors().length } }}
+            </span>
+          }
+        </div>
+
+        <div class="max-h-[70vh] overflow-auto rounded-md border border-border">
           <table class="w-full text-sm">
             <thead class="sticky top-0 z-10 bg-background">
               <tr>
-                <th class="sticky left-0 z-20 w-64 min-w-48 bg-background px-3 py-2 text-left font-semibold text-foreground">
-                  {{ 'issues.batch.pastor' | translate }}
+                <th class="sticky left-0 z-20 w-72 min-w-56 bg-background px-4 py-3 text-left align-top font-semibold text-foreground">
+                  {{ 'issues.batch.district' | translate }} · {{ 'issues.batch.pastor' | translate }}
                 </th>
                 @for (material of materials(); track material.product.productId) {
-                  <th class="min-w-40 px-3 py-2 text-left align-top font-semibold text-foreground">
-                    <div class="flex items-start gap-2">
+                  <th class="min-w-52 px-4 py-3 text-left align-top font-semibold text-foreground">
+                    <div class="flex items-start gap-3">
                       <app-product-photo
                         [productId]="material.product.productId"
                         [version]="material.product.imageVersion"
                         [name]="material.product.name"
                       />
-                      <span class="min-w-0 flex-1 text-sm leading-tight">
-                        @if (material.product.code) {
-                          <span class="text-muted-foreground">{{ material.product.code }} · </span>
-                        }
-                        {{ material.product.name }}
-                      </span>
+                      <div class="flex min-w-0 flex-1 flex-col gap-1">
+                        <span class="text-sm leading-tight">
+                          @if (material.product.code) {
+                            <span class="text-muted-foreground">{{ material.product.code }} · </span>
+                          }
+                          {{ material.product.name }}
+                        </span>
+                        <!-- Totales del material arriba, para no bajar hasta el final de la tabla. -->
+                        <span class="text-xs font-normal tabular-nums" [class.text-danger]="exceeds(material)" [class.text-muted-foreground]="!exceeds(material)">
+                          {{ 'issues.batch.total' | translate }}
+                          <span class="font-semibold" [class.text-foreground]="!exceeds(material)">{{ materialTotals()[material.product.productId] | number: '1.0-2' }}</span>
+                          · {{ 'issues.batch.available' | translate }}
+                          {{ material.stock ? (material.stock.availableQuantity | number: '1.0-2') : '…' }}
+                        </span>
+                      </div>
                       <button
                         type="button"
-                        class="shrink-0 rounded p-0.5 text-danger transition-colors hover:bg-danger/10"
+                        class="shrink-0 rounded p-1 text-danger transition-colors hover:bg-danger/10"
                         [attr.aria-label]="'issues.batch.removeMaterial' | translate"
                         (click)="removeMaterial(material.product.productId)"
                       >
-                        <svg viewBox="0 0 24 24" fill="none" class="size-3.5"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+                        <svg viewBox="0 0 24 24" fill="none" class="size-4"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
                       </button>
                     </div>
                   </th>
                 }
-                <th class="w-32 min-w-28 px-3 py-2 text-right font-semibold text-foreground">{{ 'issues.batch.cost' | translate }}</th>
-                <th class="w-10 px-2 py-2"></th>
+                <th class="w-36 min-w-32 px-4 py-3 text-right align-top font-semibold text-foreground">
+                  <div class="flex flex-col gap-1">
+                    <span>{{ 'issues.batch.cost' | translate }}</span>
+                    <span class="text-xs font-normal text-muted-foreground">
+                      {{ 'issues.batch.total' | translate }}
+                      <span class="font-semibold tabular-nums text-foreground">{{ batchTotalCost() | number: '1.2-2' }}</span>
+                    </span>
+                  </div>
+                </th>
+                <th class="w-12 px-2 py-3"></th>
               </tr>
               <tr class="border-b border-border">
-                <th class="sticky left-0 z-20 bg-background px-3 py-1.5 text-left text-xs font-medium text-muted-foreground">
+                <th class="sticky left-0 z-20 bg-background px-4 py-2 text-left text-xs font-medium text-muted-foreground">
                   {{ 'issues.batch.sameForAll' | translate }}
                 </th>
                 @for (material of materials(); track material.product.productId) {
-                  <th class="px-3 py-1.5">
+                  <th class="px-4 py-2">
                     <input
                       type="number"
                       min="0"
                       step="1"
-                      class="w-full min-w-20 rounded-md border border-dashed border-accent bg-surface px-2 py-1 text-right text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                      class="w-full min-w-28 rounded-md border border-dashed border-accent bg-surface px-3 py-2 text-right text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                       [attr.data-all]="material.product.productId"
                       [attr.aria-label]="('issues.batch.sameForAll' | translate) + ' · ' + material.product.name"
                       [placeholder]="'issues.batch.allPlaceholder' | translate"
@@ -165,21 +201,21 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-border">
-              @for (pastor of pastors(); track pastor.clientId; let row = $index) {
-                <tr [class.text-muted-foreground]="pastorTotal(pastor.clientId) === 0">
-                  <td class="sticky left-0 bg-surface px-3 py-1.5">
+              @for (pastor of visiblePastors(); track pastor.clientId; let row = $index) {
+                <tr class="transition-colors hover:bg-background/60" [class.text-muted-foreground]="pastorTotal(pastor.clientId) === 0">
+                  <td class="sticky left-0 bg-surface px-4 py-2">
                     <div class="flex flex-col">
-                      <span class="text-foreground">{{ pastor.name }}</span>
                       <span class="text-xs text-muted-foreground">{{ pastor.districtName ?? '—' }}</span>
+                      <span class="font-medium text-foreground">{{ pastor.name }}</span>
                     </div>
                   </td>
                   @for (material of materials(); track material.product.productId) {
-                    <td class="px-3 py-1.5">
+                    <td class="px-4 py-2">
                       <input
                         type="number"
                         min="0"
                         step="1"
-                        class="w-full min-w-20 rounded-md border border-border bg-surface px-2 py-1 text-right text-sm text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-accent"
+                        class="w-full min-w-28 rounded-md border border-border bg-surface px-3 py-2 text-right text-sm text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-accent"
                         [attr.data-cell]="row + '-' + material.product.productId"
                         [attr.aria-label]="pastor.name + ' · ' + material.product.name"
                         [value]="quantity(pastor.clientId, material.product.productId) ?? ''"
@@ -188,38 +224,26 @@
                       />
                     </td>
                   }
-                  <td class="whitespace-nowrap px-3 py-1.5 text-right tabular-nums">{{ pastorTotal(pastor.clientId) | number: '1.2-2' }}</td>
-                  <td class="px-2 py-1.5 text-center">
+                  <td class="whitespace-nowrap px-4 py-2 text-right tabular-nums">{{ pastorTotal(pastor.clientId) | number: '1.2-2' }}</td>
+                  <td class="px-2 py-2 text-center">
                     <button
                       type="button"
-                      class="rounded p-1 text-danger transition-colors hover:bg-danger/10"
+                      class="rounded p-1.5 text-danger transition-colors hover:bg-danger/10"
                       [attr.aria-label]="'issues.batch.removePastor' | translate"
                       (click)="removePastor(pastor.clientId)"
                     >
-                      <svg viewBox="0 0 24 24" fill="none" class="size-3.5"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+                      <svg viewBox="0 0 24 24" fill="none" class="size-4"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
                     </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td [attr.colspan]="materials().length + 3" class="px-4 py-6 text-center text-sm text-muted-foreground">
+                    {{ 'issues.batch.noPastorMatch' | translate }}
                   </td>
                 </tr>
               }
             </tbody>
-            <tfoot class="sticky bottom-0 bg-background">
-              <tr class="border-t border-border">
-                <td class="sticky left-0 bg-background px-3 py-2 text-right font-semibold text-foreground">{{ 'issues.batch.total' | translate }}</td>
-                @for (material of materials(); track material.product.productId) {
-                  <td class="px-3 py-2 text-xs" [class.text-danger]="exceeds(material)">
-                    <div class="font-semibold tabular-nums" [class.text-foreground]="!exceeds(material)">
-                      {{ materialTotals()[material.product.productId] | number: '1.0-2' }}
-                    </div>
-                    <div [class.text-muted-foreground]="!exceeds(material)">
-                      {{ 'issues.batch.available' | translate }}
-                      {{ material.stock ? (material.stock.availableQuantity | number: '1.0-2') : '…' }}
-                    </div>
-                  </td>
-                }
-                <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums text-foreground">{{ batchTotalCost() | number: '1.2-2' }}</td>
-                <td></td>
-              </tr>
-            </tfoot>
           </table>
         </div>
 

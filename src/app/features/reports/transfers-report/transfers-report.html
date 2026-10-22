@@ -4,7 +4,7 @@
   <div class="flex flex-col gap-3 rounded-md border border-border bg-surface p-3">
     <p class="text-xs text-muted-foreground">{{ 'reports.transfers.description' | translate }}</p>
 
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
       <app-select
         [label]="'reports.transfers.source' | translate"
         [options]="warehouses()"
@@ -26,6 +26,12 @@
         [label]="'reports.receipts.dateTo' | translate"
         [ngModel]="dateTo()"
         (ngModelChange)="dateTo.set($event)"
+      />
+      <app-select
+        [label]="'review.state.label' | translate"
+        [options]="reviewStates()"
+        [ngModel]="reviewState()"
+        (ngModelChange)="reviewState.set($event)"
       />
     </div>
   </div>

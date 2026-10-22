@@ -9,16 +9,16 @@ import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
-import { firstDayOfCurrentMonthIso } from '../report-date.util';
 import { ALL_WAREHOUSES_VALUE, warehouseIdFilter, warehouseOptionsWithGeneral } from '../report-warehouse.util';
-import { ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
+import { PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { InventoryCountReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 import { canPreviewPdf } from '../../../core/files/pdf';
+import { reportReviewStateOptions, toReportReviewState } from '../../../core/reviews/review-state';
 
 @Component({
   selector: 'app-inventory-count-report',
-  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton],
+  imports: [FormsModule, Select, DatePicker, Skeleton, Tooltip, TranslatePipe, PdfDownloadButton],
   templateUrl: './inventory-count-report.html',
 })
 export class InventoryCountReport {
@@ -29,26 +29,19 @@ export class InventoryCountReport {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly modes = computed<SelectOption[]>(() => [
-    { value: 'template', label: this.languageService.t('reports.inventoryCount.modeTemplate') },
-    { value: 'result', label: this.languageService.t('reports.inventoryCount.modeResult') }
-  ]);
-  protected readonly mode = signal<string>('template');
-  protected readonly hint = computed(() =>
-    this.languageService.t(
-      this.mode() === 'template' ? 'reports.inventoryCount.hintTemplate' : 'reports.inventoryCount.hintResult'
-    )
-  );
+  /** Solo la plantilla en blanco para contar en papel. */
+  protected readonly hint = computed(() => this.languageService.t('reports.inventoryCount.hintTemplate'));
 
   protected readonly warehouses = signal<SelectOption[]>([]);
   protected readonly warehouseId = signal<string | null>(ALL_WAREHOUSES_VALUE);
-  protected readonly dateFrom = signal<string | null>(firstDayOfCurrentMonthIso());
+  /** Saldo a esta fecha (vacía: hoy). Es un saldo, así que no hay fecha de inicio. */
   protected readonly dateTo = signal<string | null>(null);
+  /** Estado: "Solo actualizado" (firmado) o "Actualizado y sin actualizar" (todo). */
+  protected readonly reviewState = signal<string | null>('updated');
+  protected readonly reviewStates = computed(() => reportReviewStateOptions((key) => this.languageService.t(key)));
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
-  protected readonly exporting = signal(false);
-  protected readonly exportingTxt = signal(false);
 
   private objectUrl: string | null = null;
   private pdfBlob: Blob | null = null;
@@ -71,10 +64,9 @@ export class InventoryCountReport {
     // dependencias, si no nunca reaccionaría a cambios posteriores.
     let isFirstRun = true;
     effect(() => {
-      this.mode();
       this.warehouseId();
-      this.dateFrom();
       this.dateTo();
+      this.reviewState();
       if (isFirstRun) {
         isFirstRun = false;
         return;
@@ -104,10 +96,7 @@ export class InventoryCountReport {
     this.loading.set(true);
     try {
       const filters = this.currentFilters();
-      const blob =
-        this.mode() === 'template'
-          ? await this.reportService.getInventoryCountTemplatePdfBlob(filters)
-          : await this.reportService.getInventoryCountReportPdfBlob(filters);
+      const blob = await this.reportService.getInventoryCountTemplatePdfBlob(filters);
       this.revokeObjectUrl();
       this.pdfBlob = blob;
       this.objectUrl = URL.createObjectURL(blob);
@@ -122,36 +111,14 @@ export class InventoryCountReport {
   private currentFilters(): InventoryCountReportFilters {
     return {
       warehouseId: warehouseIdFilter(this.warehouseId()),
-      dateFrom: this.dateFrom() ?? undefined,
-      dateTo: this.dateTo() ?? undefined
+      dateTo: this.dateTo() ?? undefined,
+      reviewState: toReportReviewState(this.reviewState()),
     };
-  }
-
-  protected async onExportExcel(): Promise<void> {
-    this.exporting.set(true);
-    try {
-      downloadBlob(await this.reportService.getInventoryCountReportExcelBlob(this.currentFilters()), 'levantamiento-de-inventario.xlsx');
-    } catch {
-      this.toastService.error(this.languageService.t('reports.excel.error'));
-    } finally {
-      this.exporting.set(false);
-    }
-  }
-
-  protected async onExportTxt(): Promise<void> {
-    this.exportingTxt.set(true);
-    try {
-      downloadBlob(await this.reportService.getInventoryCountReportTxtBlob(this.currentFilters()), 'levantamiento-de-inventario.txt');
-    } catch {
-      this.toastService.error(this.languageService.t('reports.txt.error'));
-    } finally {
-      this.exportingTxt.set(false);
-    }
   }
 
   protected onDownloadPdf(): void {
     if (this.pdfBlob) {
-      downloadBlob(this.pdfBlob, this.mode() === 'template' ? 'plantilla-conteo-fisico.pdf' : 'levantamiento-de-inventario.pdf');
+      downloadBlob(this.pdfBlob, 'plantilla-conteo-fisico.pdf');
     }
   }
 

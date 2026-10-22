@@ -20,6 +20,41 @@ interface GrantPortalAccessResponse {
 export class ClientService {
   private readonly http = inject(HttpClient);
 
+  /** NIT/C.I. ya registrado: nombre de quien lo tiene (null si está libre). */
+  async taxIdOwner(taxId: string, excludePartyId?: number | null): Promise<string | null> {
+    const response = await firstValueFrom(
+      this.http.get<{ data: { ownerName: string | null } }>(`${environment.apiUrl}/Clients/tax-id-check`, {
+        params: excludePartyId ? { taxId, excludePartyId } : { taxId },
+      })
+    );
+    return response.data.ownerName;
+  }
+
+  /** Pastor que ya tiene ese distrito y esa iglesia (null si están libres). */
+  async pastorSlots(
+    districtId: number | null,
+    churchId: number | null,
+    excludeClientId: number | null
+  ): Promise<{ districtPastor: string | null; churchPastor: string | null }> {
+    const params: Record<string, number> = {};
+    if (districtId) {
+      params['districtId'] = districtId;
+    }
+    if (churchId) {
+      params['churchId'] = churchId;
+    }
+    if (excludeClientId) {
+      params['excludeClientId'] = excludeClientId;
+    }
+    const response = await firstValueFrom(
+      this.http.get<{ data: { districtPastor: string | null; churchPastor: string | null } }>(
+        `${environment.apiUrl}/Clients/pastor-check`,
+        { params }
+      )
+    );
+    return response.data;
+  }
+
   async list(pageNumber: number, pageSize: number, filters: ClientFilters): Promise<PagedResult<Client>> {
     const response = await firstValueFrom(
       this.http.get<{ data: PagedResult<Client> }>(`${environment.apiUrl}/Clients`, {

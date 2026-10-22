@@ -248,6 +248,12 @@
     "total": "Total (Bs.)"
   },
   "review": {
+    "state": {
+      "label": "Estado",
+      "all": "Todos",
+      "updated": "Atualizado",
+      "outdated": "Desatualizado"
+    },
     "signatureInvalid": "Assinatura inválida: o documento mudou depois de assinado",
     "signatureValid": "Assinatura válida",
     "signConfirm": "Assinar",
@@ -411,6 +417,9 @@
     }
   },
   "products": {
+    "photoUploadError": "Não foi possível enviar a foto.",
+    "photoUploaded": "Foto de {{name}} salva.",
+    "photoUpload": "Enviar ou trocar a foto (máx. 5 MB)",
     "title": "Produtos",
     "new": "Novo produto",
     "filters": {
@@ -1010,6 +1019,10 @@
       "sheetTitle": "Materiais e quantidade por pastor",
       "addMaterial": "Adicionar material",
       "sheetHint": "Cada coluna é um material. \"Igual para todos\" preenche a coluna inteira; depois corrija só quem leva outra quantidade. Enter desce para o pastor seguinte. Vazio ou 0: esse pastor não leva esse material.",
+      "searchInSheet": "Buscar pastor na tabela",
+      "searchInSheetPlaceholder": "Sobrenome, nome ou distrito",
+      "showing": "Mostrando {{shown}} de {{total}} pastores",
+      "noPastorMatch": "Nenhum pastor corresponde à busca.",
       "sameForAll": "Igual para todos",
       "allPlaceholder": "Qtd.",
       "removeMaterial": "Remover material",
@@ -1079,7 +1092,7 @@
       "description": "Busque o cliente por nome para continuar com o registro da saída.",
       "search": "Nome",
       "taxId": "NIT",
-      "fullName": "Nome completo",
+      "fullName": "Sobrenomes e nomes",
       "email": "E-mail",
       "createClient": "Criar cliente"
     },
@@ -1508,7 +1521,7 @@
       "hint": "Entradas menos Saídas mais Transferências, agrupado por Categoria e Subcategoria.",
       "warehouse": "Armazém",
       "dateFrom": "Data inicial",
-      "dateTo": "Data final",
+      "dateTo": "Saldo em",
       "selectPrompt": "Selecione um armazém para gerar o relatório.",
       "error": "Não foi possível gerar o relatório. Tente novamente."
     },
@@ -1519,7 +1532,7 @@
       "warehouse": "Armazém",
       "department": "Categoria",
       "dateFrom": "Data inicial",
-      "dateTo": "Data final",
+      "dateTo": "Saldo em",
       "selectPrompt": "Selecione um armazém para gerar o relatório.",
       "error": "Não foi possível gerar o relatório. Tente novamente."
     },
@@ -1544,7 +1557,7 @@
       "hintResult": "Agrupado por Categoria e Subcategoria, no armazém e período filtrado.",
       "warehouse": "Armazém",
       "dateFrom": "Data inicial",
-      "dateTo": "Data final",
+      "dateTo": "Saldo em",
       "selectPrompt": "Selecione um armazém para gerar o relatório.",
       "error": "Não foi possível gerar o relatório. Tente novamente."
     },
@@ -1746,7 +1759,7 @@
     },
     "columns": {
       "taxId": "Carteira de Identidade",
-      "name": "Nome",
+      "name": "Sobrenomes e nomes",
       "email": "E-mail",
       "mobilePhone": "Celular",
       "status": "Status"
@@ -1756,9 +1769,12 @@
       "delete": "Excluir"
     },
     "form": {
+      "churchTaken": "Já tem pastor: {{name}}",
+      "districtTaken": "Já tem pastor: {{name}}",
+      "taxIdTaken": "Já registrado: {{name}}",
       "newTitle": "Novo cliente",
       "editTitle": "Editar cliente",
-      "name": "Nome Completo",
+      "name": "Sobrenomes e nomes",
       "documentType": "Tipo de Documento",
       "taxId": "Carteira de Identidade",
       "complement": "Complemento",

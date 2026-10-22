@@ -21,7 +21,7 @@
       <app-switch [label]="'reports.kardexByProduct.allProducts' | translate" [(checked)]="allProducts" />
     </div>
 
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-4">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
       <div class="flex flex-col gap-1">
         <label class="text-sm font-medium text-foreground">{{ 'reports.kardexByProduct.product' | translate }}</label>
         @if (allProducts()) {
@@ -64,6 +64,12 @@
         [label]="'reports.kardexByProduct.dateTo' | translate"
         [ngModel]="dateTo()"
         (ngModelChange)="dateTo.set($event)"
+      />
+      <app-select
+        [label]="'review.state.label' | translate"
+        [options]="reviewStates()"
+        [ngModel]="reviewState()"
+        (ngModelChange)="reviewState.set($event)"
       />
     </div>
   </div>

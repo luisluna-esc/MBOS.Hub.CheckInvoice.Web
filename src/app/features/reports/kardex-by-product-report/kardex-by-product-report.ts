@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CatalogService } from '../../../core/catalogs/catalog.service';
@@ -20,6 +20,7 @@ import { ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton, downloadBlob
 import { KardexByProductReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 import { canPreviewPdf } from '../../../core/files/pdf';
+import { reportReviewStateOptions, toReportReviewState } from '../../../core/reviews/review-state';
 
 @Component({
   selector: 'app-kardex-by-product-report',
@@ -43,6 +44,9 @@ export class KardexByProductReport {
   protected readonly warehouseId = signal<string | null>(null);
   protected readonly dateFrom = signal<string | null>(firstDayOfCurrentMonthIso());
   protected readonly dateTo = signal<string | null>(null);
+  /** Estado: "Solo actualizado" (firmado) o "Actualizado y sin actualizar" (todo). */
+  protected readonly reviewState = signal<string | null>('updated');
+  protected readonly reviewStates = computed(() => reportReviewStateOptions((key) => this.languageService.t(key)));
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
@@ -71,6 +75,7 @@ export class KardexByProductReport {
       this.warehouseId();
       this.dateFrom();
       this.dateTo();
+      this.reviewState();
       this.scheduleGenerate();
     });
   }
@@ -127,7 +132,8 @@ export class KardexByProductReport {
       productId: !this.allProducts() && this.productId() ? Number(this.productId()) : undefined,
       warehouseId: Number(this.warehouseId()),
       dateFrom: this.dateFrom() ?? undefined,
-      dateTo: this.dateTo() ?? undefined
+      dateTo: this.dateTo() ?? undefined,
+      reviewState: toReportReviewState(this.reviewState()),
     };
   }
 

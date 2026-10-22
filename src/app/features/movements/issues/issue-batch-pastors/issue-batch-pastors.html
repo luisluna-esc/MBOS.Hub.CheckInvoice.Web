@@ -77,8 +77,8 @@
             <thead class="sticky top-0 bg-background">
               <tr>
                 <th class="w-10 px-3 py-2"></th>
-                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.batch.pastor' | translate }}</th>
                 <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.batch.district' | translate }}</th>
+                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'issues.batch.pastor' | translate }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border">
@@ -98,8 +98,8 @@
                       (change)="toggle(pastor.clientId)"
                     />
                   </td>
-                  <td class="px-3 py-2 text-foreground">{{ pastor.name }}</td>
                   <td class="px-3 py-2 text-muted-foreground">{{ pastor.districtName ?? '—' }}</td>
+                  <td class="px-3 py-2 text-foreground">{{ pastor.name }}</td>
                 </tr>
               }
             </tbody>

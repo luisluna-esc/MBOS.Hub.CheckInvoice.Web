@@ -251,6 +251,9 @@ export class ReportService {
     if (filters.receiptTypeId) {
       params['ReceiptTypeId'] = String(filters.receiptTypeId);
     }
+    if (filters.reviewState) {
+      params['ReviewState'] = filters.reviewState;
+    }
     return params;
   }
 
@@ -267,6 +270,9 @@ export class ReportService {
     }
     if (filters.dateTo) {
       params['DateTo'] = filters.dateTo;
+    }
+    if (filters.reviewState) {
+      params['ReviewState'] = filters.reviewState;
     }
     return params;
   }
@@ -409,7 +415,10 @@ export class ReportService {
     if ('status' in filters && filters.status) {
       clean['Status'] = filters.status;
     }
-    if (filters.dateFrom) {
+    if ('reviewState' in filters && filters.reviewState) {
+      clean['ReviewState'] = filters.reviewState;
+    }
+    if ('dateFrom' in filters && filters.dateFrom) {
       clean['DateFrom'] = filters.dateFrom;
     }
     if (filters.dateTo) {

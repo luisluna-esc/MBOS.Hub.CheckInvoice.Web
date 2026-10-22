@@ -26,6 +26,7 @@ import { Issue, IssueFilters } from '../issue.models';
 import { IssueService } from '../issue.service';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
+import { reviewStateOptions, toReviewState } from '../../../../core/reviews/review-state';
 
 @Component({
   selector: 'app-issues-list',
@@ -77,6 +78,13 @@ export class IssuesList {
       label: this.languageService.t('issues.filters.issueType'),
       type: 'select',
       options: this.issueTypes().map((item) => ({ value: String(item.id), label: item.name })),
+    },
+    {
+      key: 'reviewState',
+      label: this.languageService.t('review.state.label'),
+      type: 'select',
+      placeholder: this.languageService.t('review.state.all'),
+      options: reviewStateOptions((key) => this.languageService.t(key)),
     },
   ]);
 
@@ -272,6 +280,7 @@ export class IssuesList {
       warehouseId: values['warehouseId'] ? Number(values['warehouseId']) : undefined,
       clientName: values['clientName'] || undefined,
       issueTypeId: values['issueTypeId'] ? Number(values['issueTypeId']) : undefined,
+      reviewState: toReviewState(values['reviewState']),
     };
     this.pageNumber.set(1);
     void this.load();

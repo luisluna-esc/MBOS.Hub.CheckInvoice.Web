@@ -13,6 +13,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ProductFormDialog, ProductFormDialogData } from '../product-form-dialog/product-form-dialog';
 import { Product, ProductFilters } from '../product.models';
 import { ProductService } from '../product.service';
+import { prepareProductPhoto } from '../../../../core/files/image';
 
 @Component({
   selector: 'app-products-list',
@@ -69,6 +70,7 @@ export class ProductsList {
         header: this.languageService.t('products.columns.photo'),
         align: 'center',
         photo: (row) => ({ productId: row.productId, version: row.imageVersion, name: row.name }),
+        photoUpload: (row, file) => void this.uploadPhoto(row, file),
       },
       { key: 'code', header: this.languageService.t('products.columns.code'), format: (value) => (value as string) || '—' },
       { key: 'name', header: this.languageService.t('products.columns.name') },
@@ -114,6 +116,23 @@ export class ProductsList {
 
   private async loadCatalogs(): Promise<void> {
     this.departments.set(await this.catalogService.getDepartments());
+  }
+
+  /** Clic en la foto de la tabla: sube la imagen elegida (máx. 5 MB) sin abrir el formulario. */
+  private async uploadPhoto(row: Product, file: File): Promise<void> {
+    const result = await prepareProductPhoto(file);
+    if ('errorKey' in result) {
+      this.toastService.error(this.languageService.t(result.errorKey));
+      return;
+    }
+    try {
+      await this.productService.setImage(row.productId, result.photo);
+      this.toastService.success(this.languageService.t('products.photoUploaded', { name: row.name }));
+      void this.load();
+    } catch (error) {
+      const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]?.description;
+      this.toastService.error(this.languageService.t('products.photoUploadError'), message);
+    }
   }
 
   private async load(): Promise<void> {

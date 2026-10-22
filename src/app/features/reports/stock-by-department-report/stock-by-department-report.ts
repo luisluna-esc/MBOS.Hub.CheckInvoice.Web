@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CatalogService } from '../../../core/catalogs/catalog.service';
@@ -9,12 +9,12 @@ import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { Tooltip } from '../../../shared/components/tooltip/tooltip';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
-import { firstDayOfCurrentMonthIso } from '../report-date.util';
 import { ALL_WAREHOUSES_VALUE, warehouseIdFilter, warehouseOptionsWithGeneral } from '../report-warehouse.util';
 import { ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton, downloadBlob } from '../excel-download-button/excel-download-button';
 import { StockByDepartmentReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 import { canPreviewPdf } from '../../../core/files/pdf';
+import { reportReviewStateOptions, toReportReviewState } from '../../../core/reviews/review-state';
 
 @Component({
   selector: 'app-stock-by-department-report',
@@ -33,8 +33,11 @@ export class StockByDepartmentReport {
   protected readonly departments = signal<SelectOption[]>([]);
   protected readonly warehouseId = signal<string | null>(ALL_WAREHOUSES_VALUE);
   protected readonly departmentId = signal<string | null>(null);
-  protected readonly dateFrom = signal<string | null>(firstDayOfCurrentMonthIso());
+  /** Saldo a esta fecha (vacía: hoy). Es un saldo, así que no hay fecha de inicio. */
   protected readonly dateTo = signal<string | null>(null);
+  /** Estado: "Solo actualizado" (firmado) o "Actualizado y sin actualizar" (todo). */
+  protected readonly reviewState = signal<string | null>('updated');
+  protected readonly reviewStates = computed(() => reportReviewStateOptions((key) => this.languageService.t(key)));
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
@@ -65,8 +68,8 @@ export class StockByDepartmentReport {
     effect(() => {
       this.warehouseId();
       this.departmentId();
-      this.dateFrom();
       this.dateTo();
+      this.reviewState();
       if (isFirstRun) {
         isFirstRun = false;
         return;
@@ -116,8 +119,8 @@ export class StockByDepartmentReport {
     return {
       warehouseId: warehouseIdFilter(this.warehouseId()),
       departmentId: this.departmentId() ? Number(this.departmentId()) : undefined,
-      dateFrom: this.dateFrom() ?? undefined,
-      dateTo: this.dateTo() ?? undefined
+      dateTo: this.dateTo() ?? undefined,
+      reviewState: toReportReviewState(this.reviewState()),
     };
   }
 

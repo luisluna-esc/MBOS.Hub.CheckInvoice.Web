@@ -65,6 +65,14 @@ export class IssueBatchCreate {
   /** Cantidad de cada pastor por material: clave "clientId:productId". */
   protected readonly quantities = signal<Record<string, number>>({});
   protected readonly headerConfirmed = signal(false);
+  /** Buscador de la tabla: filtra las filas por pastor o distrito (sin perder lo escrito). */
+  protected readonly pastorSearch = signal('');
+  protected readonly visiblePastors = computed(() => {
+    const text = normalize(this.pastorSearch());
+    return text
+      ? this.pastors().filter((p) => normalize(p.name).includes(text) || normalize(p.districtName ?? '').includes(text))
+      : this.pastors();
+  });
   protected readonly saving = signal(false);
 
   protected readonly warehouses = signal<CatalogItem[]>([]);
@@ -277,6 +285,10 @@ export class IssueBatchCreate {
     input.value = '';
   }
 
+  protected onPastorSearch(event: Event): void {
+    this.pastorSearch.set((event.target as HTMLInputElement).value);
+  }
+
   /** Enter en "Igual para todos" lo aplica; en una cantidad, baja al pastor siguiente del mismo material. */
   protected onAllEnter(productId: number, event: Event): void {
     event.preventDefault();
@@ -375,4 +387,8 @@ function key(clientId: number, productId: number): string {
 function toQuantity(value: string): number {
   const number = Math.floor(Number(value));
   return Number.isFinite(number) && number > 0 ? number : 0;
+}
+
+function normalize(value: string): string {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 }

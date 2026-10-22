@@ -32,6 +32,8 @@ export class Select implements ControlValueAccessor {
   readonly hint = input<string | null>(null);
   readonly required = input(false);
   readonly errorMessages = input<Record<string, string>>({});
+  /** Error que viene de afuera del control (ej. "ya tiene pastor"): va en la misma línea de abajo. */
+  readonly externalError = input<string | null>(null);
 
   protected readonly selectId = `app-select-${nextId++}`;
   protected readonly value = signal<string | null>(null);
@@ -260,13 +262,13 @@ export class Select implements ControlValueAccessor {
 
   protected get showError(): boolean {
     const control = this.ngControl?.control;
-    return !!control && control.invalid && (control.touched || control.dirty);
+    return (!!control && control.invalid && (control.touched || control.dirty)) || !!this.externalError();
   }
 
   protected get errorMessage(): string | null {
     const control = this.ngControl?.control;
-    if (!control?.errors) {
-      return null;
+    if (!control?.errors || !(control.touched || control.dirty)) {
+      return this.externalError();
     }
     if (control.errors['required']) {
       return this.errorMessages()['required'] ?? 'Este campo es obligatorio.';

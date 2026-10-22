@@ -137,7 +137,12 @@
         />
         <div class="flex min-w-0 items-start gap-2 sm:col-span-2 sm:max-w-xs">
           <div class="min-w-0 flex-1">
-            <app-input formControlName="taxId" [label]="'clients.form.taxId' | translate" [maxLength]="20" />
+            <app-input
+              formControlName="taxId"
+              [label]="'clients.form.taxId' | translate"
+              [maxLength]="20"
+              [externalError]="taxIdOwner() ? ('clients.form.taxIdTaken' | translate: { name: taxIdOwner()! }) : null"
+            />
           </div>
           @if (isNitDocumentType()) {
             <div class="flex w-20 shrink-0 flex-col gap-1">
@@ -164,22 +169,30 @@
           [patternRule]="phonePattern"
           [errorMessages]="{ pattern: ('clients.form.mobilePhoneInvalid' | translate) }"
         />
-        <app-select
-          formControlName="districtId"
-          [label]="'clients.form.district' | translate"
-          [options]="districtOptions()"
-        />
-        <app-select
-          formControlName="churchId"
-          [label]="'clients.form.church' | translate"
-          [options]="churchOptions()"
-        />
       </div>
 
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
         <app-checkbox formControlName="isActive">{{ 'clients.form.isActive' | translate }}</app-checkbox>
         <app-checkbox formControlName="isPastor">{{ 'clients.form.isPastor' | translate }}</app-checkbox>
       </div>
+
+      <!-- Distrito e iglesia solo son de los pastores: aparecen al marcar "Es pastor". -->
+      @if (isPastorValue()) {
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <app-select
+            formControlName="districtId"
+            [label]="'clients.form.district' | translate"
+            [options]="districtOptions()"
+            [externalError]="districtPastor() ? ('clients.form.districtTaken' | translate: { name: districtPastor()! }) : null"
+          />
+          <app-select
+            formControlName="churchId"
+            [label]="'clients.form.church' | translate"
+            [options]="churchOptions()"
+            [externalError]="churchPastor() ? ('clients.form.churchTaken' | translate: { name: churchPastor()! }) : null"
+          />
+        </div>
+      }
 
       @if (!linkedParty() && !linkedSupplier()) {
         <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">

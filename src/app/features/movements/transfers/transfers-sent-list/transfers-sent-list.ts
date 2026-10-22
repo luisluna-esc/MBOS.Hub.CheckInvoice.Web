@@ -27,6 +27,7 @@ import { Transfer, TransferFilters } from '../transfer.models';
 import { TransferService } from '../transfer.service';
 import { localDateIso } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
+import { reviewStateOptions, toReviewState } from '../../../../core/reviews/review-state';
 
 @Component({
   selector: 'app-transfers-sent-list',
@@ -92,6 +93,13 @@ export class TransfersSentList {
         label: this.languageService.t('transfers.filters.dateTo'),
         type: 'date',
         max: this.todayIso,
+      },
+      {
+        key: 'reviewState',
+        label: this.languageService.t('review.state.label'),
+        type: 'select',
+        placeholder: this.languageService.t('review.state.all'),
+        options: reviewStateOptions((key) => this.languageService.t(key)),
       },
     ];
   });
@@ -242,6 +250,7 @@ export class TransfersSentList {
       destinationWarehouseId: values['destinationWarehouseId'] ? Number(values['destinationWarehouseId']) : undefined,
       dateFrom: values['dateFrom'] ?? undefined,
       dateTo: values['dateTo'] ?? undefined,
+      reviewState: toReviewState(values['reviewState']),
     };
     this.selectedSourceId.set(this.currentFilters.sourceWarehouseId ?? null);
     this.selectedDestId.set(this.currentFilters.destinationWarehouseId ?? null);

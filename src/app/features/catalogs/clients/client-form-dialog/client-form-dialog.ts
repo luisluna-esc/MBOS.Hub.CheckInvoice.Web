@@ -2,7 +2,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { map, startWith } from 'rxjs';
+import { debounceTime, map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService, SpecialCaseItem } from '../../../../core/catalogs/catalog.service';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
@@ -184,8 +184,31 @@ export class ClientFormDialog {
    *  para que la elección misma sea la explicación. */
   protected readonly preStage = signal<'choose' | 'link' | 'special'>('choose');
 
+  // --- Avisos en vivo (mientras se llena el formulario, no al guardar) ---
+
+  /** Quien ya tiene el NIT/C.I. escrito (null si está libre). */
+  protected readonly taxIdOwner = signal<string | null>(null);
+  /** Pastor que ya está en el distrito / la iglesia elegidos (un solo pastor por cada uno). */
+  protected readonly districtPastor = signal<string | null>(null);
+  protected readonly churchPastor = signal<string | null>(null);
+
+  protected readonly isPastorValue = toSignal(
+    this.form.controls.isPastor.valueChanges.pipe(startWith(this.form.controls.isPastor.value), takeUntilDestroyed()),
+    { initialValue: this.form.controls.isPastor.value }
+  );
+
+  private readonly churchIdValue = toSignal(
+    this.form.controls.churchId.valueChanges.pipe(startWith(this.form.controls.churchId.value), takeUntilDestroyed()),
+    { initialValue: this.form.controls.churchId.value }
+  );
+
   protected readonly saveDisabled = computed(
-    () => !this.decisionsConfirmed() || this.formInvalid() || this.saving()
+    () =>
+      !this.decisionsConfirmed() ||
+      this.formInvalid() ||
+      !!this.taxIdOwner() ||
+      (this.isPastorValue() && (!!this.districtPastor() || !!this.churchPastor())) ||
+      this.saving()
   );
 
   protected readonly specialCaseSummary = computed(() => {
@@ -195,6 +218,21 @@ export class ClientFormDialog {
 
   constructor() {
     void this.loadCatalogs();
+
+    // NIT/C.I. ya registrado: se consulta mientras se escribe. Los casos especiales (99001...)
+    // los comparten muchos clientes a propósito, así que no se revisan.
+    this.form.controls.taxId.valueChanges.pipe(debounceTime(350), takeUntilDestroyed()).subscribe(() => {
+      void this.checkTaxId();
+    });
+
+    // Un distrito y una iglesia tienen un solo pastor: se revisa al marcar "Es pastor" o al
+    // cambiar el distrito o la iglesia.
+    effect(() => {
+      const isPastor = this.isPastorValue();
+      const districtId = Number(this.districtIdValue()) || null;
+      const churchId = Number(this.churchIdValue()) || null;
+      void this.checkPastorSlots(isPastor, districtId, churchId);
+    });
 
     // La Iglesia se maneja por Distrito: al cambiar el Distrito se recarga la lista
     // de Iglesias filtrada por ese distrito y se limpia la Iglesia elegida antes.
@@ -254,6 +292,40 @@ export class ClientFormDialog {
       // el nombre que haya quedado de un caso especial seleccionado antes.
       this.form.controls.name.setValue(selected.code === '99001' ? '' : selected.name);
     });
+  }
+
+  private async checkTaxId(): Promise<void> {
+    const taxId = this.form.controls.taxId.value.trim();
+    if (!taxId || this.hasSpecialCase()) {
+      this.taxIdOwner.set(null);
+      return;
+    }
+    const excludePartyId = this.linkedParty()?.partyId ?? this.data.client?.partyId ?? null;
+    try {
+      const owner = await this.clientService.taxIdOwner(taxId, excludePartyId);
+      // Si mientras tanto cambió lo escrito, esta respuesta ya no vale.
+      if (this.form.controls.taxId.value.trim() === taxId) {
+        this.taxIdOwner.set(owner);
+      }
+    } catch {
+      this.taxIdOwner.set(null);
+    }
+  }
+
+  private async checkPastorSlots(isPastor: boolean, districtId: number | null, churchId: number | null): Promise<void> {
+    if (!isPastor || (!districtId && !churchId)) {
+      this.districtPastor.set(null);
+      this.churchPastor.set(null);
+      return;
+    }
+    try {
+      const slots = await this.clientService.pastorSlots(districtId, churchId, this.data.client?.clientId ?? null);
+      this.districtPastor.set(slots.districtPastor);
+      this.churchPastor.set(slots.churchPastor);
+    } catch {
+      this.districtPastor.set(null);
+      this.churchPastor.set(null);
+    }
   }
 
   protected onContinue(): void {

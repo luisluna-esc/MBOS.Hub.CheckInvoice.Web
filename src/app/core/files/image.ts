@@ -38,3 +38,25 @@ export async function shrinkImage(file: File, maxSide = 1200, quality = 0.85): P
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
   return blob ?? file;
 }
+
+/**
+ * Revisa y achica la foto elegida para un producto: tiene que ser una imagen y no pasar de
+ * 5 MB (antes y después de achicarla). Devuelve la foto lista para subir, o la clave del
+ * mensaje de error. La usan el formulario del producto y el botón de la tabla.
+ */
+export async function prepareProductPhoto(file: File): Promise<{ photo: Blob } | { errorKey: string }> {
+  if (!file.type.startsWith('image/')) {
+    return { errorKey: 'products.form.photoInvalid' };
+  }
+  if (file.size > MAX_PRODUCT_IMAGE_BYTES) {
+    return { errorKey: 'products.form.photoTooLarge' };
+  }
+  let photo: Blob;
+  try {
+    photo = await shrinkImage(file);
+  } catch {
+    // El navegador no pudo leerla (archivo dañado o formato que no es imagen de verdad).
+    return { errorKey: 'products.form.photoInvalid' };
+  }
+  return photo.size > MAX_PRODUCT_IMAGE_BYTES ? { errorKey: 'products.form.photoTooLarge' } : { photo };
+}

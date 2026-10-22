@@ -1,8 +1,8 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
-import { map, startWith } from 'rxjs';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
@@ -98,11 +98,7 @@ export class SupplierFormDialog {
   protected readonly form = new FormGroup({
     legalName: new FormControl(this.data.supplier?.legalName ?? '', { nonNullable: true }),
     name: new FormControl(this.data.supplier?.name ?? '', { nonNullable: true }),
-    taxId: new FormControl(this.data.supplier?.taxId ?? '', {
-      nonNullable: true,
-      updateOn: 'blur',
-      asyncValidators: [this.taxIdAvailabilityValidator()],
-    }),
+    taxId: new FormControl(this.data.supplier?.taxId ?? '', { nonNullable: true }),
     countryId: new FormControl(
       this.data.supplier?.countryId ? String(this.data.supplier.countryId) : '',
       { nonNullable: true }
@@ -114,17 +110,25 @@ export class SupplierFormDialog {
     isActive: new FormControl(this.data.supplier?.isActive ?? true, { nonNullable: true }),
   });
 
-  private taxIdAvailabilityValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Promise<ValidationErrors | null> => {
-      const taxId = (control.value as string)?.trim();
-      if (!taxId) {
-        return Promise.resolve(null);
+  /** Quien ya tiene el NIT escrito (null si está libre): se avisa mientras se escribe. */
+  protected readonly taxIdOwner = signal<string | null>(null);
+
+  private async checkTaxId(): Promise<void> {
+    const taxId = this.form.controls.taxId.value.trim();
+    if (!taxId) {
+      this.taxIdOwner.set(null);
+      return;
+    }
+    const excludePartyId = this.linkedParty()?.partyId ?? this.data.supplier?.partyId ?? null;
+    try {
+      const owner = await this.clientService.taxIdOwner(taxId, excludePartyId);
+      // Si mientras tanto cambió lo escrito, esta respuesta ya no vale.
+      if (this.form.controls.taxId.value.trim() === taxId) {
+        this.taxIdOwner.set(owner);
       }
-      const excludePartyId = this.linkedParty()?.partyId ?? this.data.supplier?.partyId ?? null;
-      return this.supplierService
-        .checkTaxIdAvailable(taxId, excludePartyId)
-        .then((available) => (available ? null : { taxIdTaken: true }));
-    };
+    } catch {
+      this.taxIdOwner.set(null);
+    }
   }
 
   protected readonly formInvalid = toSignal(
@@ -148,11 +152,16 @@ export class SupplierFormDialog {
   protected readonly churchMissing = computed(() => this.isAdventist() && !this.districtIdValue());
 
   protected readonly saveDisabled = computed(
-    () => !this.decisionsConfirmed() || this.formInvalid() || this.churchMissing() || this.saving()
+    () =>
+      !this.decisionsConfirmed() || this.formInvalid() || this.churchMissing() || !!this.taxIdOwner() || this.saving()
   );
 
   constructor() {
     void this.loadCatalogs();
+
+    this.form.controls.taxId.valueChanges.pipe(debounceTime(350), takeUntilDestroyed()).subscribe(() => {
+      void this.checkTaxId();
+    });
 
     this.districtId.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
       this.churchId.setValue('');

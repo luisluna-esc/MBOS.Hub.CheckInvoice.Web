@@ -147,6 +147,8 @@ export interface ReceiptFilters {
   supplierName?: string;
   /** N° de nota tal como sale impreso: "15-01" o "15-01-2026". */
   noteNumber?: string;
+  /** Firma: 'updated' (aprobado por el Contador) u 'outdated' (sin aprobar). */
+  reviewState?: 'updated' | 'outdated';
 }
 
 export interface ReturnableIssueLine {

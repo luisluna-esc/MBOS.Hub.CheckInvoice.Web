@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CatalogService } from '../../../core/catalogs/catalog.service';
@@ -14,6 +14,7 @@ import { ExcelDownloadButton, TxtDownloadButton, PdfDownloadButton, downloadBlob
 import { TransfersReportFilters } from '../report.models';
 import { ReportService } from '../report.service';
 import { canPreviewPdf } from '../../../core/files/pdf';
+import { reportReviewStateOptions, toReportReviewState } from '../../../core/reviews/review-state';
 
 /** Transferencias entre almacenes propios: por origen, destino y fechas. */
 @Component({
@@ -34,6 +35,9 @@ export class TransfersReport {
   protected readonly destinationWarehouseId = signal<string | null>(ALL_WAREHOUSES_VALUE);
   protected readonly dateFrom = signal<string | null>(firstDayOfCurrentMonthIso());
   protected readonly dateTo = signal<string | null>(null);
+  /** Estado: "Solo actualizado" (firmado) o "Actualizado y sin actualizar" (todo). */
+  protected readonly reviewState = signal<string | null>('updated');
+  protected readonly reviewStates = computed(() => reportReviewStateOptions((key) => this.languageService.t(key)));
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
@@ -63,6 +67,7 @@ export class TransfersReport {
       this.destinationWarehouseId();
       this.dateFrom();
       this.dateTo();
+      this.reviewState();
       if (isFirstRun) {
         isFirstRun = false;
         return;
@@ -104,6 +109,7 @@ export class TransfersReport {
       destinationWarehouseId: warehouseIdFilter(this.destinationWarehouseId()),
       dateFrom: this.dateFrom() ?? undefined,
       dateTo: this.dateTo() ?? undefined,
+      reviewState: toReportReviewState(this.reviewState()),
     };
   }
 

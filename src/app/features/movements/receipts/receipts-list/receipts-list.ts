@@ -29,6 +29,7 @@ import {
 } from '../../issues/issue-details-dialog/issue-details-dialog';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
+import { reviewStateOptions, toReviewState } from '../../../../core/reviews/review-state';
 
 @Component({
   selector: 'app-receipts-list',
@@ -84,6 +85,13 @@ export class ReceiptsList {
       key: 'invoiceNumber',
       label: this.languageService.t('receipts.filters.invoiceNumber'),
       type: 'text',
+    },
+    {
+      key: 'reviewState',
+      label: this.languageService.t('review.state.label'),
+      type: 'select',
+      placeholder: this.languageService.t('review.state.all'),
+      options: reviewStateOptions((key) => this.languageService.t(key)),
     },
   ]);
 
@@ -274,6 +282,7 @@ export class ReceiptsList {
       supplierName: values['supplierName'] || undefined,
       receiptTypeId: values['receiptTypeId'] ? Number(values['receiptTypeId']) : undefined,
       invoiceNumber: values['invoiceNumber'] ?? undefined,
+      reviewState: toReviewState(values['reviewState']),
     };
     this.pageNumber.set(1);
     void this.load();

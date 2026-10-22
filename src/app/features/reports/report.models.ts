@@ -23,33 +23,40 @@ export interface FinancialDashboardData {
 
 export interface StockReportFilters {
   warehouseId?: number;
-  dateFrom?: string;
   dateTo?: string;
+  /** Estado: solo elige productos (todos sus documentos firmados o no); no cambia cantidades. */
+  reviewState?: 'updated' | 'outdated';
 }
 
 export interface StockByDepartmentReportFilters {
   warehouseId?: number;
   departmentId?: number;
-  dateFrom?: string;
   dateTo?: string;
+  /** Estado: solo elige productos (todos sus documentos firmados o no); no cambia cantidades. */
+  reviewState?: 'updated' | 'outdated';
 }
 
 export interface KardexReportFilters {
   warehouseId?: number;
   dateFrom?: string;
   dateTo?: string;
+  /** Estado: solo elige productos (todos sus documentos firmados o no); no cambia cantidades. */
+  reviewState?: 'updated' | 'outdated';
 }
 
 export interface InventoryCountReportFilters {
   warehouseId?: number;
-  dateFrom?: string;
   dateTo?: string;
+  /** Estado: solo elige productos (todos sus documentos firmados o no); no cambia cantidades. */
+  reviewState?: 'updated' | 'outdated';
 }
 
 export interface IssuesReportFilters {
   warehouseId?: number;
   dateFrom?: string;
   dateTo?: string;
+  /** Firma: 'updated' (verificado) u 'outdated' (sin verificar). */
+  reviewState?: 'updated' | 'outdated';
 }
 
 /** Informe para contabilidad: de salidas o de entradas (ingresos). */
@@ -61,6 +68,8 @@ export interface AccountingReportFilters {
   dateTo?: string;
   /** Solo en entradas. */
   receiptTypeId?: number;
+  /** Firma: 'updated' (verificado) u 'outdated' (sin verificar). */
+  reviewState?: 'updated' | 'outdated';
 }
 
 /** Una fila del archivo para contabilidad (formato "Transaction_Entry"). */
@@ -88,12 +97,16 @@ export interface TransfersReportFilters {
   destinationWarehouseId?: number;
   dateFrom?: string;
   dateTo?: string;
+  /** Firma: 'updated' (aprobado por el Contador) u 'outdated' (sin aprobar). */
+  reviewState?: 'updated' | 'outdated';
 }
 
 export interface ReceiptsReportFilters {
   warehouseId?: number;
   dateFrom?: string;
   dateTo?: string;
+  /** Firma: 'updated' (verificado) u 'outdated' (sin verificar). */
+  reviewState?: 'updated' | 'outdated';
 }
 
 export interface KardexByProductReportFilters {
@@ -101,6 +114,8 @@ export interface KardexByProductReportFilters {
   warehouseId?: number;
   dateFrom?: string;
   dateTo?: string;
+  /** Estado: solo elige productos (todos sus documentos firmados o no); no cambia cantidades. */
+  reviewState?: 'updated' | 'outdated';
 }
 
 export interface PastorFieldReportFilters {

@@ -248,6 +248,12 @@
     "total": "Total (Bs.)"
   },
   "review": {
+    "state": {
+      "label": "Estado",
+      "all": "Todos",
+      "updated": "Actualizado",
+      "outdated": "Desactualizado"
+    },
     "signatureInvalid": "Firma no válida: el documento cambió después de firmado",
     "signatureValid": "Firma válida",
     "signConfirm": "Firmar",
@@ -411,6 +417,9 @@
     }
   },
   "products": {
+    "photoUploadError": "No se pudo subir la foto.",
+    "photoUploaded": "Foto de {{name}} guardada.",
+    "photoUpload": "Subir o cambiar la foto (máx. 5 MB)",
     "title": "Productos",
     "new": "Nuevo producto",
     "filters": {
@@ -1010,6 +1019,10 @@
       "sheetTitle": "Materiales y cantidad por pastor",
       "addMaterial": "Agregar material",
       "sheetHint": "Cada columna es un material. \"Igual para todos\" llena la columna entera; después corriges solo a quien saca otra cantidad. Enter baja al pastor siguiente. Vacío o 0: ese pastor no saca ese material.",
+      "searchInSheet": "Buscar pastor en la tabla",
+      "searchInSheetPlaceholder": "Apellido, nombre o distrito",
+      "showing": "Mostrando {{shown}} de {{total}} pastores",
+      "noPastorMatch": "Ningún pastor coincide con la búsqueda.",
       "sameForAll": "Igual para todos",
       "allPlaceholder": "Cant.",
       "removeMaterial": "Quitar material",
@@ -1079,7 +1092,7 @@
       "description": "Busca al cliente por nombre para continuar con el registro de la salida.",
       "search": "Nombre",
       "taxId": "NIT",
-      "fullName": "Nombre completo",
+      "fullName": "Apellidos y Nombres",
       "email": "Correo",
       "createClient": "Crear cliente"
     },
@@ -1508,7 +1521,7 @@
       "hint": "Entradas menos Salidas más Transferencias, agrupado por Categoría y Subcategoría.",
       "warehouse": "Almacén",
       "dateFrom": "Fecha inicio",
-      "dateTo": "Fecha fin",
+      "dateTo": "Saldo al",
       "selectPrompt": "Selecciona un almacén para generar el reporte.",
       "error": "No se pudo generar el reporte. Intenta de nuevo."
     },
@@ -1519,7 +1532,7 @@
       "warehouse": "Almacén",
       "department": "Categoría",
       "dateFrom": "Fecha inicio",
-      "dateTo": "Fecha fin",
+      "dateTo": "Saldo al",
       "selectPrompt": "Selecciona un almacén para generar el reporte.",
       "error": "No se pudo generar el reporte. Intenta de nuevo."
     },
@@ -1544,7 +1557,7 @@
       "hintResult": "Agrupado por Categoría y Subcategoría, en el almacén y período filtrado.",
       "warehouse": "Almacén",
       "dateFrom": "Fecha inicio",
-      "dateTo": "Fecha fin",
+      "dateTo": "Saldo al",
       "selectPrompt": "Selecciona un almacén para generar el reporte.",
       "error": "No se pudo generar el reporte. Intenta de nuevo."
     },
@@ -1746,7 +1759,7 @@
     },
     "columns": {
       "taxId": "Carnet de Identidad",
-      "name": "Nombre",
+      "name": "Apellidos y Nombres",
       "email": "Correo",
       "mobilePhone": "Celular",
       "status": "Estado"
@@ -1756,9 +1769,12 @@
       "delete": "Eliminar"
     },
     "form": {
+      "churchTaken": "Ya tiene pastor: {{name}}",
+      "districtTaken": "Ya tiene pastor: {{name}}",
+      "taxIdTaken": "Ya registrado: {{name}}",
       "newTitle": "Nuevo cliente",
       "editTitle": "Editar cliente",
-      "name": "Nombres y Apellidos",
+      "name": "Apellidos y Nombres",
       "documentType": "Tipo Documento",
       "taxId": "Carnet de Identidad",
       "complement": "Complemento",

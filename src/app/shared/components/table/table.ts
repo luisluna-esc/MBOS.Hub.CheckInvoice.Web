@@ -34,6 +34,8 @@ export interface TableColumn<T> {
   tooltip?: (value: unknown, row: T, index: number) => string | null;
   /** Columna de foto de producto: miniatura chica que se amplía con un clic. */
   photo?: (row: T) => { productId: number; version: number | null | undefined; name: string };
+  /** Con esto la foto es un botón: al elegir un archivo se llama con la fila y el archivo. */
+  photoUpload?: (row: T, file: File) => void;
 }
 
 export interface TableAction<T> {
@@ -139,6 +141,16 @@ export class Table<T extends Record<string, unknown>> {
     const size = Number(value);
     if (size > 0 && size !== this.pageSize()) {
       this.pageSizeChange.emit(size);
+    }
+  }
+
+  protected onPhotoChosen(row: T, upload: (row: T, file: File) => void, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    // Se limpia para poder volver a elegir el mismo archivo después.
+    input.value = '';
+    if (file) {
+      upload(row, file);
     }
   }
 }

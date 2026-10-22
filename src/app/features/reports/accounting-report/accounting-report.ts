@@ -5,6 +5,7 @@ import { LanguageService } from '../../../core/i18n/language.service';
 import { ToastService } from '../../../core/toast/toast.service';
 import { DatePicker } from '../../../shared/components/date-picker/date-picker';
 import { InfoHint } from '../../../shared/components/info-hint/info-hint';
+import { reportReviewStateOptions, toReportReviewState } from '../../../core/reviews/review-state';
 import { Select, SelectOption } from '../../../shared/components/select/select';
 import { Table, TableColumn } from '../../../shared/components/table/table';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -49,6 +50,9 @@ export class AccountingReport {
   protected readonly receiptTypeId = signal<string | null>(ALL_TYPES_VALUE);
   protected readonly dateFrom = signal<string | null>(firstDayOfCurrentMonthIso());
   protected readonly dateTo = signal<string | null>(null);
+  /** Estado: "Solo actualizado" (firmado) o "Actualizado y sin actualizar" (todo). */
+  protected readonly reviewState = signal<string | null>('updated');
+  protected readonly reviewStates = computed(() => reportReviewStateOptions((key) => this.languageService.t(key)));
 
   protected readonly rows = signal<AccountingEntryRow[]>([]);
   protected readonly loading = signal(false);
@@ -115,6 +119,7 @@ export class AccountingReport {
       warehouseId: warehouseIdFilter(this.warehouseId()),
       dateFrom: this.dateFrom() ?? undefined,
       dateTo: this.dateTo() ?? undefined,
+      reviewState: toReportReviewState(this.reviewState()),
       receiptTypeId: type && type !== ALL_TYPES_VALUE ? Number(type) : undefined,
     };
   }

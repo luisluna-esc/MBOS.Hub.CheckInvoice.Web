@@ -97,6 +97,8 @@ export interface IssueFilters {
   clientName?: string;
   /** N° de salida tal como sale impreso: "S 15-10-26". */
   noteNumber?: string;
+  /** Firma: 'updated' (aprobado por el Contador) u 'outdated' (sin aprobar). */
+  reviewState?: 'updated' | 'outdated';
 }
 
 /** Salida por lote: lo mismo para todos los pastores y la cantidad de cada uno. */

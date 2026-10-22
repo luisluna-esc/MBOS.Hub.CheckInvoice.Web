@@ -248,6 +248,12 @@
     "total": "Total (Bs.)"
   },
   "review": {
+    "state": {
+      "label": "Status",
+      "all": "All",
+      "updated": "Up to date",
+      "outdated": "Outdated"
+    },
     "signatureInvalid": "Invalid signature: the document changed after it was signed",
     "signatureValid": "Valid signature",
     "signConfirm": "Sign",
@@ -411,6 +417,9 @@
     }
   },
   "products": {
+    "photoUploadError": "The photo could not be uploaded.",
+    "photoUploaded": "Photo of {{name}} saved.",
+    "photoUpload": "Upload or change the photo (max. 5 MB)",
     "title": "Products",
     "new": "New product",
     "filters": {
@@ -1010,6 +1019,10 @@
       "sheetTitle": "Materials and quantity per pastor",
       "addMaterial": "Add material",
       "sheetHint": "Each column is a material. \"Same for all\" fills the whole column; then fix only who takes a different quantity. Enter moves to the next pastor. Empty or 0: that pastor does not take that material.",
+      "searchInSheet": "Find pastor in the table",
+      "searchInSheetPlaceholder": "Surname, name or district",
+      "showing": "Showing {{shown}} of {{total}} pastors",
+      "noPastorMatch": "No pastor matches the search.",
       "sameForAll": "Same for all",
       "allPlaceholder": "Qty",
       "removeMaterial": "Remove material",
@@ -1079,7 +1092,7 @@
       "description": "Search for the client by name to continue with the issue registration.",
       "search": "Name",
       "taxId": "Tax ID",
-      "fullName": "Full name",
+      "fullName": "Surnames and names",
       "email": "Email",
       "createClient": "Create client"
     },
@@ -1508,7 +1521,7 @@
       "hint": "Receipts minus Issues plus Transfers, grouped by Category and Sub-category.",
       "warehouse": "Warehouse",
       "dateFrom": "Start date",
-      "dateTo": "End date",
+      "dateTo": "Balance as of",
       "selectPrompt": "Select a warehouse to generate the report.",
       "error": "Could not generate the report. Please try again."
     },
@@ -1519,7 +1532,7 @@
       "warehouse": "Warehouse",
       "department": "Category",
       "dateFrom": "Start date",
-      "dateTo": "End date",
+      "dateTo": "Balance as of",
       "selectPrompt": "Select a warehouse to generate the report.",
       "error": "Could not generate the report. Please try again."
     },
@@ -1544,7 +1557,7 @@
       "hintResult": "Grouped by Category and Sub-category, for the filtered warehouse and period.",
       "warehouse": "Warehouse",
       "dateFrom": "Start date",
-      "dateTo": "End date",
+      "dateTo": "Balance as of",
       "selectPrompt": "Select a warehouse to generate the report.",
       "error": "Could not generate the report. Please try again."
     },
@@ -1746,7 +1759,7 @@
     },
     "columns": {
       "taxId": "ID Number",
-      "name": "Name",
+      "name": "Surnames and names",
       "email": "Email",
       "mobilePhone": "Mobile",
       "status": "Status"
@@ -1756,9 +1769,12 @@
       "delete": "Delete"
     },
     "form": {
+      "churchTaken": "Already has a pastor: {{name}}",
+      "districtTaken": "Already has a pastor: {{name}}",
+      "taxIdTaken": "Already registered: {{name}}",
       "newTitle": "New client",
       "editTitle": "Edit client",
-      "name": "Full name",
+      "name": "Surnames and names",
       "documentType": "Document Type",
       "taxId": "ID Number",
       "complement": "Complement",

@@ -52,4 +52,6 @@ export interface TransferFilters {
   dateFrom?: string;
   dateTo?: string;
   isApproved?: boolean;
+  /** Firma: 'updated' (aprobado por el Contador) u 'outdated' (sin aprobar). */
+  reviewState?: 'updated' | 'outdated';
 }

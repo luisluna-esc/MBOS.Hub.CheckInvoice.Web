@@ -6,7 +6,7 @@ import { map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
-import { MAX_PRODUCT_IMAGE_BYTES, productImageUrl, shrinkImage } from '../../../../core/files/image';
+import { prepareProductPhoto, productImageUrl } from '../../../../core/files/image';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { Checkbox } from '../../../../shared/components/checkbox/checkbox';
@@ -126,21 +126,12 @@ export class ProductFormDialog implements OnDestroy {
     if (!file) {
       return;
     }
-    if (!file.type.startsWith('image/')) {
-      this.toastService.error(this.languageService.t('products.form.photoInvalid'));
+    const result = await prepareProductPhoto(file);
+    if ('errorKey' in result) {
+      this.toastService.error(this.languageService.t(result.errorKey));
       return;
     }
-    // Límite sobre el archivo original (no solo después de achicarlo).
-    if (file.size > MAX_PRODUCT_IMAGE_BYTES) {
-      this.toastService.error(this.languageService.t('products.form.photoTooLarge'));
-      return;
-    }
-
-    const photo = await shrinkImage(file);
-    if (photo.size > MAX_PRODUCT_IMAGE_BYTES) {
-      this.toastService.error(this.languageService.t('products.form.photoTooLarge'));
-      return;
-    }
+    const photo = result.photo;
 
     this.pendingPhoto = photo;
     this.removePhoto = false;
