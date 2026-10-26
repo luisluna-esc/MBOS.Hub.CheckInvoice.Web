@@ -1936,6 +1936,7 @@
     "subtitle": "Material que llegó sin factura. No cuenta en el stock ni en los reportes hasta unirle la factura; ahí se vuelve una entrada con la fecha de recepción y sus entregas, salidas.",
     "new": "Nueva nota sin factura",
     "print": "Imprimir reporte",
+    "printNote": "Imprimir",
     "joinInvoice": "Unir factura ({{count}})",
     "selectHint": "Marca las notas que cubre la factura (del mismo almacén) y pulsa Unir factura.",
     "selectNote": "Marcar la nota {{note}}",
@@ -1994,6 +1995,7 @@
       "removeLine": "Quitar material",
       "save": "Guardar nota",
       "saving": "Guardando…",
+      "saveAndPrint": "Guardar e imprimir",
       "success": "Nota registrada",
       "error": "No se pudo guardar la nota"
     },

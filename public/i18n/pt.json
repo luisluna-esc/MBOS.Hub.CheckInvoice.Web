@@ -1936,6 +1936,7 @@
     "subtitle": "Material que chegou sem fatura. Não conta no estoque nem nos relatórios até anexar a fatura; então vira uma entrada com a data de recebimento, e suas entregas, saídas.",
     "new": "Nova nota sem fatura",
     "print": "Imprimir relatório",
+    "printNote": "Imprimir",
     "joinInvoice": "Anexar fatura ({{count}})",
     "selectHint": "Marque as notas cobertas pela fatura (do mesmo almoxarifado) e clique em Anexar fatura.",
     "selectNote": "Marcar a nota {{note}}",
@@ -1994,6 +1995,7 @@
       "removeLine": "Remover material",
       "save": "Salvar nota",
       "saving": "Salvando…",
+      "saveAndPrint": "Salvar e imprimir",
       "success": "Nota registrada",
       "error": "Não foi possível salvar a nota"
     },

@@ -57,6 +57,11 @@ export class PendingReceiptService {
     return firstValueFrom(this.http.post<PostResponse>(`${this.baseUrl}/validate`, request));
   }
 
+  /** Formulario de Recepción de una nota. */
+  notePdf(pendingReceiptId: number): Promise<Blob> {
+    return firstValueFrom(this.http.get(`${this.baseUrl}/${pendingReceiptId}/pdf`, { responseType: 'blob' }));
+  }
+
   pdf(filters: PendingReceiptFilters): Promise<Blob> {
     return firstValueFrom(this.http.get(`${this.baseUrl}/pdf`, { params: clean(filters), responseType: 'blob' }));
   }

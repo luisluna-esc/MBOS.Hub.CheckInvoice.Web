@@ -6,6 +6,7 @@ import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { minIssueDateIso } from '../../../../core/catalogs/current-warehouse-periods';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
 import { localDateIso } from '../../../../core/dates/calendar-date';
+import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 import { DialogService } from '../../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../../core/i18n/language.service';
 import { ToastService } from '../../../../core/toast/toast.service';
@@ -108,11 +109,13 @@ export class PendingReceiptCreate {
     this.lines.update((lines) => lines.filter((_, i) => i !== index));
   }
 
-  protected async save(): Promise<void> {
+  protected async save(print = false): Promise<void> {
     if (!this.canSave()) {
       return;
     }
     this.saving.set(true);
+    // La pestaña se abre antes de cualquier await para que el navegador no la bloquee.
+    const tab = print ? openPdfTab() : null;
     try {
       const response = await this.service.create({
         warehouseId: Number(this.warehouseId()),
@@ -122,8 +125,16 @@ export class PendingReceiptCreate {
         details: this.lines().map((line) => ({ productId: line.product.productId, quantity: line.quantity ?? 0 })),
       });
       this.toastService.success(response.messages[0]?.description ?? this.languageService.t('pendingReceipts.form.success'));
+      if (tab) {
+        try {
+          showPdf(await this.service.notePdf(response.id), `formulario-recepcion-${response.id}.pdf`, tab);
+        } catch {
+          tab.close();
+        }
+      }
       void this.router.navigate(['/receipts/pending']);
     } catch (error) {
+      tab?.close();
       this.toastService.error(this.languageService.t('pendingReceipts.form.error'), apiError(error));
     } finally {
       this.saving.set(false);

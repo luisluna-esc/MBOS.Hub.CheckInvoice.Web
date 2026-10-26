@@ -186,6 +186,16 @@ export class PendingReceiptsList {
     });
   }
 
+  protected async printNote(note: PendingReceipt): Promise<void> {
+    const tab = openPdfTab();
+    try {
+      showPdf(await this.service.notePdf(note.pendingReceiptId), `formulario-recepcion-${note.noteNumber}.pdf`, tab);
+    } catch (error) {
+      tab?.close();
+      this.toastService.error(this.languageService.t('pendingReceipts.loadError'), apiError(error));
+    }
+  }
+
   protected async printReport(): Promise<void> {
     const tab = openPdfTab();
     try {

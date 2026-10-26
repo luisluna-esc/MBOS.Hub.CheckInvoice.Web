@@ -130,8 +130,15 @@
               }
             </div>
           </div>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-background"
+              (click)="printNote(note)"
+            >
+              {{ 'pendingReceipts.printNote' | translate }}
+            </button>
           @if (canManage() && note.status === 'pendiente') {
-            <div class="flex flex-wrap gap-2">
               @if (hasRemaining(note)) {
                 <a
                   [routerLink]="['/receipts/pending', note.pendingReceiptId, 'deliver']"
@@ -149,8 +156,8 @@
                   {{ 'pendingReceipts.void' | translate }}
                 </button>
               }
-            </div>
           }
+          </div>
         </header>
 
         <div class="w-full overflow-x-auto rounded-md border border-border">

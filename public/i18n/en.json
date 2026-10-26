@@ -1936,6 +1936,7 @@
     "subtitle": "Material that arrived without an invoice. It does not count in stock or reports until the invoice is attached; then it becomes a receipt dated on arrival, and its deliveries become issues.",
     "new": "New note without invoice",
     "print": "Print report",
+    "printNote": "Print",
     "joinInvoice": "Attach invoice ({{count}})",
     "selectHint": "Check the notes covered by the invoice (same warehouse) and press Attach invoice.",
     "selectNote": "Check note {{note}}",
@@ -1994,6 +1995,7 @@
       "removeLine": "Remove material",
       "save": "Save note",
       "saving": "Saving…",
+      "saveAndPrint": "Save and print",
       "success": "Note saved",
       "error": "Could not save the note"
     },
