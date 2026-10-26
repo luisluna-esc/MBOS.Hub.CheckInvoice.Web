@@ -5,6 +5,7 @@ import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
 import { MenuTreeItem } from '../../../../core/menu/menu.models';
 import { MenuService } from '../../../../core/menu/menu.service';
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -53,6 +54,7 @@ function menuRoutes(items: MenuTreeItem[]): string[] {
 export class ReceiptMotives {
   private readonly catalogService = inject(CatalogService);
   private readonly menuService = inject(MenuService);
+  private readonly languageService = inject(LanguageService);
 
   private readonly receiptTypes = signal<CatalogItem[]>([]);
   protected readonly loading = signal(true);
@@ -60,7 +62,7 @@ export class ReceiptMotives {
   // Se recalcula cuando llega el menú del usuario (Inventario Inicial depende de él).
   protected readonly motives = computed<ReceiptMotive[]>(() => {
     const allowedRoutes = new Set(menuRoutes(this.menuService.items()));
-    return this.receiptTypes().flatMap((type) => {
+    const types = this.receiptTypes().flatMap<ReceiptMotive>((type) => {
       const form = FORMS[normalize(type.name)];
       if (form?.key === 'initial' && !allowedRoutes.has(form.route)) {
         return [];
@@ -76,6 +78,16 @@ export class ReceiptMotives {
         },
       ];
     });
+    // Sin factura todavía: una nota pendiente que no toca el stock ni los reportes hasta unirle la factura.
+    const pending: ReceiptMotive = {
+      key: 'pending',
+      title: this.languageService.t('receipts.motives.pending.title'),
+      descriptionKey: 'pending',
+      icon: 'receipt',
+      route: '/receipts/pending/new',
+      queryParams: null,
+    };
+    return types.length > 0 ? [...types, pending] : [];
   });
 
   constructor() {

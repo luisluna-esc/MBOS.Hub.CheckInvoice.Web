@@ -1,0 +1,179 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+      [attr.aria-label]="'dialog.cancel' | translate"
+      (click)="cancel()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+        <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <div class="flex flex-col">
+      <h1 class="text-xl font-semibold text-foreground">
+        {{ 'pendingReceipts.delivery.title' | translate: { note: note()?.noteNumber ?? '' } }}
+      </h1>
+      <p class="text-sm text-muted-foreground">{{ 'pendingReceipts.delivery.hint' | translate }}</p>
+    </div>
+  </div>
+
+  @if (note(); as current) {
+    <div class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <app-date-picker
+          [label]="'pendingReceipts.delivery.date' | translate"
+          [required]="true"
+          [min]="minDateIso()"
+          [max]="todayIso"
+          [ngModel]="deliveryDate()"
+          (ngModelChange)="deliveryDate.set($event)"
+        />
+        <app-select
+          [label]="'pendingReceipts.delivery.issueType' | translate"
+          [options]="issueTypeOptions()"
+          [ngModel]="issueTypeId()"
+          (ngModelChange)="issueTypeId.set($event)"
+        />
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-foreground">{{ 'pendingReceipts.delivery.client' | translate }}</label>
+          @if (client(); as picked) {
+            <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
+              <span class="min-w-0 truncate text-foreground">{{ picked.name }}</span>
+              <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="client.set(null)">
+                {{ 'pendingReceipts.form.changeSupplier' | translate }}
+              </button>
+            </div>
+          } @else {
+            <app-party-search-input mode="client" (picked)="client.set($event)" />
+          }
+        </div>
+      </div>
+      <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
+        {{ 'pendingReceipts.form.description' | translate }}
+        <input
+          type="text"
+          maxlength="255"
+          class="rounded-md border border-border bg-background px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+          [value]="description()"
+          (input)="description.set($any($event.target).value)"
+        />
+      </label>
+
+      <div class="flex flex-col gap-3 rounded-md border border-border bg-background p-3">
+        <app-checkbox [ngModel]="sendToAccountsReceivable()" (ngModelChange)="sendToAccountsReceivable.set($event)">
+          {{ 'issues.form.sendToAccountsReceivable' | translate }}
+        </app-checkbox>
+        @if (sendToAccountsReceivable()) {
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <app-select
+              [label]="'issues.form.paymentType' | translate"
+              [options]="paymentTypeOptions()"
+              [required]="true"
+              [ngModel]="paymentType()"
+              (ngModelChange)="paymentType.set($event)"
+            />
+            <app-date-picker [label]="'issues.form.dueDate' | translate" [ngModel]="dueDate()" (ngModelChange)="dueDate.set($event)" />
+            <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
+              {{ 'issues.form.paymentDetail' | translate }}
+              <input
+                type="text"
+                maxlength="255"
+                class="rounded-md border border-border bg-surface px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                [value]="paymentDetail()"
+                (input)="paymentDetail.set($any($event.target).value)"
+              />
+            </label>
+          </div>
+          @if (!client()) {
+            <p class="text-xs text-danger">{{ 'issues.form.clientRequiredForAr' | translate }}</p>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+      <h3 class="text-sm font-semibold text-foreground">{{ 'pendingReceipts.delivery.lines' | translate }}</h3>
+      <div class="w-full overflow-x-auto rounded-md border border-border">
+        <table class="w-full divide-y divide-border text-sm">
+          <thead class="bg-background">
+            <tr>
+              <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'pendingReceipts.columns.material' | translate }}</th>
+              <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.columns.received' | translate }}</th>
+              <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.columns.delivered' | translate }}</th>
+              <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.columns.remaining' | translate }}</th>
+              <th class="w-48 px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.delivery.quantity' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border">
+            @for (line of current.lines; track line.productId) {
+              <tr>
+                <td class="px-3 py-2">
+                  <div class="flex items-center gap-2">
+                    <app-product-photo [productId]="line.productId" [version]="line.imageVersion" [name]="line.name" />
+                    <span class="text-foreground">
+                      @if (line.code) {
+                        <span class="text-muted-foreground">{{ line.code }} · </span>
+                      }
+                      {{ line.name }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">{{ line.received | number: '1.0-2' }}</td>
+                <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">{{ line.delivered | number: '1.0-2' }}</td>
+                <td class="px-3 py-2 text-right font-semibold tabular-nums text-foreground">{{ line.remaining | number: '1.0-2' }}</td>
+                <td class="px-3 py-2">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      class="w-full rounded-md border bg-background px-3 py-2 text-right text-sm text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-accent"
+                      [class.border-danger]="(quantities()[line.productId] ?? 0) > line.remaining"
+                      [class.border-border]="(quantities()[line.productId] ?? 0) <= line.remaining"
+                      [attr.aria-label]="line.name"
+                      [disabled]="line.remaining <= 0"
+                      [value]="quantities()[line.productId] ?? ''"
+                      (input)="onQuantity(line.productId, $event)"
+                    />
+                    <button
+                      type="button"
+                      class="shrink-0 rounded-md border border-border px-2 py-1.5 text-xs text-foreground transition-colors hover:bg-background disabled:opacity-50"
+                      [disabled]="line.remaining <= 0"
+                      (click)="fill(line.productId, line.remaining)"
+                    >
+                      {{ 'pendingReceipts.delivery.all' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (exceeding().length > 0) {
+        <p class="text-xs text-danger">{{ 'pendingReceipts.delivery.exceeds' | translate }}</p>
+      }
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <button
+        type="button"
+        class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-background"
+        (click)="cancel()"
+      >
+        {{ 'dialog.cancel' | translate }}
+      </button>
+      <button
+        type="button"
+        class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
+        [class.cursor-not-allowed]="!canSave()"
+        [class.opacity-50]="!canSave()"
+        [disabled]="!canSave()"
+        (click)="save()"
+      >
+        {{ (saving() ? 'pendingReceipts.form.saving' : 'pendingReceipts.delivery.save') | translate }}
+      </button>
+    </div>
+  }
+</div>

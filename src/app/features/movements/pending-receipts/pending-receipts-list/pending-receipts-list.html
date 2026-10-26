@@ -1,0 +1,243 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div class="flex flex-col gap-1">
+      <h1 class="text-xl font-semibold text-foreground">{{ 'pendingReceipts.title' | translate }}</h1>
+      <p class="text-sm text-muted-foreground">{{ 'pendingReceipts.subtitle' | translate }}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button
+        type="button"
+        class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-background"
+        (click)="printReport()"
+      >
+        {{ 'pendingReceipts.print' | translate }}
+      </button>
+      @if (canManage()) {
+        <a routerLink="/receipts/pending/new" class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors">
+          {{ 'pendingReceipts.new' | translate }}
+        </a>
+      }
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 items-start gap-3 rounded-lg border border-border bg-surface p-4 sm:grid-cols-2 lg:grid-cols-4">
+    <app-select
+      [label]="'pendingReceipts.filters.warehouse' | translate"
+      [options]="warehouseOptions()"
+      [ngModel]="warehouseId()"
+      (ngModelChange)="warehouseId.set($event); search()"
+    />
+    <app-select
+      [label]="'pendingReceipts.filters.status' | translate"
+      [options]="statusOptions()"
+      [ngModel]="status()"
+      (ngModelChange)="status.set($event); search()"
+    />
+    <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
+      {{ 'pendingReceipts.filters.noteNumber' | translate }}
+      <input
+        type="search"
+        class="rounded-md border border-border bg-background px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+        placeholder="NP 3-10-26"
+        [value]="noteNumber()"
+        (input)="noteNumber.set($any($event.target).value)"
+        (keydown.enter)="search()"
+      />
+    </label>
+    <button
+      type="button"
+      class="rounded-md border sm:mt-6 border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-background"
+      (click)="search()"
+    >
+      {{ 'pendingReceipts.filters.search' | translate }}
+    </button>
+  </div>
+
+  @if (canManage() && status() === 'pendiente' && notes().length > 0) {
+    <!-- Unir factura: se marcan las notas que cubre (del mismo almacén). -->
+    <div class="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-accent bg-surface p-3">
+      <p class="text-sm text-muted-foreground">{{ 'pendingReceipts.selectHint' | translate }}</p>
+      <button
+        type="button"
+        class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
+        [class.cursor-not-allowed]="selected().size === 0"
+        [class.opacity-50]="selected().size === 0"
+        [disabled]="selected().size === 0"
+        (click)="joinInvoice()"
+      >
+        {{ 'pendingReceipts.joinInvoice' | translate: { count: selected().size } }}
+      </button>
+    </div>
+  }
+
+  @if (loading()) {
+    <app-loading-skeleton variant="cards" [count]="3" />
+  } @else if (notes().length === 0) {
+    <p class="rounded-lg border border-dashed border-border bg-surface p-6 text-center text-sm text-muted-foreground">
+      {{ 'pendingReceipts.empty' | translate }}
+    </p>
+  } @else {
+    @for (note of notes(); track note.pendingReceiptId) {
+      <article
+        class="flex flex-col gap-3 rounded-lg border bg-surface p-4"
+        [class.border-accent]="selected().has(note.pendingReceiptId)"
+        [class.border-border]="!selected().has(note.pendingReceiptId)"
+      >
+        <header class="flex flex-wrap items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            @if (canManage() && note.status === 'pendiente') {
+              <input
+                type="checkbox"
+                class="mt-1 size-4 accent-[var(--color-accent)]"
+                [attr.aria-label]="'pendingReceipts.selectNote' | translate: { note: note.noteNumber }"
+                [checked]="selected().has(note.pendingReceiptId)"
+                [disabled]="!canSelect(note)"
+                (change)="toggle(note)"
+              />
+            }
+            <div class="flex flex-col gap-0.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-base font-semibold text-foreground">{{ note.noteNumber }}</span>
+                <span
+                  class="rounded-full px-2 py-0.5 text-xs font-medium"
+                  [class.bg-warning/15]="note.status === 'pendiente'"
+                  [class.text-warning]="note.status === 'pendiente'"
+                  [class.bg-success/15]="note.status === 'validado'"
+                  [class.text-success]="note.status === 'validado'"
+                  [class.bg-danger/10]="note.status === 'anulado'"
+                  [class.text-danger]="note.status === 'anulado'"
+                >
+                  {{ 'pendingReceipts.status.' + note.status | translate }}
+                </span>
+              </div>
+              <span class="text-xs text-muted-foreground">
+                {{ 'pendingReceipts.receivedOn' | translate: { date: day(note.receivedDate) } }}
+                · {{ note.warehouseName ?? '—' }}
+                @if (note.supplierName) {
+                  · {{ note.supplierName }}
+                }
+                @if (note.createdByName) {
+                  · {{ 'pendingReceipts.createdBy' | translate: { name: note.createdByName } }}
+                }
+              </span>
+              @if (note.description) {
+                <span class="text-xs italic text-muted-foreground">{{ note.description }}</span>
+              }
+              @if (note.status === 'validado') {
+                <span class="text-xs text-success">
+                  {{ 'pendingReceipts.validatedAs' | translate: { receipt: note.receiptNoteNumber ?? '', invoice: note.invoiceNumber ?? '—' } }}
+                </span>
+              }
+            </div>
+          </div>
+          @if (canManage() && note.status === 'pendiente') {
+            <div class="flex flex-wrap gap-2">
+              @if (hasRemaining(note)) {
+                <a
+                  [routerLink]="['/receipts/pending', note.pendingReceiptId, 'deliver']"
+                  class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-background"
+                >
+                  {{ 'pendingReceipts.deliver' | translate }}
+                </a>
+              }
+              @if (activeDeliveries(note).length === 0) {
+                <button
+                  type="button"
+                  class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-danger transition-colors hover:bg-danger/10"
+                  (click)="voidNote(note)"
+                >
+                  {{ 'pendingReceipts.void' | translate }}
+                </button>
+              }
+            </div>
+          }
+        </header>
+
+        <div class="w-full overflow-x-auto rounded-md border border-border">
+          <table class="w-full divide-y divide-border text-sm">
+            <thead class="bg-background">
+              <tr>
+                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'pendingReceipts.columns.material' | translate }}</th>
+                <th class="w-28 px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.columns.received' | translate }}</th>
+                <th class="w-28 px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.columns.delivered' | translate }}</th>
+                <th class="w-28 px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.columns.remaining' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (line of note.lines; track line.productId) {
+                <tr>
+                  <td class="px-3 py-2 text-foreground">
+                    @if (line.code) {
+                      <span class="text-muted-foreground">{{ line.code }} · </span>
+                    }
+                    {{ line.name }}
+                    @if (line.unitMeasure) {
+                      <span class="text-xs text-muted-foreground">({{ line.unitMeasure }})</span>
+                    }
+                  </td>
+                  <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">{{ line.received | number: '1.0-2' }}</td>
+                  <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">{{ line.delivered | number: '1.0-2' }}</td>
+                  <td class="px-3 py-2 text-right font-semibold tabular-nums text-foreground">{{ line.remaining | number: '1.0-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (note.deliveries.length > 0) {
+          <div class="flex flex-col gap-1">
+            <h4 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{{ 'pendingReceipts.deliveries' | translate }}</h4>
+            <ul class="flex flex-col divide-y divide-border rounded-md border border-border">
+              @for (delivery of note.deliveries; track delivery.pendingDeliveryId) {
+                <li class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm" [class.opacity-50]="delivery.isVoided">
+                  <span [class.line-through]="delivery.isVoided">
+                    <span class="text-muted-foreground">{{ day(delivery.deliveryDate) }}</span>
+                    · <span class="font-medium text-foreground">{{ delivery.clientName ?? delivery.issueTypeName ?? ('pendingReceipts.delivery.noClient' | translate) }}</span>
+                    · {{ deliveryText(delivery) }}
+                    @if (delivery.issueNumber) {
+                      <span class="text-xs text-success">· {{ 'pendingReceipts.issueAs' | translate: { issue: delivery.issueNumber } }}</span>
+                    }
+                    @if (delivery.isVoided) {
+                      <span class="text-xs text-danger">· {{ 'pendingReceipts.status.anulado' | translate }}</span>
+                    }
+                  </span>
+                  @if (canManage() && note.status === 'pendiente' && !delivery.isVoided) {
+                    <button
+                      type="button"
+                      class="text-xs font-medium text-danger hover:underline"
+                      (click)="voidDelivery(note, delivery)"
+                    >
+                      {{ 'pendingReceipts.voidDelivery' | translate }}
+                    </button>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </article>
+    }
+
+    @if (totalPages() > 1) {
+      <div class="flex items-center justify-end gap-2 text-sm">
+        <button
+          type="button"
+          class="rounded-md border border-border px-3 py-1.5 text-foreground transition-colors hover:bg-background disabled:opacity-50"
+          [disabled]="pageNumber() === 1"
+          (click)="goToPage(pageNumber() - 1)"
+        >
+          ‹
+        </button>
+        <span class="text-muted-foreground">{{ pageNumber() }} / {{ totalPages() }}</span>
+        <button
+          type="button"
+          class="rounded-md border border-border px-3 py-1.5 text-foreground transition-colors hover:bg-background disabled:opacity-50"
+          [disabled]="pageNumber() === totalPages()"
+          (click)="goToPage(pageNumber() + 1)"
+        >
+          ›
+        </button>
+      </div>
+    }
+  }
+</div>

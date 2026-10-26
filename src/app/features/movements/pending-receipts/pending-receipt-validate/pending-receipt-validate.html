@@ -1,0 +1,184 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+      [attr.aria-label]="'dialog.cancel' | translate"
+      (click)="cancel()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-5">
+        <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <div class="flex flex-col">
+      <h1 class="text-xl font-semibold text-foreground">
+        {{ 'pendingReceipts.validate.title' | translate }}
+        @for (note of notes(); track note.pendingReceiptId; let last = $last) {
+          <span class="font-normal text-muted-foreground">{{ note.noteNumber }}{{ last ? '' : ',' }}</span>
+        }
+      </h1>
+      <p class="text-sm text-muted-foreground">{{ 'pendingReceipts.validate.hint' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <app-select
+        [label]="'pendingReceipts.validate.purchaseType' | translate"
+        [options]="purchaseTypeOptions()"
+        [required]="true"
+        [ngModel]="receiptTypeId()"
+        (ngModelChange)="receiptTypeId.set($event)"
+      />
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-foreground">{{ 'pendingReceipts.validate.supplier' | translate }} *</label>
+        @if (supplier(); as picked) {
+          <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
+            <span class="min-w-0 truncate text-foreground">{{ picked.name }}</span>
+            <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="supplier.set(null)">
+              {{ 'pendingReceipts.form.changeSupplier' | translate }}
+            </button>
+          </div>
+        } @else {
+          <app-party-search-input mode="supplier" (picked)="onSupplierPicked($event)" />
+        }
+      </div>
+      <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
+        {{ (withRetention() ? 'pendingReceipts.validate.ci' : 'pendingReceipts.validate.nit') | translate }} *
+        <input
+          type="text"
+          maxlength="20"
+          class="rounded-md border border-border bg-background px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+          [value]="taxId()"
+          (input)="taxId.set($any($event.target).value)"
+        />
+      </label>
+      <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
+        {{ (withRetention() ? 'pendingReceipts.validate.documentNumber' : 'pendingReceipts.validate.invoiceNumber') | translate }}{{ withRetention() ? '' : ' *' }}
+        <input
+          type="text"
+          maxlength="50"
+          class="rounded-md border border-border bg-background px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+          [value]="invoiceNumber()"
+          (input)="invoiceNumber.set($any($event.target).value)"
+        />
+      </label>
+      <app-date-picker
+        [label]="'pendingReceipts.validate.purchaseDate' | translate"
+        [required]="true"
+        [max]="todayIso"
+        [ngModel]="purchaseDate()"
+        (ngModelChange)="purchaseDate.set($event)"
+      />
+      <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
+        {{ 'pendingReceipts.validate.invoiceTotal' | translate }} *
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          class="rounded-md border border-border bg-background px-3 py-2 text-right text-sm font-normal text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-accent"
+          [value]="invoiceTotal() ?? ''"
+          (input)="onTotal($event)"
+        />
+      </label>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+    <h3 class="text-sm font-semibold text-foreground">{{ 'pendingReceipts.validate.lines' | translate }}</h3>
+    <p class="text-xs text-muted-foreground">{{ 'pendingReceipts.validate.linesHint' | translate }}</p>
+    <div class="w-full overflow-x-auto rounded-md border border-border">
+      <table class="w-full divide-y divide-border text-sm">
+        <thead class="bg-background">
+          <tr>
+            <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'pendingReceipts.validate.note' | translate }}</th>
+            <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'pendingReceipts.columns.material' | translate }}</th>
+            <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.columns.received' | translate }}</th>
+            <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.columns.delivered' | translate }}</th>
+            <th class="w-36 px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.validate.quantity' | translate }}</th>
+            <th class="w-36 px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.validate.unitPrice' | translate }}</th>
+            <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.validate.subtotal' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          @for (line of lines(); track line.key) {
+            <tr>
+              <td class="whitespace-nowrap px-3 py-2 text-muted-foreground">{{ line.noteNumber }}</td>
+              <td class="px-3 py-2 text-foreground">
+                @if (line.code) {
+                  <span class="text-muted-foreground">{{ line.code }} · </span>
+                }
+                {{ line.name }}
+              </td>
+              <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">{{ line.received | number: '1.0-2' }}</td>
+              <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">{{ line.delivered | number: '1.0-2' }}</td>
+              <td class="px-3 py-2">
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-right text-sm text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-accent"
+                  [class.border-danger]="(line.quantity ?? 0) < line.delivered || (line.quantity ?? 0) <= 0"
+                  [class.border-border]="(line.quantity ?? 0) >= line.delivered && (line.quantity ?? 0) > 0"
+                  [attr.aria-label]="line.name"
+                  [value]="line.quantity ?? ''"
+                  (input)="onLine(line.key, 'quantity', $event)"
+                />
+              </td>
+              <td class="px-3 py-2">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="w-full rounded-md border border-border bg-background px-3 py-2 text-right text-sm text-foreground tabular-nums focus:outline-none focus:ring-2 focus:ring-accent"
+                  [attr.aria-label]="line.name"
+                  [value]="line.unitPrice ?? ''"
+                  (input)="onLine(line.key, 'unitPrice', $event)"
+                />
+              </td>
+              <td class="whitespace-nowrap px-3 py-2 text-right tabular-nums text-foreground">
+                {{ (line.quantity ?? 0) * (line.unitPrice ?? 0) | number: '1.2-2' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+        <tfoot class="bg-background">
+          <tr>
+            <td colspan="6" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'pendingReceipts.validate.sum' | translate }}</td>
+            <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums" [class.text-danger]="mismatch()" [class.text-foreground]="!mismatch()">
+              {{ linesTotal() | number: '1.2-2' }}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    @if (mismatch()) {
+      <p class="text-xs text-danger">
+        {{ 'pendingReceipts.validate.mismatch' | translate: { lines: (linesTotal() | number: '1.2-2') ?? '', invoice: (invoiceTotal() | number: '1.2-2') ?? '' } }}
+      </p>
+    }
+    @if (invalidLines().length > 0) {
+      <p class="text-xs text-muted-foreground">{{ 'pendingReceipts.validate.linesMissing' | translate }}</p>
+    }
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <button
+      type="button"
+      class="rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-background"
+      (click)="cancel()"
+    >
+      {{ 'dialog.cancel' | translate }}
+    </button>
+    <button
+      type="button"
+      class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors"
+      [class.cursor-not-allowed]="!canSave()"
+      [class.opacity-50]="!canSave()"
+      [disabled]="!canSave()"
+      (click)="save()"
+    >
+      {{ (saving() ? 'pendingReceipts.form.saving' : 'pendingReceipts.validate.save') | translate }}
+    </button>
+  </div>
+</div>

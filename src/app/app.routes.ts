@@ -22,6 +22,34 @@ export const routes: Routes = [
           import('./features/movements/receipts/receipt-motives/receipt-motives').then((m) => m.ReceiptMotives),
       },
       {
+        path: 'receipts/pending',
+        loadComponent: () =>
+          import('./features/movements/pending-receipts/pending-receipts-list/pending-receipts-list').then(
+            (m) => m.PendingReceiptsList
+          ),
+      },
+      {
+        path: 'receipts/pending/new',
+        loadComponent: () =>
+          import('./features/movements/pending-receipts/pending-receipt-create/pending-receipt-create').then(
+            (m) => m.PendingReceiptCreate
+          ),
+      },
+      {
+        path: 'receipts/pending/validate',
+        loadComponent: () =>
+          import('./features/movements/pending-receipts/pending-receipt-validate/pending-receipt-validate').then(
+            (m) => m.PendingReceiptValidate
+          ),
+      },
+      {
+        path: 'receipts/pending/:id/deliver',
+        loadComponent: () =>
+          import('./features/movements/pending-receipts/pending-delivery-create/pending-delivery-create').then(
+            (m) => m.PendingDeliveryCreate
+          ),
+      },
+      {
         path: 'receipts/view/:id',
         loadComponent: () =>
           import('./features/movements/receipts/receipt-view/receipt-view').then((m) => m.ReceiptView),
