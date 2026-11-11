@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
@@ -9,6 +9,7 @@ import { LanguageService } from '../../../../core/i18n/language.service';
 import { Icon } from '../../../../shared/components/icon/icon';
 import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { ReceiptDraft, ReceiptDraftStore } from '../receipt-draft';
 
 interface ReceiptMotive {
   key: string;
@@ -55,6 +56,24 @@ export class ReceiptMotives {
   private readonly catalogService = inject(CatalogService);
   private readonly menuService = inject(MenuService);
   private readonly languageService = inject(LanguageService);
+  private readonly router = inject(Router);
+  private readonly draftStore = inject(ReceiptDraftStore);
+
+  /** Entrada sin terminar (se guardó sola): se ofrece continuarla o descartarla. */
+  protected readonly draft = signal<ReceiptDraft | null>(this.draftStore.get());
+
+  protected draftSummary(draft: ReceiptDraft): { date: string; count: number; supplier: string } {
+    return { date: new Date(draft.savedAt).toLocaleString(), count: draft.lines.length, supplier: draft.supplierName ?? '—' };
+  }
+
+  protected continueDraft(draft: ReceiptDraft): void {
+    void this.router.navigate([draft.route], { state: { restoreDraft: true } });
+  }
+
+  protected discardDraft(): void {
+    this.draftStore.clear();
+    this.draft.set(null);
+  }
 
   private readonly receiptTypes = signal<CatalogItem[]>([]);
   protected readonly loading = signal(true);

@@ -16,6 +16,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Dialog } from '../dialog/dialog';
 import { Input as AppInput } from '../input/input';
 import { LoadingSkeleton } from '../loading-skeleton/loading-skeleton';
+import { DocumentLines } from '../document-lines/document-lines';
 
 export interface DocumentReviewDialogData {
   type: ReviewDocumentType;
@@ -32,7 +33,7 @@ export interface DocumentReviewDialogData {
  */
 @Component({
   selector: 'app-document-review-dialog',
-  imports: [LoadingSkeleton, Dialog, AppInput, ReactiveFormsModule, TranslatePipe],
+  imports: [LoadingSkeleton, Dialog, AppInput, ReactiveFormsModule, TranslatePipe, DocumentLines],
   templateUrl: './document-review-dialog.html',
 })
 export class DocumentReviewDialog {

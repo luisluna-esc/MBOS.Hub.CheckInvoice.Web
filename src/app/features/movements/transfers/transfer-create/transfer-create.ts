@@ -175,9 +175,9 @@ export class TransferCreate {
     }
     this.headerForm.disable();
     this.headerConfirmed.set(true);
-    if (this.detailsArray.length === 0) {
-      this.addProduct();
-    } else {
+    // La ventana de productos se abre solo con "Agregar producto": abrirla sola al continuar
+    // confundía.
+    if (this.detailsArray.length > 0) {
       this.lineProducts().forEach((product, index) => {
         if (product) {
           void this.loadStock(index, product.productId);

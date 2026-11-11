@@ -302,7 +302,7 @@ export class IssueCreate {
 
   private async loadCatalogs(): Promise<void> {
     const [warehouses, issueTypes, printTypes, departments, documentTypes] = await settleCatalogs([
-      this.catalogService.getActiveWarehouses(),
+      this.catalogService.getWarehousesWithStock(),
       this.catalogService.getIssueTypes(),
       this.catalogService.getPrintTypes(),
       this.catalogService.getDepartments(),
@@ -399,9 +399,9 @@ export class IssueCreate {
     }
     this.headerForm.disable();
     this.headerConfirmed.set(true);
-    if (this.detailsArray.length === 0) {
-      this.addProduct();
-    } else {
+    // La ventana de productos se abre solo con "Agregar producto": abrirla sola al continuar
+    // confundía.
+    if (this.detailsArray.length > 0) {
       // Si venían de "Editar" y cambiaron el almacén, el stock de las líneas ya cargadas
       // quedó calculado contra el almacén anterior: se refresca contra el actual.
       this.lineProducts().forEach((product, index) => {

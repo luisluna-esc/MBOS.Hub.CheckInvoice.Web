@@ -9,6 +9,11 @@ import {
   DocumentReviewDialogData,
 } from '../../shared/components/document-review-dialog/document-review-dialog';
 import { ErrorState } from '../../shared/components/error-state/error-state';
+import {
+  ReviewQueueDialog,
+  ReviewQueueDialogData,
+  ReviewQueueItem,
+} from '../../shared/components/review-queue-dialog/review-queue-dialog';
 import { FilterField, Filters, FilterValues } from '../../shared/components/filters/filters';
 import { Table, TableAction, TableColumn } from '../../shared/components/table/table';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -149,6 +154,53 @@ export class Inbox {
     }
     return actions;
   });
+
+  /** En Pendientes, si hay algo para verificar o aprobar, se puede revisar uno por uno y firmar juntos. */
+  protected readonly canReviewQueue = computed(() => {
+    const counts = this.counts();
+    return this.tab() === 'pending' && ((counts?.byKind.toVerify ?? 0) > 0 || (counts?.byKind.toApprove ?? 0) > 0);
+  });
+  protected readonly openingQueue = signal(false);
+
+  /** Abre la revisión uno por uno con los pendientes de firma (hasta 100, con los filtros puestos). */
+  protected async openReviewQueue(): Promise<void> {
+    this.openingQueue.set(true);
+    try {
+      const result = await this.inboxService.list({
+        tab: 'pending',
+        kind: this.kind() === 'toVerify' || this.kind() === 'toApprove' ? this.kind() : null,
+        documentType: this.filters['documentType'],
+        search: this.filters['search'],
+        dateFrom: this.filters['dateFrom'],
+        dateTo: this.filters['dateTo'],
+        pageNumber: 1,
+        pageSize: 100,
+      });
+      const items: ReviewQueueItem[] = result.items
+        .filter((row) => row.kind === 'toVerify' || row.kind === 'toApprove')
+        .map((row) => ({
+          type: row.documentType,
+          id: row.documentId,
+          title: this.documentLabel(row),
+          detail: row.detail,
+          action: row.kind === 'toVerify' ? 'verify' : 'approve',
+        }));
+      if (items.length === 0) {
+        return;
+      }
+      const ref = this.dialogService.open<boolean, ReviewQueueDialogData, ReviewQueueDialog>(ReviewQueueDialog, {
+        data: { items },
+      });
+      ref.closed.subscribe((changed) => {
+        if (changed) {
+          void this.inboxService.refresh();
+          void this.load();
+        }
+      });
+    } finally {
+      this.openingQueue.set(false);
+    }
+  }
 
   constructor() {
     void this.inboxService.refresh();

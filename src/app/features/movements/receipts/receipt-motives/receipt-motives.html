@@ -4,6 +4,32 @@
     <p class="text-sm text-muted-foreground">{{ 'receipts.motives.question' | translate }}</p>
   </div>
 
+  <!-- Entrada sin terminar: continuar o descartar (si se descarta, desaparece). -->
+  @if (draft(); as pending) {
+    <div class="flex flex-col gap-3 rounded-lg border border-accent bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between" role="status">
+      <div class="flex flex-col gap-0.5">
+        <span class="text-sm font-semibold text-foreground">{{ 'receipts.draft.title' | translate }}</span>
+        <span class="text-xs text-muted-foreground">{{ 'receipts.draft.detail' | translate: draftSummary(pending) }}</span>
+      </div>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-background"
+          (click)="discardDraft()"
+        >
+          {{ 'receipts.draft.discard' | translate }}
+        </button>
+        <button
+          type="button"
+          class="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground transition-colors"
+          (click)="continueDraft(pending)"
+        >
+          {{ 'receipts.draft.continue' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
   @if (loading()) {
     <app-loading-skeleton variant="cards" [count]="6" />
   } @else {

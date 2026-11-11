@@ -1,5 +1,6 @@
 {
   "issueEdits": {
+    "back": "Voltar",
     "title": "Correções de Saídas",
     "description": "Corrigir uma saída já registrada passa por aqui: quem pede explica o motivo e o Contador aprova ou rejeita.",
     "statusFilter": "Status",
@@ -22,7 +23,8 @@
     "notes": "Observação (obrigatória para rejeitar)",
     "approve": "Aprovar correção",
     "reject": "Rejeitar",
-    "waiting": "Aguardando a revisão do Contador.",
+    "waiting": "Aguardando a revisão do Contador, do Tesoureiro ou do M-BOS.",
+    "ownRequest": "Você a solicitou: outro usuário a revisa (Contador, Tesoureiro ou M-BOS), nunca quem solicitou.",
     "notesRequired": "Escreva por que rejeita.",
     "approved": "Correção aprovada. A saída fica como uma nova versão e precisa ser assinada novamente.",
     "rejected": "Correção rejeitada.",
@@ -98,6 +100,7 @@
     }
   },
   "receiptEdits": {
+    "back": "Voltar",
     "title": "Correções de Entradas",
     "description": "Corrigir uma entrada já registrada passa por aqui: quem pede explica o motivo e o Contador aprova ou rejeita. Se produtos da entrada já saíram, a quantidade não pode ficar abaixo do que já saiu.",
     "statusFilter": "Estado",
@@ -120,7 +123,8 @@
     "notes": "Observação (obrigatória para rejeitar)",
     "approve": "Aprovar correção",
     "reject": "Rejeitar",
-    "waiting": "Aguardando a revisão do Contador.",
+    "waiting": "Aguardando a revisão do Contador, do Tesoureiro ou do M-BOS.",
+    "ownRequest": "Você a solicitou: outro usuário a revisa (Contador, Tesoureiro ou M-BOS), nunca quem solicitou.",
     "notesRequired": "Escreva por que a rejeita.",
     "approved": "Correção aprovada. A nota vira uma nova versão e precisa ser assinada de novo.",
     "rejected": "Correção rejeitada.",
@@ -138,7 +142,10 @@
     "toast": {
       "unread": "Você tem {{count}} resposta(s) não lida(s) na Caixa de entrada",
       "new": "Chegaram {{count}} resposta(s) nova(s) na Caixa de entrada",
-      "hint": "Veja na Caixa de entrada, aba Respostas."
+      "hint": "Veja na Caixa de entrada, aba Respostas.",
+      "copy": "Copiar N°",
+      "copied": "Copiado",
+      "copyHint": "Copie o número e procure no Histórico ou na Caixa de entrada."
     },
     "alreadySeen": "Já vista",
     "newMark": "Nova",
@@ -152,7 +159,8 @@
     "actions": {
       "open": "Abrir",
       "markSeen": "Marcar como vista",
-      "markAllSeen": "Marcar tudo como visto"
+      "markAllSeen": "Marcar tudo como visto",
+      "reviewQueue": "Revisar um por um"
     },
     "columns": {
       "kind": "Tipo",
@@ -257,6 +265,7 @@
     "signatureInvalid": "Assinatura inválida: o documento mudou depois de assinado",
     "signatureValid": "Assinatura válida",
     "signConfirm": "Assinar",
+    "batchNote": "Saída em lote: esta assinatura vale para as {{count}} saídas do lote, uma por pastor.",
     "notesOptional": "Observação (opcional)",
     "passwordRequired": "Digite sua senha para assinar.",
     "password": "Sua senha (assinatura digital)",
@@ -310,7 +319,32 @@
     "verified": "Documento verificado.",
     "approved": "Documento aprovado.",
     "reopened": "Documento reaberto.",
-    "error": "Não foi possível concluir a revisão."
+    "error": "Não foi possível concluir a revisão.",
+    "lines": {
+      "title": "Produtos do documento",
+      "viewPdf": "Ver PDF",
+      "empty": "Este documento não tem produtos.",
+      "product": "Produto",
+      "quantity": "Quantidade",
+      "unitCost": "Custo unitário",
+      "total": "Total",
+      "sum": "Total",
+      "pdfError": "Não foi possível abrir o PDF."
+    },
+    "queue": {
+      "title": "Revisar um por um",
+      "accepted": "Aceitos: {{count}} de {{total}}",
+      "clear": "Limpar seleção",
+      "position": "Documento {{current}} de {{total}}",
+      "previous": "Anterior",
+      "skip": "Próximo sem aceitar",
+      "accept": "Aceitar",
+      "acceptNext": "Aceitar e próximo",
+      "unaccept": "Remover aceitação",
+      "signed": "Assinado",
+      "signAll": "Assinar os {{count}} aceitos",
+      "signedCount": "{{count}} documentos foram assinados."
+    }
   },
   "productPhoto": {
     "enlarge": "Ver foto",
@@ -415,7 +449,8 @@
     "columns": {
       "code": "Código",
       "name": "Nome"
-    }
+    },
+    "create": "Criar produto"
   },
   "products": {
     "photoUploadError": "Não foi possível enviar a foto.",
@@ -460,7 +495,10 @@
       "mediaType": "Unidade de Medida",
       "isActive": "Ativo",
       "success": "Produto salvo com sucesso.",
-      "error": "Não foi possível salvar o produto."
+      "error": "Não foi possível salvar o produto.",
+      "similarTitle": "Já existem produtos com nome parecido:",
+      "similarHint": "Verifique se não é um destes. O mesmo nome não pode se repetir no mesmo departamento e subdepartamento.",
+      "useExisting": "Usar este"
     },
     "delete": {
       "title": "Excluir produto",
@@ -586,24 +624,50 @@
       "success": "Excluído com sucesso.",
       "error": "Não foi possível excluir. Pode estar em uso em outro registro."
     },
-    "countries": { "title": "Países" },
-    "documentTypes": { "title": "Tipos de Documento" },
-    "churchTypes": { "title": "Tipos de Igreja" },
-    "printTypes": { "title": "Tipos de Impressão" },
-    "issueTypes": { "title": "Tipos de Saída" },
-    "receiptTypes": { "title": "Tipos de Entrada" },
-    "mediaTypes": { "title": "Tipos de Mídia" },
+    "countries": {
+      "title": "Países"
+    },
+    "documentTypes": {
+      "title": "Tipos de Documento"
+    },
+    "churchTypes": {
+      "title": "Tipos de Igreja"
+    },
+    "printTypes": {
+      "title": "Tipos de Impressão"
+    },
+    "issueTypes": {
+      "title": "Tipos de Saída"
+    },
+    "receiptTypes": {
+      "title": "Tipos de Entrada"
+    },
+    "mediaTypes": {
+      "title": "Tipos de Mídia"
+    },
     "departments": {
       "title": "Departamentos",
       "code": "Código contábil",
       "codeHint": "SubAccountCode do arquivo para contabilidade (ex. 106)."
     },
-    "subDepartments": { "title": "Subdepartamentos" },
-    "missions": { "title": "Missões" },
-    "provinces": { "title": "Províncias" },
-    "specialCases": { "title": "Casos Especiais" },
-    "voidReasons": { "title": "Motivos de Anulação" },
-    "warehouses": { "title": "Armazéns" },
+    "subDepartments": {
+      "title": "Subdepartamentos"
+    },
+    "missions": {
+      "title": "Missões"
+    },
+    "provinces": {
+      "title": "Províncias"
+    },
+    "specialCases": {
+      "title": "Casos Especiais"
+    },
+    "voidReasons": {
+      "title": "Motivos de Anulação"
+    },
+    "warehouses": {
+      "title": "Armazéns"
+    },
     "warehousePeriods": {
       "title": "Períodos de Armazém",
       "nameHint": "Formato \"YYYY-MM\" (ex. 2026-10). O sistema usa este valor como data para saber quais períodos estão vigentes."
@@ -997,6 +1061,12 @@
       "grandTotal": "Total geral (Bs.)",
       "totalQuantity": "Total de unidades",
       "summary": "{{count}} produtos"
+    },
+    "draft": {
+      "title": "Você tem uma entrada não concluída",
+      "detail": "De {{supplier}}, com {{count}} produtos, salva em {{date}}. Deseja continuá-la?",
+      "continue": "Continuar",
+      "discard": "Descartar"
     }
   },
   "issues": {
@@ -1428,7 +1498,34 @@
       "success": "Pagamento registrado.",
       "error": "Não foi possível registrar o pagamento."
     },
-    "detailError": "Não foi possível gerar o comprovante da conta a receber."
+    "detailError": "Não foi possível gerar o comprovante da conta a receber.",
+    "views": {
+      "pastor": "Por pastor",
+      "issue": "Por número de saída"
+    },
+    "pastor": {
+      "search": "Buscar pastor",
+      "prompt": "Escolha um pastor para ver tudo o que deve, de todas as saídas.",
+      "empty": "Este pastor não tem contas a receber.",
+      "showPaid": "Ver também as saídas pagas",
+      "total": "Total",
+      "totalPaid": "Total pago",
+      "totalPending": "Total pendente",
+      "pay": "Registrar pagamento",
+      "allPaid": "Não deve nada.",
+      "nothingPayable": "O pendente está atrasado: é descontado do salário.",
+      "lateNote": "{{count}} saídas estão atrasadas: não se cobram no Caixa, são descontadas do salário.",
+      "issue": "Saída",
+      "linePaid": "Pago",
+      "linePartial": "Pago parcial",
+      "linePending": "Pendente",
+      "noProducts": "Conta sem produtos. Pendente: {{amount}} Bs.",
+      "payTitle": "Pagamento do pastor",
+      "payHint": "Pendente de todas as saídas: {{amount}} Bs. Escreva quanto paga de cada material.",
+      "payAll": "Pagar tudo",
+      "paid": "Pagamento registrado em {{count}} saídas.",
+      "loadError": "Não foi possível carregar as contas do pastor."
+    }
   },
   "portal": {
     "myAccount": {
@@ -1522,17 +1619,20 @@
     },
     "stock": {
       "title": "Estoque - Armazém",
-      "description": "Movimento líquido por produto no período, valorizado ao custo médio.",
+      "description": "Saldo de cada produto na data final, valorizado ao custo médio. Com data inicial, só aparecem os que tiveram movimento desde então. Produtos sem saldo não aparecem.",
       "hint": "Entradas menos Saídas mais Transferências, agrupado por Categoria e Subcategoria.",
       "warehouse": "Armazém",
       "dateFrom": "Data inicial",
-      "dateTo": "Saldo em",
+      "dateTo": "Data final",
       "selectPrompt": "Selecione um armazém para gerar o relatório.",
       "error": "Não foi possível gerar o relatório. Tente novamente."
     },
     "stockByDepartment": {
+      "view": "Visualização",
+      "viewDetail": "Detalhe por produto",
+      "viewSummary": "Resumo por departamento",
       "title": "Estoque - Departamento",
-      "description": "Movimento líquido por produto no período, valorizado ao custo médio.",
+      "description": "Saldo de cada produto na data final, valorizado ao custo médio. Com data inicial, só aparecem os que tiveram movimento desde então. Produtos sem saldo não aparecem.",
       "hint": "Entradas menos Saídas mais Transferências, agrupado por Subcategoria e filtrável por Categoria.",
       "warehouse": "Armazém",
       "department": "Categoria",
@@ -1622,8 +1722,8 @@
       "status": "Status",
       "openStatuses": "A cobrar (pendentes e atrasadas)",
       "allStatuses": "Todos os status",
-      "dateFrom": "Data limite de",
-      "dateTo": "Data limite até",
+      "dateFrom": "De",
+      "dateTo": "Corte em",
       "error": "Não foi possível gerar o relatório. Tente novamente."
     }
   },
@@ -1870,8 +1970,8 @@
     },
     "form": {
       "alreadyClientHint": "Já está cadastrado em Clientes como \"{{name}}\".",
-      "clientHint": "Se escolher Sim, também fica cadastrado em Clientes com o mesmo nome, NIT, e-mail e celular, para poder fazer saídas. Não depende da pergunta da igreja.",
-      "clientQuestion": "Também fazemos saídas para ele (é cliente)?",
+      "clientHint": "Se escolher Sim, também é cadastrado em Clientes com os mesmos dados.",
+      "clientQuestion": "Também é cliente?",
       "clientSectionTitle": "Cliente",
       "churchHint": "Só indica a qual distrito e igreja este fornecedor pertence. Não o cadastra como cliente.",
       "churchQuestion": "É membro da Igreja Adventista?",
@@ -1976,7 +2076,7 @@
       "material": "Material",
       "received": "Recebido",
       "delivered": "Entregue",
-      "remaining": "Resta"
+      "remaining": "Saldo"
     },
     "form": {
       "title": "Nota de entrada sem fatura",

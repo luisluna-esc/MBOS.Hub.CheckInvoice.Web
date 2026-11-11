@@ -1,0 +1,76 @@
+<app-dialog
+  [title]="('accountReceivables.pastor.payTitle' | translate) + ' · ' + data.pastorName"
+  size="large"
+  [saveDisabled]="saveDisabled()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p class="text-sm text-muted-foreground">
+        {{ 'accountReceivables.pastor.payHint' | translate: { amount: pendingTotal.toFixed(2) } }}
+      </p>
+      <button type="button" class="text-sm font-medium text-accent hover:underline" (click)="fillAll()">
+        {{ 'accountReceivables.pastor.payAll' | translate }}
+      </button>
+    </div>
+
+    <div class="w-full overflow-x-auto rounded-md border border-border">
+      <table class="w-full min-w-full divide-y divide-border text-sm">
+        <thead class="bg-background">
+          <tr>
+            <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'accountReceivables.pastor.issue' | translate }}</th>
+            <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'accountReceivables.payment.product' | translate }}</th>
+            <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.lineRemaining' | translate }}</th>
+            <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'accountReceivables.payment.lineAmount' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          @for (row of rows; track row.line.issueDetailId) {
+            <tr>
+              <td class="whitespace-nowrap px-3 py-2 align-middle text-muted-foreground">{{ row.noteNumber }}</td>
+              <td class="px-3 py-2 align-middle text-foreground">{{ row.line.name }}</td>
+              <td class="whitespace-nowrap px-3 py-2 text-right align-middle font-medium tabular-nums text-foreground">
+                {{ row.line.remainingAmount | number: '1.2-2' }}
+              </td>
+              <td class="w-56 px-3 py-2 align-middle">
+                <div class="flex items-center gap-2">
+                  <div class="min-w-0 flex-1">
+                    <app-input
+                      [formControl]="row.control"
+                      type="number"
+                      errorDisplay="icon"
+                      placeholder="0.00"
+                      [min]="0"
+                      [decimals]="2"
+                      [externalError]="lineError(row)"
+                    />
+                  </div>
+                  <button type="button" class="shrink-0 text-xs font-medium text-accent hover:underline" (click)="fill(row)">
+                    {{ 'accountReceivables.payment.fillRemaining' | translate }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+        <tfoot class="bg-background">
+          <tr>
+            <td colspan="3" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.depositTotal' | translate }}</td>
+            <td class="whitespace-nowrap px-3 py-2 font-semibold tabular-nums text-foreground">{{ depositTotal() | number: '1.2-2' }} Bs.</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <app-select
+        formControlName="paymentMethod"
+        [label]="'accountReceivables.payment.method' | translate"
+        [options]="paymentMethodOptions"
+        [required]="true"
+      />
+      <app-input formControlName="notes" [label]="'accountReceivables.payment.notes' | translate" [maxLength]="255" />
+    </div>
+  </form>
+</app-dialog>

@@ -31,7 +31,9 @@ export class StockReport {
 
   protected readonly warehouses = signal<SelectOption[]>([]);
   protected readonly warehouseId = signal<string | null>(ALL_WAREHOUSES_VALUE);
-  /** Saldo a esta fecha (vacía: hoy). Es un saldo, así que no hay fecha de inicio. */
+  /** Opcional: vacía da el saldo acumulado; con fecha, el movimiento neto del periodo. */
+  protected readonly dateFrom = signal<string | null>(null);
+  /** Fecha fin (vacía: hoy). */
   protected readonly dateTo = signal<string | null>(null);
   /** Estado: "Solo actualizado" (firmado) o "Actualizado y sin actualizar" (todo). */
   protected readonly reviewState = signal<string | null>('updated');
@@ -64,6 +66,7 @@ export class StockReport {
     let isFirstRun = true;
     effect(() => {
       this.warehouseId();
+      this.dateFrom();
       this.dateTo();
       this.reviewState();
       if (isFirstRun) {
@@ -109,6 +112,7 @@ export class StockReport {
   private currentFilters(): StockReportFilters {
     return {
       warehouseId: warehouseIdFilter(this.warehouseId()),
+      dateFrom: this.dateFrom() ?? undefined,
       dateTo: this.dateTo() ?? undefined,
       reviewState: toReportReviewState(this.reviewState()),
     };

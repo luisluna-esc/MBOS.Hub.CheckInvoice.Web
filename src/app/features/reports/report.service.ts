@@ -83,6 +83,16 @@ export class ReportService {
     );
   }
 
+  /** Resumen por Departamento: solo el saldo final de cada departamento (PDF o Excel). */
+  async getDepartmentSummaryBlob(filters: StockByDepartmentReportFilters, format: 'pdf' | 'excel'): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${environment.apiUrl}/Reports/department-summary/${format}`, {
+        params: this.cleanFilters(filters),
+        responseType: 'blob'
+      })
+    );
+  }
+
   async getStockByDepartmentReportTxtBlob(filters: StockByDepartmentReportFilters): Promise<Blob> {
     return firstValueFrom(
       this.http.get(`${environment.apiUrl}/Reports/stock-by-department/txt`, {

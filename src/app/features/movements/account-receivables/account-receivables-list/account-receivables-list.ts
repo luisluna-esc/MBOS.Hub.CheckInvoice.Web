@@ -14,12 +14,13 @@ import { ReportService } from '../../../reports/report.service';
 import { AccountReceivable, AccountReceivableFilters } from '../account-receivable.models';
 import { AccountReceivableService } from '../account-receivable.service';
 import { RegisterPaymentDialog, RegisterPaymentDialogData } from '../register-payment-dialog/register-payment-dialog';
+import { PastorAccount } from '../pastor-account/pastor-account';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 
 @Component({
   selector: 'app-account-receivables-list',
-  imports: [Filters, Table, ErrorState, TranslatePipe],
+  imports: [Filters, Table, ErrorState, TranslatePipe, PastorAccount],
   templateUrl: './account-receivables-list.html',
 })
 export class AccountReceivablesList {
@@ -39,6 +40,9 @@ export class AccountReceivablesList {
   protected readonly loading = signal(false);
 
   protected readonly clients = signal<CatalogItem[]>([]);
+
+  /** Por pastor: todo lo que debe un pastor junto, y se paga desde ahí. Por salida: una fila por salida. */
+  protected readonly view = signal<'pastor' | 'issue'>('pastor');
 
   private currentFilters: AccountReceivableFilters = {};
 

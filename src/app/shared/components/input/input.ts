@@ -58,13 +58,17 @@ export class Input implements ControlValueAccessor {
     if (this.type() === 'password') {
       return this.showPassword() ? 'text' : 'password';
     }
-    if (this.type() === 'number') {
+    // El type="email" nativo del navegador no deja escribir letras con acento, la ñ ni otros
+    // caracteres especiales: se usa "text" y el formato lo valida emailValidator.
+    if (this.type() === 'number' || this.type() === 'email') {
       return 'text';
     }
     return this.type();
   });
 
-  protected readonly inputMode = computed<'decimal' | null>(() => (this.type() === 'number' ? 'decimal' : null));
+  protected readonly inputMode = computed<'decimal' | 'email' | null>(() =>
+    this.type() === 'number' ? 'decimal' : this.type() === 'email' ? 'email' : null
+  );
 
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
@@ -90,7 +94,7 @@ export class Input implements ControlValueAccessor {
           validators.push(Validators.maxLength(this.maxLength()!));
         }
         if (this.type() === 'email') {
-          validators.push(Validators.email);
+          validators.push(emailValidator);
         }
         if (this.patternRule() !== null) {
           validators.push(Validators.pattern(this.patternRule()!));
@@ -200,4 +204,16 @@ export class Input implements ControlValueAccessor {
         return null;
     }
   }
+}
+
+/**
+ * Correo: algo@algo.algo, sin espacios. Acepta acentos, ñ y caracteres especiales (el
+ * Validators.email de Angular solo acepta letras sin acento).
+ */
+function emailValidator(control: AbstractControl): ValidationErrors | null {
+  const value = String(control.value ?? '').trim();
+  if (!value) {
+    return null;
+  }
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(value) ? null : { email: true };
 }

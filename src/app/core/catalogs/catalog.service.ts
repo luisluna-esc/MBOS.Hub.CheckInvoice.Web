@@ -43,6 +43,15 @@ export class CatalogService {
     );
   }
 
+  /** Almacenes activos que tienen productos en stock: en Salidas el almacén sale solo cuando tiene qué sacar. */
+  getWarehousesWithStock(): Promise<CatalogItem[]> {
+    return this.fetch<{ warehouseId: number; name: string }>(
+      'Warehouses',
+      (item) => ({ id: item.warehouseId, name: item.name }),
+      { isActive: 'true', withStock: 'true' }
+    );
+  }
+
   getSuppliers(): Promise<CatalogItem[]> {
     return this.fetch<{ supplierId: number; name: string }>('Suppliers', (item) => ({
       id: item.supplierId,

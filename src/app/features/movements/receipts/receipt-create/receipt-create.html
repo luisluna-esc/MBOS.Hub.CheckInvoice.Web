@@ -22,6 +22,32 @@
     </h1>
   </div>
 
+  <!-- Entrada sin terminar: se ofrece seguirla o descartarla (si se descarta, desaparece). -->
+  @if (pendingDraft(); as draft) {
+    <div class="flex flex-col gap-3 rounded-lg border border-accent bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between" role="status">
+      <div class="flex flex-col gap-0.5">
+        <span class="text-sm font-semibold text-foreground">{{ 'receipts.draft.title' | translate }}</span>
+        <span class="text-xs text-muted-foreground">{{ 'receipts.draft.detail' | translate: draftSummary(draft) }}</span>
+      </div>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-background"
+          (click)="discardDraft()"
+        >
+          {{ 'receipts.draft.discard' | translate }}
+        </button>
+        <button
+          type="button"
+          class="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground transition-colors"
+          (click)="continueDraft()"
+        >
+          {{ 'receipts.draft.continue' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
   <form [formGroup]="headerForm" class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <div class="flex flex-col gap-1">

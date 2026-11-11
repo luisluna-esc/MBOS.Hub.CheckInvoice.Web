@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../auth/auth.service';
 import { LanguageService } from '../i18n/language.service';
-import { ToastService } from '../toast/toast.service';
+import { ToastItem, ToastService } from '../toast/toast.service';
 import { PagedResult } from '../http/paged-result';
 import { ReviewDocumentType } from '../review/document-review';
 
@@ -62,6 +62,8 @@ export interface InboxQuery {
 export const INBOX_ROLES = ['Auxiliar Contador', 'Contador', 'Tesorero', 'M-BOS'];
 
 const REFRESH_MS = 30_000;
+/** Documentos que nombra el toast de respuestas nuevas (el resto, en el Buzón). */
+const MAX_TOAST_ITEMS = 5;
 
 /**
  * Buzón: el contador del menú (pendientes + sin leer) se refresca cada 30 segundos. Cuando llegan
@@ -101,25 +103,55 @@ export class InboxService {
     try {
       const response = await firstValueFrom(this.http.get<{ data: InboxCounts }>(`${environment.apiUrl}/Inbox/counts`));
       this.counts.set(response.data);
-      this.notifyNewAnswers(response.data.unread);
+      void this.notifyNewAnswers(response.data.unread);
       return response.data;
     } catch {
       return this.counts();
     }
   }
 
-  /** Toast al entrar con respuestas sin leer, y cada vez que llegan respuestas nuevas. */
-  private notifyNewAnswers(unread: number): void {
+  /**
+   * Toast al entrar con respuestas sin leer, y cada vez que llegan respuestas nuevas. Nombra los
+   * documentos (hasta 5) con un botón para copiar su N°: así se pega directo en el buscador del
+   * Historial o del Buzón sin tener que recordarlo.
+   */
+  private async notifyNewAnswers(unread: number): Promise<void> {
     const previous = this.lastUnread;
     this.lastUnread = unread;
-    if (unread > 0 && (previous === null || unread > previous)) {
-      const count = previous === null ? unread : unread - previous;
-      this.toastService.info(
-        this.languageService.t(previous === null ? 'inbox.toast.unread' : 'inbox.toast.new', { count }),
-        this.languageService.t('inbox.toast.hint'),
-        8000
-      );
+    if (!(unread > 0 && (previous === null || unread > previous))) {
+      return;
     }
+    const count = previous === null ? unread : unread - previous;
+    const message = this.languageService.t(previous === null ? 'inbox.toast.unread' : 'inbox.toast.new', { count });
+
+    let items: ToastItem[] = [];
+    try {
+      const page = await this.list({ tab: 'answers', pageNumber: 1, pageSize: Math.min(count, MAX_TOAST_ITEMS) });
+      items = page.items.filter((row) => !row.seen).map((row) => this.toToastItem(row));
+    } catch {
+      items = [];
+    }
+
+    if (items.length === 0) {
+      this.toastService.info(message, this.languageService.t('inbox.toast.hint'), 8000);
+      return;
+    }
+    const more = count - items.length;
+    const description = more > 0
+      ? `${this.languageService.t('inbox.toast.copyHint')} ${this.languageService.t('inbox.more', { count: more })}`
+      : this.languageService.t('inbox.toast.copyHint');
+    this.toastService.withItems('info', message, items, description);
+  }
+
+  private toToastItem(row: InboxRow): ToastItem {
+    const t = (key: string) => this.languageService.t(key);
+    // Anulaciones y correcciones dicen cómo terminaron; "aprobado"/"rechazado" ya lo dice el tipo.
+    const result = row.status && !row.kind.startsWith('review') ? `, ${t(`inbox.results.${row.status}`)}` : '';
+    return {
+      label: `${t(`inbox.kinds.${row.kind}`)}${result}`,
+      document: `${t(`inbox.documentTypes.${row.documentType}`)} ${row.number}`,
+      copy: row.number,
+    };
   }
 
   async list(query: InboxQuery): Promise<PagedResult<InboxRow>> {

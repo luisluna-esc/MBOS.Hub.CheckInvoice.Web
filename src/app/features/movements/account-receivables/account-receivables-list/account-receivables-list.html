@@ -1,6 +1,27 @@
 <div class="flex flex-col gap-4">
   <h1 class="text-xl font-semibold text-foreground">{{ 'accountReceivables.title' | translate }}</h1>
 
+  <!-- Dos formas de ver lo que se debe: por pastor (todo junto) o por número de salida. -->
+  <div class="flex w-fit gap-1 rounded-lg border border-border bg-surface p-1" role="tablist">
+    @for (option of ['pastor', 'issue']; track option) {
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="view() === option"
+        class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors"
+        [class.bg-primary]="view() === option"
+        [class.text-primary-foreground]="view() === option"
+        [class.text-foreground]="view() !== option"
+        (click)="view.set($any(option))"
+      >
+        {{ 'accountReceivables.views.' + option | translate }}
+      </button>
+    }
+  </div>
+
+  @if (view() === 'pastor') {
+    <app-pastor-account [clients]="clients()" [canManage]="canManage()" />
+  } @else {
   <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
 
   @if (errorCode()) {
@@ -20,5 +41,6 @@
       (pageChange)="onPageChange($event)"
       (pageSizeChange)="onPageSizeChange($event)"
     />
+  }
   }
 </div>

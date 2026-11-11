@@ -1,7 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
+import { DialogService } from '../../../core/dialog/dialog.service';
 import { LanguageService } from '../../../core/i18n/language.service';
+import {
+  ProductFormDialog,
+  ProductFormDialogData,
+  ProductFormDialogResult,
+} from '../../../features/catalogs/products/product-form-dialog/product-form-dialog';
 import { Product, ProductFilters } from '../../../features/catalogs/products/product.models';
 import { ProductService } from '../../../features/catalogs/products/product.service';
 import { Dialog } from '../dialog/dialog';
@@ -30,6 +36,8 @@ export interface ProductPickerData {
   inStockOnly?: boolean;
   /** Productos que ya están en otra línea del documento: se muestran pero no se pueden elegir. */
   excludedProductIds?: number[];
+  /** Entradas: botón "Crear producto" para dar de alta uno que todavía no existe. */
+  allowCreate?: boolean;
 }
 
 @Component({
@@ -42,6 +50,9 @@ export class ProductPickerDialog {
   private readonly data = inject<ProductPickerData | null>(DIALOG_DATA, { optional: true });
   private readonly productService = inject(ProductService);
   private readonly languageService = inject(LanguageService);
+  private readonly dialogService = inject(DialogService);
+  protected readonly allowCreate = !!this.data?.allowCreate;
+  private lastSearch = '';
 
   private readonly warehouseId = this.data?.warehouseId ?? undefined;
   private readonly inStock = this.data?.inStockOnly ? true : undefined;
@@ -142,6 +153,7 @@ export class ProductPickerDialog {
   }
 
   protected onSearch(values: FilterValues): void {
+    this.lastSearch = values['searchCriteria'] ?? '';
     this.currentFilters = {
       searchCriteria: values['searchCriteria'] ?? undefined,
       code: values['code'] ?? undefined,
@@ -185,5 +197,38 @@ export class ProductPickerDialog {
 
   protected close(): void {
     this.dialogRef.close(null);
+  }
+
+  /**
+   * Atajo para dar de alta un producto que no existe. El formulario muestra los que ya existen
+   * con un nombre parecido (se puede usar uno de esos) y el sistema no deja repetir el mismo
+   * nombre en el mismo departamento y subdepartamento. El producto queda elegido en la línea.
+   */
+  protected createProduct(): void {
+    const ref = this.dialogService.open<ProductFormDialogResult, ProductFormDialogData, ProductFormDialog>(ProductFormDialog, {
+      data: { product: null, initialName: this.lastSearch, allowPickExisting: true },
+    });
+    ref.closed.subscribe((result) => {
+      if (result && typeof result === 'object') {
+        void this.selectById(result.productId);
+      }
+    });
+  }
+
+  private async selectById(productId: number): Promise<void> {
+    const code = String(productId).padStart(5, '0');
+    const found = (await this.productService.list(1, 5, { code })).items.find((item) => item.productId === productId);
+    if (!found) {
+      void this.load();
+      return;
+    }
+    if (this.isExcluded(found)) {
+      // Ya está en otra línea del documento: se muestra en la lista con su aviso.
+      this.currentFilters = { code, warehouseId: this.warehouseId, inStock: this.inStock };
+      this.pageNumber.set(1);
+      void this.load();
+      return;
+    }
+    this.onRowSelected(found);
   }
 }

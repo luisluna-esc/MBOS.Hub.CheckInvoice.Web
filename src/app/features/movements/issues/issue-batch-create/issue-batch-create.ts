@@ -176,7 +176,7 @@ export class IssueBatchCreate {
 
   private async loadCatalogs(): Promise<void> {
     const [warehouses, printTypes] = await settleCatalogs([
-      this.catalogService.getActiveWarehouses(),
+      this.catalogService.getWarehousesWithStock(),
       this.catalogService.getPrintTypes(),
     ]);
     this.warehouses.set(warehouses);
@@ -198,9 +198,8 @@ export class IssueBatchCreate {
     this.headerConfirmed.set(true);
     // El stock de los materiales ya elegidos se vuelve a leer por si cambió el almacén.
     this.materials().forEach((material) => void this.loadStock(material.product.productId));
-    if (this.materials().length === 0) {
-      setTimeout(() => this.addMaterial());
-    }
+    // La ventana de productos se abre solo con "Agregar material": abrirla sola al continuar
+    // confundía.
   }
 
   protected onEditHeader(): void {

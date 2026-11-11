@@ -8,7 +8,18 @@
   (cancel)="close()"
 >
   <div class="flex flex-col gap-4">
-    <p class="text-xs text-muted-foreground">{{ 'productPicker.keyboardHint' | translate }}</p>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p class="text-xs text-muted-foreground">{{ 'productPicker.keyboardHint' | translate }}</p>
+      @if (allowCreate) {
+        <button
+          type="button"
+          class="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-background"
+          (click)="createProduct()"
+        >
+          + {{ 'productPicker.create' | translate }}
+        </button>
+      }
+    </div>
     <app-filters [fields]="filterFields()" (search)="onSearch($event)" (clear)="onClear()" />
 
     @if (errorCode()) {

@@ -42,6 +42,14 @@
         }
       </div>
 
+      <!-- Un lote se firma una sola vez: verificar, aprobar o rechazar firma todas sus salidas
+           (reabrir es de una sola salida, por eso no se avisa cuando está aprobado). -->
+      @if ((current.batchCount ?? 1) > 1 && current.status !== 'aprobado' && !current.isVoided) {
+        <div class="rounded-lg border border-border bg-surface p-3 text-sm text-foreground">
+          {{ 'review.batchNote' | translate: { count: current.batchCount ?? 1 } }}
+        </div>
+      }
+
       @if (signing(); as action) {
         <!-- La contraseña es la firma: reemplaza a la firma en papel. -->
         <div class="flex flex-col gap-3 rounded-lg border border-border bg-surface p-3">
@@ -80,6 +88,9 @@
           </div>
         </div>
       }
+
+      <!-- Lo que se firma: los productos del documento y su PDF, para revisarlo antes de firmar. -->
+      <app-document-lines [type]="data.type" [documentId]="data.id" />
 
       <div class="flex flex-col gap-3">
         <h3 class="text-sm font-semibold text-foreground">{{ 'review.history' | translate }}</h3>

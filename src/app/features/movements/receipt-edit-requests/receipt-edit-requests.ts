@@ -1,9 +1,10 @@
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, Location } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { LanguageService } from '../../../core/i18n/language.service';
-import { APPROVER_ROLES } from '../../../core/review/document-review';
+import { CORRECTION_REVIEWER_ROLES } from '../../../core/review/document-review';
 import { ToastService } from '../../../core/toast/toast.service';
 import { Select, SelectOption } from '../../../shared/components/select/select';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -23,6 +24,8 @@ import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loa
 export class ReceiptEditRequests {
   private readonly receiptService = inject(ReceiptService);
   private readonly authService = inject(AuthService);
+  private readonly location = inject(Location);
+  private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
   private readonly languageService = inject(LanguageService);
 
@@ -33,7 +36,9 @@ export class ReceiptEditRequests {
   /** Observación del Contador por solicitud (obligatoria para rechazar). */
   protected readonly notes = signal<Record<number, string | undefined>>({});
 
-  protected readonly canReview = computed(() => APPROVER_ROLES.includes(this.authService.activeRole() ?? ''));
+  protected readonly canReview = computed(() => CORRECTION_REVIEWER_ROLES.includes(this.authService.activeRole() ?? ''));
+  /** Quien pidió la corrección no la revisa: la revisa otro usuario. */
+  protected readonly myUserId = computed(() => this.authService.session()?.appUserId ?? null);
 
   protected readonly statusOptions = computed<SelectOption[]>(() => [
     { value: 'pending', label: this.languageService.t('receiptEdits.status.pending') },
@@ -81,13 +86,23 @@ export class ReceiptEditRequests {
     try {
       await this.receiptService.reviewEdit(edit.changeRequestId, decision, notes || null);
       this.toastService.success(this.languageService.t(decision === 'approve' ? 'receiptEdits.approved' : 'receiptEdits.rejected'));
-      await this.load();
+      // Revisada la corrección, se sale de la pantalla (vuelve a donde estaba, normalmente el Buzón).
+      this.goBack();
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;
       this.toastService.error(this.languageService.t('receiptEdits.error'), message);
     } finally {
       this.working.set(null);
+    }
+  }
+
+  /** Vuelve a la pantalla anterior; si se entró directo a esta, va al Buzón. */
+  protected goBack(): void {
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      void this.router.navigate(['/inbox']);
     }
   }
 }

@@ -16,6 +16,9 @@ export const APPROVER_ROLES = ['Contador', 'M-BOS'];
 /** Verifican y firman: el Contador y el Tesorero (el Auxiliar Contador no). */
 export const VERIFIER_ROLES = ['Contador', 'Tesorero', 'M-BOS'];
 
+/** Revisan correcciones de entradas y salidas (nunca la suya propia). El Auxiliar Contador solo las pide. */
+export const CORRECTION_REVIEWER_ROLES = ['Contador', 'M-BOS', 'Tesorero'];
+
 export interface DocumentReviewEntry {
   version: number;
   action: 'digitado' | 'verificado' | 'aprobado' | 'rechazado' | 'reabierto' | 'corregido';
@@ -33,6 +36,8 @@ export interface DocumentReview {
   status: ReviewStatus;
   version: number;
   isVoided: boolean;
+  /** Salida por lote: cuántas salidas del lote se firman juntas con esta (1 si no es de un lote). */
+  batchCount?: number;
   entries: DocumentReviewEntry[];
 }
 

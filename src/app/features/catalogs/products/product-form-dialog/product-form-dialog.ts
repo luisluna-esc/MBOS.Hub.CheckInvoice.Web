@@ -2,7 +2,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { map, startWith } from 'rxjs';
+import { debounceTime, map, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { settleCatalogs } from '../../../../core/catalogs/settle-catalogs';
@@ -19,7 +19,14 @@ import { ProductService } from '../product.service';
 
 export interface ProductFormDialogData {
   product: Product | null;
+  /** Nombre para empezar (ej. lo que se buscó y no se encontró). */
+  initialName?: string;
+  /** Desde una entrada: los productos parecidos se pueden elegir en vez de crear uno nuevo. */
+  allowPickExisting?: boolean;
 }
+
+/** Al crear devuelve el producto (nuevo o el existente que se eligió); al editar, true. */
+export type ProductFormDialogResult = boolean | { productId: number; existing: boolean };
 
 @Component({
   selector: 'app-product-form-dialog',
@@ -28,7 +35,7 @@ export interface ProductFormDialogData {
 })
 export class ProductFormDialog implements OnDestroy {
   private readonly data = inject<ProductFormDialogData>(DIALOG_DATA);
-  private readonly dialogRef = inject(DialogRef<boolean, ProductFormDialog>);
+  private readonly dialogRef = inject(DialogRef<ProductFormDialogResult, ProductFormDialog>);
   private readonly catalogService = inject(CatalogService);
   private readonly productService = inject(ProductService);
   private readonly toastService = inject(ToastService);
@@ -61,7 +68,7 @@ export class ProductFormDialog implements OnDestroy {
   );
 
   protected readonly form = new FormGroup({
-    name: new FormControl(this.data.product?.name ?? '', { nonNullable: true }),
+    name: new FormControl(this.data.product?.name ?? this.data.initialName ?? '', { nonNullable: true }),
     departmentId: new FormControl(
       this.data.product?.departmentId ? String(this.data.product.departmentId) : '',
       { nonNullable: true }
@@ -88,8 +95,46 @@ export class ProductFormDialog implements OnDestroy {
 
   protected readonly saveDisabled = computed(() => this.formInvalid() || this.saving());
 
+  /** Productos que ya existen con un nombre parecido: para no crear uno repetido. */
+  protected readonly similar = signal<Product[]>([]);
+  protected readonly allowPickExisting = !!this.data.allowPickExisting;
+
+  protected departmentName(id: number | null): string {
+    return this.departments().find((item) => item.id === id)?.name ?? '—';
+  }
+
+  protected subDepartmentName(id: number | null): string {
+    return this.subDepartments().find((item) => item.id === id)?.name ?? '—';
+  }
+
+  private async searchSimilar(name: string): Promise<void> {
+    const term = name.trim();
+    if (term.length < 3) {
+      this.similar.set([]);
+      return;
+    }
+    try {
+      const result = await this.productService.list(1, 5, { searchCriteria: term });
+      this.similar.set(result.items.filter((item) => item.productId !== this.data.product?.productId));
+    } catch {
+      this.similar.set([]);
+    }
+  }
+
+  /** Usar un producto que ya existe en lugar de crear otro. */
+  protected pickExisting(product: Product): void {
+    this.dialogRef.close({ productId: product.productId, existing: true });
+  }
+
   constructor() {
     void this.loadCatalogs();
+
+    if (!this.isEdit) {
+      void this.searchSimilar(this.form.controls.name.value);
+      this.form.controls.name.valueChanges
+        .pipe(debounceTime(300), takeUntilDestroyed())
+        .subscribe((value) => void this.searchSimilar(value));
+    }
 
     const departmentControl = this.form.controls.departmentId;
     const subDepartmentControl = this.form.controls.subDepartmentId;
@@ -198,7 +243,7 @@ export class ProductFormDialog implements OnDestroy {
       }
 
       this.toastService.success(this.languageService.t('products.form.success'));
-      this.dialogRef.close(true);
+      this.dialogRef.close(this.isEdit ? true : { productId, existing: false });
     } catch (error) {
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
         ?.description;

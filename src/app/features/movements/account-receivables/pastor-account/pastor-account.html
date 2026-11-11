@@ -1,0 +1,125 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:flex-row sm:items-end">
+    <div class="w-full sm:max-w-md">
+      <app-select
+        [label]="'accountReceivables.pastor.search' | translate"
+        [options]="clientOptions()"
+        [ngModel]="clientId()"
+        (ngModelChange)="onClientChange($event)"
+      />
+    </div>
+    @if (accounts().length > 0) {
+      <label class="flex items-center gap-2 text-sm text-foreground">
+        <input type="checkbox" class="size-4 accent-current" [ngModel]="showPaid()" (ngModelChange)="showPaid.set($event)" />
+        {{ 'accountReceivables.pastor.showPaid' | translate }}
+      </label>
+    }
+  </div>
+
+  @if (loading()) {
+    <app-loading-skeleton [count]="4" />
+  } @else if (clientId() && accounts().length === 0) {
+    <p class="text-sm text-muted-foreground">{{ 'accountReceivables.pastor.empty' | translate }}</p>
+  } @else if (accounts().length > 0) {
+    <!-- Totales del pastor y el pago de todo junto. -->
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-4">
+      <div class="flex flex-col rounded-lg border border-border bg-surface p-3">
+        <span class="text-xs text-muted-foreground">{{ 'accountReceivables.pastor.total' | translate }}</span>
+        <span class="text-lg font-semibold tabular-nums text-foreground">{{ totals().total | number: '1.2-2' }} Bs.</span>
+      </div>
+      <div class="flex flex-col rounded-lg border border-border bg-surface p-3">
+        <span class="text-xs text-muted-foreground">{{ 'accountReceivables.pastor.totalPaid' | translate }}</span>
+        <span class="text-lg font-semibold tabular-nums text-success">{{ totals().paid | number: '1.2-2' }} Bs.</span>
+      </div>
+      <div class="flex flex-col rounded-lg border border-border bg-surface p-3">
+        <span class="text-xs text-muted-foreground">{{ 'accountReceivables.pastor.totalPending' | translate }}</span>
+        <span class="text-lg font-semibold tabular-nums text-danger">{{ totals().pending | number: '1.2-2' }} Bs.</span>
+      </div>
+      <div class="flex items-center justify-center rounded-lg border border-border bg-surface p-3">
+        @if (canManage() && payable().length > 0) {
+          <button
+            type="button"
+            class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors"
+            (click)="openPayment()"
+          >
+            {{ 'accountReceivables.pastor.pay' | translate }}
+          </button>
+        } @else {
+          <span class="text-center text-xs text-muted-foreground">
+            {{ (totals().pending > 0 ? 'accountReceivables.pastor.nothingPayable' : 'accountReceivables.pastor.allPaid') | translate }}
+          </span>
+        }
+      </div>
+    </div>
+    @if (lateCount() > 0) {
+      <p class="text-xs text-muted-foreground">{{ 'accountReceivables.pastor.lateNote' | translate: { count: lateCount() } }}</p>
+    }
+
+    <!-- Cada salida con sus materiales: pagado o pendiente. -->
+    @for (item of visibleAccounts(); track item.account.accountReceivableId) {
+      <div class="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="text-sm font-semibold text-foreground">
+            {{ 'accountReceivables.pastor.issue' | translate }} {{ issueLabel(item.account) }}
+            <span class="font-normal text-muted-foreground">
+              · {{ formatDate(item.account.issueDate) }} · {{ 'accountReceivables.columns.dueDate' | translate }} {{ formatDate(item.account.dueDate) }}
+            </span>
+          </span>
+          <span
+            class="rounded-full border px-3 py-0.5 text-xs font-medium"
+            [class.border-success]="item.account.status === 'paid'"
+            [class.text-success]="item.account.status === 'paid'"
+            [class.border-danger]="item.account.status === 'late'"
+            [class.text-danger]="item.account.status === 'late'"
+            [class.border-border]="item.account.status === 'pending'"
+            [class.text-foreground]="item.account.status === 'pending'"
+          >
+            {{ 'accountReceivables.status.' + item.account.status | translate }}
+          </span>
+        </div>
+        <div class="w-full overflow-x-auto rounded-md border border-border">
+          <table class="w-full divide-y divide-border text-sm">
+            <thead class="bg-background">
+              <tr>
+                <th class="px-3 py-2 text-left font-semibold text-foreground">{{ 'accountReceivables.payment.product' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.quantity' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.lineTotal' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.linePaid' | translate }}</th>
+                <th class="px-3 py-2 text-right font-semibold text-foreground">{{ 'accountReceivables.payment.lineRemaining' | translate }}</th>
+                <th class="px-3 py-2 text-center font-semibold text-foreground">{{ 'accountReceivables.columns.status' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              @for (line of item.lines; track line.issueDetailId) {
+                <tr>
+                  <td class="px-3 py-2 text-foreground">{{ line.name }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right tabular-nums text-muted-foreground">{{ line.quantity | number: '1.0-2' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right tabular-nums text-foreground">{{ line.totalAmount | number: '1.2-2' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right tabular-nums text-success">{{ line.paidAmount | number: '1.2-2' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right tabular-nums font-medium text-foreground">{{ line.remainingAmount | number: '1.2-2' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-center text-xs font-medium">
+                    @if (line.remainingAmount <= 0) {
+                      <span class="text-success">{{ 'accountReceivables.pastor.linePaid' | translate }}</span>
+                    } @else if (line.paidAmount > 0) {
+                      <span class="text-foreground">{{ 'accountReceivables.pastor.linePartial' | translate }}</span>
+                    } @else {
+                      <span class="text-danger">{{ 'accountReceivables.pastor.linePending' | translate }}</span>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="px-3 py-2 text-muted-foreground">
+                    {{ 'accountReceivables.pastor.noProducts' | translate: { amount: item.account.outstandingBalance.toFixed(2) } }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  } @else {
+    <p class="text-sm text-muted-foreground">{{ 'accountReceivables.pastor.prompt' | translate }}</p>
+  }
+</div>

@@ -3,7 +3,7 @@ import { Component, ElementRef, computed, inject, signal, LOCALE_ID, viewChildre
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, startWith } from 'rxjs';
+import { debounceTime, map, merge, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { minIssueDateIso } from '../../../../core/catalogs/current-warehouse-periods';
@@ -25,6 +25,7 @@ import { ReportService } from '../../../reports/report.service';
 import { SupplierService } from '../../../catalogs/suppliers/supplier.service';
 import { ReceiptRequest } from '../receipt.models';
 import { ReceiptService } from '../receipt.service';
+import { ReceiptDraft, ReceiptDraftStore } from '../receipt-draft';
 import { localDateIso } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 import { ShortcutDirective } from '../../../../shared/directives/shortcut.directive';
@@ -64,6 +65,14 @@ export class ReceiptCreate {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   private readonly route = inject(ActivatedRoute);
+  private readonly draftStore = inject(ReceiptDraftStore);
+
+  /**
+   * Entrada sin terminar guardada en este navegador. Mientras se muestra el aviso (continuar o
+   * descartar) no se guarda nada encima; elegido uno, se sigue guardando sola.
+   */
+  protected readonly pendingDraft = signal<ReceiptDraft | null>(null);
+  private draftEnabled = false;
   private readonly motive = this.route.snapshot.data['motive'] as 'donation' | 'correct' | undefined;
 
   /**
@@ -253,13 +262,21 @@ export class ReceiptCreate {
     if (this.isCorrection && this.correctionId) {
       void this.loadForCorrection(this.correctionId);
     } else {
-      void this.loadCatalogs();
-      const state = history.state as { supplierId?: number; receiptTypeId?: number | null };
-      if (state.supplierId) {
+      const catalogsLoaded = this.loadCatalogs();
+      const state = history.state as { supplierId?: number; receiptTypeId?: number | null; restoreDraft?: boolean };
+      const draft = this.draftStore.get();
+      if (state.restoreDraft && draft) {
+        void catalogsLoaded.then(() => this.restoreDraft(draft));
+      } else if (draft) {
+        this.pendingDraft.set(draft);
+      } else {
+        this.draftEnabled = true;
+      }
+      if (state.supplierId && !state.restoreDraft) {
         void this.lockSupplier(state.supplierId);
       }
       // El tipo viene de la tarjeta elegida en Entradas: ya no se vuelve a preguntar.
-      if (state.receiptTypeId) {
+      if (state.receiptTypeId && !state.restoreDraft) {
         this.headerForm.controls.receiptTypeId.setValue(String(state.receiptTypeId));
         this.presetReceiptTypeId.set(state.receiptTypeId);
       }
@@ -274,6 +291,100 @@ export class ReceiptCreate {
     if (this.isDonation()) {
       this.applyDonationRules();
     }
+
+    // Guardado momentáneo: lo escrito se guarda solo en este navegador, para no perderlo si se
+    // apaga la compu o se sale sin guardar.
+    if (!this.isCorrection) {
+      merge(this.headerForm.valueChanges, this.detailsArray.valueChanges)
+        .pipe(debounceTime(500), takeUntilDestroyed())
+        .subscribe(() => this.saveDraft());
+    }
+  }
+
+  private saveDraft(): void {
+    if (!this.draftEnabled) {
+      return;
+    }
+    const header = this.headerForm.getRawValue();
+    const lines = this.detailsArray.getRawValue();
+    // Sin nada escrito todavía no hay qué guardar.
+    if (lines.length === 0 && !header.invoiceNumber && !header.invoiceTotal && !header.description) {
+      this.draftStore.clear();
+      return;
+    }
+    this.draftStore.save({
+      savedAt: new Date().toISOString(),
+      route: this.router.url.split('?')[0],
+      supplierId: header.supplierId ? Number(header.supplierId) : null,
+      supplierName: this.lockedSupplierName(),
+      receiptTypeId: this.presetReceiptTypeId(),
+      header,
+      headerConfirmed: this.headerConfirmed(),
+      lines: lines.map((line, index) => ({ ...line, product: this.lineProducts()[index] ?? null })),
+    });
+  }
+
+  /** Cuándo se dejó la entrada sin terminar, de quién y cuántos productos tenía (para el aviso). */
+  protected draftSummary(draft: ReceiptDraft): { date: string; count: number; supplier: string } {
+    return {
+      date: new Date(draft.savedAt).toLocaleString(),
+      count: draft.lines.length,
+      supplier: draft.supplierName ?? '—',
+    };
+  }
+
+  protected continueDraft(): void {
+    const draft = this.pendingDraft();
+    if (!draft) {
+      return;
+    }
+    if (draft.route !== this.router.url.split('?')[0]) {
+      void this.router.navigate([draft.route], { state: { restoreDraft: true } });
+      return;
+    }
+    void this.restoreDraft(draft);
+  }
+
+  protected discardDraft(): void {
+    this.draftStore.clear();
+    this.pendingDraft.set(null);
+    this.draftEnabled = true;
+    this.saveDraft();
+  }
+
+  /** Deja el formulario como estaba la entrada sin terminar. */
+  private async restoreDraft(draft: ReceiptDraft): Promise<void> {
+    this.pendingDraft.set(null);
+    this.headerForm.enable();
+    this.headerConfirmed.set(false);
+    this.detailsArray.clear();
+    this.lineProducts.set([]);
+
+    if (draft.receiptTypeId) {
+      this.presetReceiptTypeId.set(draft.receiptTypeId);
+    }
+    if (draft.supplierId) {
+      await this.lockSupplier(draft.supplierId);
+    }
+    this.headerForm.patchValue(draft.header);
+    this.applyPurchaseTypeRules();
+
+    for (const line of draft.lines) {
+      this.detailsArray.push(
+        new FormGroup({
+          productId: new FormControl(line.productId, { nonNullable: true, validators: [Validators.required] }),
+          quantity: new FormControl(line.quantity, { nonNullable: true }),
+          unitPrice: new FormControl(line.unitPrice, { nonNullable: true }),
+        })
+      );
+    }
+    this.lineProducts.set(draft.lines.map((line) => line.product));
+
+    if (draft.headerConfirmed) {
+      this.headerForm.disable();
+      this.headerConfirmed.set(true);
+    }
+    this.draftEnabled = true;
   }
 
   private applyDonationRules(): void {
@@ -415,9 +526,8 @@ export class ReceiptCreate {
     }
     this.headerForm.disable();
     this.headerConfirmed.set(true);
-    if (this.detailsArray.length === 0) {
-      this.addProduct();
-    }
+    // La ventana de productos se abre solo con "Agregar producto": abrirla sola al continuar
+    // confundía.
   }
 
   /** "Agregar producto": abre la ventana de productos y lo elegido entra como una línea nueva. */
@@ -460,7 +570,7 @@ export class ReceiptCreate {
   /** Ventana para elegir el producto: muestra los ya elegidos en otras líneas sin dejar repetirlos. */
   protected pickProduct(index: number, isNew = false): void {
     const ref = this.dialogService.open<ProductPickerResult | null, ProductPickerData, ProductPickerDialog>(ProductPickerDialog, {
-      data: { excludedProductIds: this.excludedFor(index) },
+      data: { excludedProductIds: this.excludedFor(index), allowCreate: true },
     });
     ref.closed.subscribe((result) => {
       if (result) {
@@ -555,6 +665,8 @@ export class ReceiptCreate {
 
     try {
       const response = await this.receiptService.create(request);
+      this.draftEnabled = false;
+      this.draftStore.clear();
       this.toastService.success(this.languageService.t('receipts.form.success'));
       if (print) {
         try {

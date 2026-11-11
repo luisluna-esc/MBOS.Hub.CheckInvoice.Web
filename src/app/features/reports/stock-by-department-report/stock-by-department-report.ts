@@ -38,6 +38,13 @@ export class StockByDepartmentReport {
   /** Estado: "Solo actualizado" (firmado) o "Actualizado y sin actualizar" (todo). */
   protected readonly reviewState = signal<string | null>('updated');
   protected readonly reviewStates = computed(() => reportReviewStateOptions((key) => this.languageService.t(key)));
+  /** Vista: detalle por producto o resumen (solo el saldo de cada departamento). */
+  protected readonly view = signal<string | null>('detail');
+  protected readonly isSummary = computed(() => this.view() === 'summary');
+  protected readonly views = computed<SelectOption[]>(() => [
+    { value: 'detail', label: this.languageService.t('reports.stockByDepartment.viewDetail') },
+    { value: 'summary', label: this.languageService.t('reports.stockByDepartment.viewSummary') },
+  ]);
 
   protected readonly previewUrl = signal<SafeResourceUrl | null>(null);
   protected readonly loading = signal(false);
@@ -70,6 +77,7 @@ export class StockByDepartmentReport {
       this.departmentId();
       this.dateTo();
       this.reviewState();
+      this.view();
       if (isFirstRun) {
         isFirstRun = false;
         return;
@@ -103,7 +111,9 @@ export class StockByDepartmentReport {
 
     this.loading.set(true);
     try {
-      const blob = await this.reportService.getStockByDepartmentReportPdfBlob(this.currentFilters());
+      const blob = this.isSummary()
+        ? await this.reportService.getDepartmentSummaryBlob(this.currentFilters(), 'pdf')
+        : await this.reportService.getStockByDepartmentReportPdfBlob(this.currentFilters());
       this.revokeObjectUrl();
       this.pdfBlob = blob;
       this.objectUrl = URL.createObjectURL(blob);
@@ -127,7 +137,11 @@ export class StockByDepartmentReport {
   protected async onExportExcel(): Promise<void> {
     this.exporting.set(true);
     try {
-      downloadBlob(await this.reportService.getStockByDepartmentReportExcelBlob(this.currentFilters()), 'inventario-por-departamento.xlsx');
+      if (this.isSummary()) {
+        downloadBlob(await this.reportService.getDepartmentSummaryBlob(this.currentFilters(), 'excel'), 'resumen-por-departamento.xlsx');
+      } else {
+        downloadBlob(await this.reportService.getStockByDepartmentReportExcelBlob(this.currentFilters()), 'inventario-por-departamento.xlsx');
+      }
     } catch {
       this.toastService.error(this.languageService.t('reports.excel.error'));
     } finally {
@@ -148,7 +162,7 @@ export class StockByDepartmentReport {
 
   protected onDownloadPdf(): void {
     if (this.pdfBlob) {
-      downloadBlob(this.pdfBlob, 'inventario-por-departamento.pdf');
+      downloadBlob(this.pdfBlob, this.isSummary() ? 'resumen-por-departamento.pdf' : 'inventario-por-departamento.pdf');
     }
   }
 

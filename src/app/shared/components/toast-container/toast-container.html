@@ -53,6 +53,26 @@
         @if (toast.description) {
           <p class="mt-1 text-sm text-muted-foreground">{{ toast.description }}</p>
         }
+        @if (toast.items?.length) {
+          <ul class="mt-2 flex flex-col gap-1.5">
+            @for (item of toast.items; track $index) {
+              <li class="flex items-center justify-between gap-2 rounded-md border border-border bg-background px-2.5 py-1.5">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-semibold text-foreground">{{ item.document }}</p>
+                  <p class="truncate text-xs text-muted-foreground">{{ item.label }}</p>
+                </div>
+                <button
+                  type="button"
+                  class="shrink-0 rounded-md border border-border px-2 py-1 text-xs text-foreground transition-colors hover:bg-surface"
+                  [attr.aria-label]="('inbox.toast.copy' | translate) + ' ' + item.copy"
+                  (click)="copy(toast.id, $index, item)"
+                >
+                  {{ (copiedKey() === toast.id + ':' + $index ? 'inbox.toast.copied' : 'inbox.toast.copy') | translate }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
       </div>
       <button
         type="button"

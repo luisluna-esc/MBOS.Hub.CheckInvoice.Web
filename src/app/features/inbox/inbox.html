@@ -4,6 +4,16 @@
       <h1 class="text-xl font-semibold text-foreground">{{ 'inbox.title' | translate }}</h1>
       <p class="text-sm text-muted-foreground">{{ 'inbox.description' | translate }}</p>
     </div>
+    @if (canReviewQueue()) {
+      <button
+        type="button"
+        class="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground transition-colors disabled:opacity-50"
+        [disabled]="openingQueue()"
+        (click)="openReviewQueue()"
+      >
+        {{ 'inbox.actions.reviewQueue' | translate }}
+      </button>
+    }
     @if (tab() === 'answers' && (counts()?.unread ?? 0) > 0) {
       <button
         type="button"

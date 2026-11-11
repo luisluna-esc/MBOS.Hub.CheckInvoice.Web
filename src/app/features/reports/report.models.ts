@@ -23,6 +23,8 @@ export interface FinancialDashboardData {
 
 export interface StockReportFilters {
   warehouseId?: number;
+  /** Opcional: sin ella es el saldo acumulado; con ella, el movimiento neto del periodo. */
+  dateFrom?: string;
   dateTo?: string;
   /** Estado: solo elige productos (todos sus documentos firmados o no); no cambia cantidades. */
   reviewState?: 'updated' | 'outdated';

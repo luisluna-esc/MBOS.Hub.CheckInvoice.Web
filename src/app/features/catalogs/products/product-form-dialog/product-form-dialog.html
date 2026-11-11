@@ -31,6 +31,33 @@
       />
     </div>
 
+    <!-- Antes de crear: los que ya existen con un nombre parecido, para no repetir un producto. -->
+    @if (!isEdit && similar().length > 0) {
+      <div class="flex flex-col gap-2 rounded-md border border-warning bg-warning/10 p-3">
+        <span class="text-sm font-medium text-foreground">{{ 'products.form.similarTitle' | translate }}</span>
+        <ul class="flex flex-col gap-1">
+          @for (item of similar(); track item.productId) {
+            <li class="flex flex-wrap items-center justify-between gap-2 text-sm">
+              <span class="text-foreground">
+                <span class="text-muted-foreground">{{ item.code }} · </span>{{ item.name }}
+                <span class="text-xs text-muted-foreground">({{ departmentName(item.departmentId) }} / {{ subDepartmentName(item.subDepartmentId) }})</span>
+              </span>
+              @if (allowPickExisting) {
+                <button
+                  type="button"
+                  class="rounded-md border border-border px-2 py-1 text-xs font-medium text-foreground transition-colors hover:bg-background"
+                  (click)="pickExisting(item)"
+                >
+                  {{ 'products.form.useExisting' | translate }}
+                </button>
+              }
+            </li>
+          }
+        </ul>
+        <span class="text-xs text-muted-foreground">{{ 'products.form.similarHint' | translate }}</span>
+      </div>
+    }
+
     <div class="flex flex-col gap-2">
       <span class="text-sm font-medium text-foreground">{{ 'products.form.photo' | translate }}</span>
       <div class="flex items-center gap-4">

@@ -10,7 +10,7 @@ import { ErrorState } from '../../../../shared/components/error-state/error-stat
 import { FilterField, Filters, FilterValues } from '../../../../shared/components/filters/filters';
 import { Table, TableAction, TableColumn } from '../../../../shared/components/table/table';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-import { ProductFormDialog, ProductFormDialogData } from '../product-form-dialog/product-form-dialog';
+import { ProductFormDialog, ProductFormDialogData, ProductFormDialogResult } from '../product-form-dialog/product-form-dialog';
 import { Product, ProductFilters } from '../product.models';
 import { ProductService } from '../product.service';
 import { prepareProductPhoto } from '../../../../core/files/image';
@@ -185,7 +185,7 @@ export class ProductsList {
   }
 
   private openForm(product: Product | null): void {
-    const ref = this.dialogService.open<boolean, ProductFormDialogData, ProductFormDialog>(ProductFormDialog, {
+    const ref = this.dialogService.open<ProductFormDialogResult, ProductFormDialogData, ProductFormDialog>(ProductFormDialog, {
       data: { product },
     });
     ref.closed.subscribe((saved) => {

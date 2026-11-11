@@ -129,6 +129,7 @@ export interface ReceiptEdit {
   noteNumber: string;
   status: 'pending' | 'approved' | 'rejected';
   reason: string;
+  requestedById: number;
   requestedByName: string | null;
   requestedAt: string;
   reviewedByName: string | null;

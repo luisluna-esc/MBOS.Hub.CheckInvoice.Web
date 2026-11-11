@@ -1,5 +1,6 @@
 {
   "issueEdits": {
+    "back": "Back",
     "title": "Issue Corrections",
     "description": "Correcting a recorded issue goes through here: the requester explains the reason and the Accountant approves or rejects it.",
     "statusFilter": "Status",
@@ -22,7 +23,8 @@
     "notes": "Note (required to reject)",
     "approve": "Approve correction",
     "reject": "Reject",
-    "waiting": "Waiting for the Accountant review.",
+    "waiting": "Waiting for review by the Accountant, the Treasurer or M-BOS.",
+    "ownRequest": "You requested it: another user reviews it (Accountant, Treasurer or M-BOS), never the requester.",
     "notesRequired": "Write why you reject it.",
     "approved": "Correction approved. The issue becomes a new version and must be signed again.",
     "rejected": "Correction rejected.",
@@ -98,6 +100,7 @@
     }
   },
   "receiptEdits": {
+    "back": "Back",
     "title": "Receipt Corrections",
     "description": "Correcting a recorded receipt goes through here: the requester explains why and the Accountant approves or rejects it. If products from the receipt were already issued, the quantity cannot go below what was issued.",
     "statusFilter": "Status",
@@ -120,7 +123,8 @@
     "notes": "Note (required to reject)",
     "approve": "Approve correction",
     "reject": "Reject",
-    "waiting": "Waiting for the Accountant to review it.",
+    "waiting": "Waiting for review by the Accountant, the Treasurer or M-BOS.",
+    "ownRequest": "You requested it: another user reviews it (Accountant, Treasurer or M-BOS), never the requester.",
     "notesRequired": "Write why you reject it.",
     "approved": "Correction approved. The note becomes a new version and must be signed again.",
     "rejected": "Correction rejected.",
@@ -138,7 +142,10 @@
     "toast": {
       "unread": "You have {{count}} unread answer(s) in your Inbox",
       "new": "{{count}} new answer(s) arrived in your Inbox",
-      "hint": "Check them in Inbox, Answers tab."
+      "hint": "Check them in Inbox, Answers tab.",
+      "copy": "Copy No.",
+      "copied": "Copied",
+      "copyHint": "Copy the number and search it in History or the Inbox."
     },
     "alreadySeen": "Already seen",
     "newMark": "New",
@@ -152,7 +159,8 @@
     "actions": {
       "open": "Open",
       "markSeen": "Mark as seen",
-      "markAllSeen": "Mark all as seen"
+      "markAllSeen": "Mark all as seen",
+      "reviewQueue": "Review one by one"
     },
     "columns": {
       "kind": "Type",
@@ -257,6 +265,7 @@
     "signatureInvalid": "Invalid signature: the document changed after it was signed",
     "signatureValid": "Valid signature",
     "signConfirm": "Sign",
+    "batchNote": "Batch issue: this signature applies to all {{count}} issues in the batch, one per pastor.",
     "notesOptional": "Note (optional)",
     "passwordRequired": "Type your password to sign.",
     "password": "Your password (digital signature)",
@@ -310,7 +319,32 @@
     "verified": "Document verified.",
     "approved": "Document approved.",
     "reopened": "Document reopened.",
-    "error": "The review could not be completed."
+    "error": "The review could not be completed.",
+    "lines": {
+      "title": "Document products",
+      "viewPdf": "View PDF",
+      "empty": "This document has no products.",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitCost": "Unit cost",
+      "total": "Total",
+      "sum": "Total",
+      "pdfError": "Could not open the PDF."
+    },
+    "queue": {
+      "title": "Review one by one",
+      "accepted": "Accepted: {{count}} of {{total}}",
+      "clear": "Clear selection",
+      "position": "Document {{current}} of {{total}}",
+      "previous": "Previous",
+      "skip": "Next without accepting",
+      "accept": "Accept",
+      "acceptNext": "Accept and next",
+      "unaccept": "Remove acceptance",
+      "signed": "Signed",
+      "signAll": "Sign the {{count}} accepted",
+      "signedCount": "{{count}} documents were signed."
+    }
   },
   "productPhoto": {
     "enlarge": "View photo",
@@ -415,7 +449,8 @@
     "columns": {
       "code": "Code",
       "name": "Name"
-    }
+    },
+    "create": "Create product"
   },
   "products": {
     "photoUploadError": "The photo could not be uploaded.",
@@ -460,7 +495,10 @@
       "mediaType": "Unit of Measure",
       "isActive": "Active",
       "success": "Product saved successfully.",
-      "error": "The product could not be saved."
+      "error": "The product could not be saved.",
+      "similarTitle": "Products with a similar name already exist:",
+      "similarHint": "Check it is not one of these. The same name cannot be repeated in the same department and sub-department.",
+      "useExisting": "Use this one"
     },
     "delete": {
       "title": "Delete product",
@@ -586,24 +624,50 @@
       "success": "Deleted successfully.",
       "error": "Could not delete. It may be in use elsewhere."
     },
-    "countries": { "title": "Countries" },
-    "documentTypes": { "title": "Document Types" },
-    "churchTypes": { "title": "Church Types" },
-    "printTypes": { "title": "Print Types" },
-    "issueTypes": { "title": "Issue Types" },
-    "receiptTypes": { "title": "Receipt Types" },
-    "mediaTypes": { "title": "Media Types" },
+    "countries": {
+      "title": "Countries"
+    },
+    "documentTypes": {
+      "title": "Document Types"
+    },
+    "churchTypes": {
+      "title": "Church Types"
+    },
+    "printTypes": {
+      "title": "Print Types"
+    },
+    "issueTypes": {
+      "title": "Issue Types"
+    },
+    "receiptTypes": {
+      "title": "Receipt Types"
+    },
+    "mediaTypes": {
+      "title": "Media Types"
+    },
     "departments": {
       "title": "Departments",
       "code": "Accounting code",
       "codeHint": "SubAccountCode of the accounting file (e.g. 106)."
     },
-    "subDepartments": { "title": "Sub-departments" },
-    "missions": { "title": "Missions" },
-    "provinces": { "title": "Provinces" },
-    "specialCases": { "title": "Special Cases" },
-    "voidReasons": { "title": "Void Reasons" },
-    "warehouses": { "title": "Warehouses" },
+    "subDepartments": {
+      "title": "Sub-departments"
+    },
+    "missions": {
+      "title": "Missions"
+    },
+    "provinces": {
+      "title": "Provinces"
+    },
+    "specialCases": {
+      "title": "Special Cases"
+    },
+    "voidReasons": {
+      "title": "Void Reasons"
+    },
+    "warehouses": {
+      "title": "Warehouses"
+    },
     "warehousePeriods": {
       "title": "Warehouse Periods",
       "nameHint": "Format \"YYYY-MM\" (e.g. 2026-10). The system uses this value as a date to know which periods are currently active."
@@ -997,6 +1061,12 @@
       "grandTotal": "Grand total (Bs.)",
       "totalQuantity": "Total units",
       "summary": "{{count}} products"
+    },
+    "draft": {
+      "title": "You have an unfinished receipt",
+      "detail": "From {{supplier}}, with {{count}} products, saved on {{date}}. Do you want to continue it?",
+      "continue": "Continue",
+      "discard": "Discard"
     }
   },
   "issues": {
@@ -1428,7 +1498,34 @@
       "success": "Payment registered.",
       "error": "The payment could not be registered."
     },
-    "detailError": "The account receivable voucher could not be generated."
+    "detailError": "The account receivable voucher could not be generated.",
+    "views": {
+      "pastor": "By pastor",
+      "issue": "By issue number"
+    },
+    "pastor": {
+      "search": "Search pastor",
+      "prompt": "Choose a pastor to see everything owed, from all their issues.",
+      "empty": "This pastor has no accounts receivable.",
+      "showPaid": "Also show paid issues",
+      "total": "Total",
+      "totalPaid": "Total paid",
+      "totalPending": "Total pending",
+      "pay": "Register payment",
+      "allPaid": "Nothing is owed.",
+      "nothingPayable": "What is pending is late: it is deducted from salary.",
+      "lateNote": "{{count}} issues are late: they are not collected at the cash desk, they are deducted from salary.",
+      "issue": "Issue",
+      "linePaid": "Paid",
+      "linePartial": "Partly paid",
+      "linePending": "Pending",
+      "noProducts": "Account without products. Pending: {{amount}} Bs.",
+      "payTitle": "Pastor payment",
+      "payHint": "Pending across all issues: {{amount}} Bs. Enter how much is paid for each item.",
+      "payAll": "Pay everything",
+      "paid": "Payment registered on {{count}} issues.",
+      "loadError": "Could not load the pastor accounts."
+    }
   },
   "portal": {
     "myAccount": {
@@ -1522,17 +1619,20 @@
     },
     "stock": {
       "title": "Stock - Warehouse",
-      "description": "Net movement per product in the period, valued at average cost.",
+      "description": "Balance of each product at the end date, valued at average cost. With a start date, only products that moved since then are listed. Products with no balance are left out.",
       "hint": "Receipts minus Issues plus Transfers, grouped by Category and Sub-category.",
       "warehouse": "Warehouse",
       "dateFrom": "Start date",
-      "dateTo": "Balance as of",
+      "dateTo": "End date",
       "selectPrompt": "Select a warehouse to generate the report.",
       "error": "Could not generate the report. Please try again."
     },
     "stockByDepartment": {
+      "view": "View",
+      "viewDetail": "Detail by product",
+      "viewSummary": "Summary by department",
       "title": "Stock - Department",
-      "description": "Net movement per product in the period, valued at average cost.",
+      "description": "Balance of each product at the end date, valued at average cost. With a start date, only products that moved since then are listed. Products with no balance are left out.",
       "hint": "Receipts minus Issues plus Transfers, grouped by Sub-category and filterable by Category.",
       "warehouse": "Warehouse",
       "department": "Category",
@@ -1622,8 +1722,8 @@
       "status": "Status",
       "openStatuses": "To collect (pending and late)",
       "allStatuses": "All statuses",
-      "dateFrom": "Due date from",
-      "dateTo": "Due date to",
+      "dateFrom": "From",
+      "dateTo": "Cut-off date",
       "error": "Could not generate the report. Please try again."
     }
   },
@@ -1870,8 +1970,8 @@
     },
     "form": {
       "alreadyClientHint": "Already registered in Clients as \"{{name}}\".",
-      "clientHint": "If you choose Yes, they are also registered in Clients with the same name, tax ID, email and mobile, so issues can be made to them. It does not depend on the church question.",
-      "clientQuestion": "Do we also issue material to them (client)?",
+      "clientHint": "If you choose Yes, it is also registered in Clients with the same data.",
+      "clientQuestion": "Is it also a client?",
       "clientSectionTitle": "Client",
       "churchHint": "Only records the district and church this supplier belongs to. It does not register them as a client.",
       "churchQuestion": "Is a member of the Adventist Church?",
@@ -1976,7 +2076,7 @@
       "material": "Material",
       "received": "Received",
       "delivered": "Delivered",
-      "remaining": "Remaining"
+      "remaining": "Balance"
     },
     "form": {
       "title": "Receipt note without invoice",
