@@ -30,6 +30,7 @@ import {
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 import { reviewStateOptions, toReviewState } from '../../../../core/reviews/review-state';
+import { formatMoney } from '../../../../core/format/money';
 
 @Component({
   selector: 'app-receipts-list',
@@ -163,7 +164,7 @@ export class ReceiptsList {
         key: 'invoiceTotal',
         header: this.languageService.t('receipts.columns.invoiceTotal'),
         align: 'right',
-        format: (value) => (value != null ? Number(value).toFixed(2) : '—'),
+        format: (value) => (value != null ? formatMoney(value) : '—'),
       },
       {
         key: 'createdByFullName',

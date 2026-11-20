@@ -492,7 +492,7 @@
       "name": "Nome",
       "department": "Departamento",
       "subDepartment": "Subdepartamento",
-      "mediaType": "Unidade de Medida",
+      "mediaType": "Tipo de produto",
       "isActive": "Ativo",
       "success": "Produto salvo com sucesso.",
       "error": "Não foi possível salvar o produto.",
@@ -823,8 +823,8 @@
       "issuesThisMonth": "Saídas do mês",
       "receiptsThisMonth": "Entradas do mês",
       "pendingReceivable": "Pendente a receber",
-      "paymentsThisMonth": "Pagamentos do mês",
-      "issuesChartTitle": "Saídas por mês (últimos 6 meses)",
+      "paymentsThisMonth": "Cobranças do mês",
+      "issuesChartTitle": "Saídas dos últimos seis meses",
       "receivableChartTitle": "Contas a Receber: pendente vs pago"
     }
   },
@@ -1038,10 +1038,10 @@
       "totalMismatch": "A soma das linhas deve ser igual ao Total da fatura.",
       "totalMismatchOver": "As linhas somam {{lines}} Bs. e o valor total da compra é {{invoice}} Bs.: sobram {{difference}} Bs. Corrija as quantidades ou preços, ou o valor total.",
       "totalMismatchUnder": "As linhas somam {{lines}} Bs. e o valor total da compra é {{invoice}} Bs.: faltam {{difference}} Bs. Corrija as quantidades ou preços, ou o valor total.",
-      "linesTotal": "Soma das linhas",
-      "product": "Produto",
+      "linesTotal": "Total",
+      "product": "Nome do produto",
       "quantity": "Quantidade",
-      "unitCost": "Custo Unitário (Bs.)",
+      "unitCost": "Custo unitário (Bs.)",
       "workOrder": "Ordem de trabalho",
       "success": "Entrada registrada com sucesso.",
       "error": "Não foi possível registrar a entrada."

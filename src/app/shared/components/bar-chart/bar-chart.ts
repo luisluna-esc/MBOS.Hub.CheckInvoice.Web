@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { formatMoney } from '../../../core/format/money';
 
 export interface BarChartItem {
   label: string;
@@ -13,7 +14,7 @@ export interface BarChartItem {
 })
 export class BarChart {
   readonly items = input.required<BarChartItem[]>();
-  readonly valueFormatter = input<(value: number) => string>((value) => value.toFixed(2));
+  readonly valueFormatter = input<(value: number) => string>((value) => formatMoney(value));
   readonly height = input(200);
 
   protected readonly maxValue = computed(() => Math.max(1, ...this.items().map((item) => item.value)));

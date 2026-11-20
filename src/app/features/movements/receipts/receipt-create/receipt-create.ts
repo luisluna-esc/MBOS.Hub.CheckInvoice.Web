@@ -138,7 +138,7 @@ export class ReceiptCreate {
     invoiceNumber: new FormControl('', { nonNullable: true }),
     taxId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     invoiceTotal: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    purchaseDate: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    purchaseDate: new FormControl(this.todayIso, { nonNullable: true, validators: [Validators.required] }),
     issueDate: new FormControl(this.todayIso, { nonNullable: true, validators: [Validators.required] }),
     description: new FormControl('', { nonNullable: true }),
   });

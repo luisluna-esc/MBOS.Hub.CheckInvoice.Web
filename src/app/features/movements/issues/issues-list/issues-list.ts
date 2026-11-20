@@ -27,6 +27,7 @@ import { IssueService } from '../issue.service';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 import { reviewStateOptions, toReviewState } from '../../../../core/reviews/review-state';
+import { formatMoney } from '../../../../core/format/money';
 
 @Component({
   selector: 'app-issues-list',
@@ -149,7 +150,7 @@ export class IssuesList {
         key: 'total',
         header: this.languageService.t('issues.columns.total'),
         align: 'right',
-        format: (value) => (value != null ? Number(value).toFixed(2) : '—'),
+        format: (value) => (value != null ? formatMoney(value) : '—'),
       },
       {
         key: 'reviewStatus',

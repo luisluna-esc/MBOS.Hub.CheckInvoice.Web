@@ -21,6 +21,7 @@ import { formatCalendarDate, localDateIso } from '../../../../core/dates/calenda
 import { DatePicker } from '../../../../shared/components/date-picker/date-picker';
 import { ShortcutDirective } from '../../../../shared/directives/shortcut.directive';
 import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
+import { formatMoney } from '../../../../core/format/money';
 
 interface ReturnLineRow {
   productId: number;
@@ -129,7 +130,7 @@ export class IssueReturnCreate {
         key: 'total',
         header: this.languageService.t('issues.columns.total'),
         align: 'right',
-        format: (value) => (value != null ? Number(value).toFixed(2) : '—'),
+        format: (value) => (value != null ? formatMoney(value) : '—'),
       },
     ];
   });

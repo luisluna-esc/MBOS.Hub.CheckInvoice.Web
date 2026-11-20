@@ -492,7 +492,7 @@
       "name": "Name",
       "department": "Department",
       "subDepartment": "Sub-department",
-      "mediaType": "Unit of Measure",
+      "mediaType": "Product type",
       "isActive": "Active",
       "success": "Product saved successfully.",
       "error": "The product could not be saved.",
@@ -823,8 +823,8 @@
       "issuesThisMonth": "Issues this month",
       "receiptsThisMonth": "Receipts this month",
       "pendingReceivable": "Pending receivable",
-      "paymentsThisMonth": "Payments this month",
-      "issuesChartTitle": "Issues by month (last 6 months)",
+      "paymentsThisMonth": "Collections this month",
+      "issuesChartTitle": "Issues in the last six months",
       "receivableChartTitle": "Accounts Receivable: pending vs paid"
     }
   },
@@ -1038,10 +1038,10 @@
       "totalMismatch": "The sum of the lines must equal the Invoice total.",
       "totalMismatchOver": "The lines add up to {{lines}} Bs. and the purchase total is {{invoice}} Bs.: {{difference}} Bs. too much. Fix the quantities or prices, or the total.",
       "totalMismatchUnder": "The lines add up to {{lines}} Bs. and the purchase total is {{invoice}} Bs.: {{difference}} Bs. missing. Fix the quantities or prices, or the total.",
-      "linesTotal": "Lines total",
-      "product": "Product",
+      "linesTotal": "Total",
+      "product": "Product name",
       "quantity": "Quantity",
-      "unitCost": "Unit Cost (Bs.)",
+      "unitCost": "Unit cost (Bs.)",
       "workOrder": "Work order",
       "success": "Receipt created successfully.",
       "error": "The receipt could not be created."

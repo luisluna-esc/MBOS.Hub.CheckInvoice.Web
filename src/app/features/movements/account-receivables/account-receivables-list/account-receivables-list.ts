@@ -17,6 +17,7 @@ import { RegisterPaymentDialog, RegisterPaymentDialogData } from '../register-pa
 import { PastorAccount } from '../pastor-account/pastor-account';
 import { formatCalendarDate } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
+import { formatMoney } from '../../../../core/format/money';
 
 @Component({
   selector: 'app-account-receivables-list',
@@ -109,19 +110,19 @@ export class AccountReceivablesList {
         key: 'totalAmount',
         header: this.languageService.t('accountReceivables.columns.total'),
         align: 'right',
-        format: (value) => Number(value).toFixed(2),
+        format: (value) => formatMoney(value),
       },
       {
         key: 'paidAmount',
         header: this.languageService.t('accountReceivables.columns.paid'),
         align: 'right',
-        format: (value) => Number(value).toFixed(2),
+        format: (value) => formatMoney(value),
       },
       {
         key: 'outstandingBalance',
         header: this.languageService.t('accountReceivables.columns.outstandingBalance'),
         align: 'right',
-        format: (value) => Number(value).toFixed(2),
+        format: (value) => formatMoney(value),
       },
       {
         key: 'status',

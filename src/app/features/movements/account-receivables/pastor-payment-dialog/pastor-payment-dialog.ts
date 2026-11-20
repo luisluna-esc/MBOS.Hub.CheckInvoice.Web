@@ -12,6 +12,7 @@ import { Select, SelectOption } from '../../../../shared/components/select/selec
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { AccountReceivable, PaymentLine } from '../account-receivable.models';
 import { AccountReceivableService } from '../account-receivable.service';
+import { formatMoney } from '../../../../core/format/money';
 
 export interface PastorPaymentAccount {
   account: AccountReceivable;
@@ -99,7 +100,7 @@ export class PastorPaymentDialog {
 
   protected lineError(row: PayRow): string | null {
     return this.exceeds(row)
-      ? this.languageService.t('accountReceivables.payment.lineExceeds', { name: row.line.name, amount: row.line.remainingAmount.toFixed(2) })
+      ? this.languageService.t('accountReceivables.payment.lineExceeds', { name: row.line.name, amount: formatMoney(row.line.remainingAmount) })
       : null;
   }
 

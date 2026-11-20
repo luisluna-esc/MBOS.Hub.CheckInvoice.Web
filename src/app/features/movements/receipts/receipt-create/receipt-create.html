@@ -154,7 +154,8 @@
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.product' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.quantity' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">
-                  {{ (isDonation() ? 'receipts.form.estimatedValue' : 'receipts.form.unitPrice') | translate }}
+                  <!-- Con retención se escribe el precio de la factura: el costo es ese precio ÷ 0,92 (columna siguiente). -->
+                  {{ (isDonation() ? 'receipts.form.estimatedValue' : withRetention() ? 'receipts.form.unitPrice' : 'receipts.form.unitCost') | translate }}
                 </th>
                 @if (withRetention()) {
                   <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.unitCostRetention' | translate }}</th>

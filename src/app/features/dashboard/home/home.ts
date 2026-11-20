@@ -8,6 +8,7 @@ import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { FinancialDashboardData } from '../../reports/report.models';
 import { ReportService } from '../../reports/report.service';
+import { formatMoney } from '../../../core/format/money';
 
 const DASHBOARD_ROLES = ['M-BOS', 'Tesorero', 'Contador', 'Auxiliar Contador'];
 
@@ -66,6 +67,6 @@ export class Home {
   }
 
   protected formatAmount(amount: number): string {
-    return amount.toFixed(2);
+    return formatMoney(amount);
   }
 }
