@@ -28,7 +28,7 @@
   (detach)="close()"
 >
   <div class="min-w-[18rem] overflow-hidden rounded-md border border-border bg-surface shadow-lg">
-    <ul [id]="inputId + '-list'" role="listbox" class="max-h-72 overflow-auto py-1">
+    <ul [id]="inputId + '-list'" role="listbox" class="max-h-72 overflow-auto p-1">
       @if (loading()) {
         <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'productSearch.loading' | translate }}</li>
       } @else {
@@ -38,8 +38,8 @@
             role="option"
             [attr.aria-selected]="i === activeIndex()"
             [attr.aria-disabled]="isExcluded(product)"
-            class="px-3 py-2 text-sm transition-colors"
-            [class.bg-brand-300]="i === activeIndex() && !isExcluded(product)"
+            class="rounded-md px-2.5 py-2 text-sm transition-colors"
+            [class.bg-primary/10]="i === activeIndex() && !isExcluded(product)"
             [class.cursor-pointer]="!isExcluded(product)"
             [class.text-foreground]="!isExcluded(product)"
             [class.cursor-not-allowed]="isExcluded(product)"

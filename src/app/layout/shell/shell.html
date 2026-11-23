@@ -113,7 +113,7 @@
         </app-tooltip>
 
         @if (!isCollapsed && isExpanded(item.menuId)) {
-          <div class="ml-4 flex flex-col gap-1 border-l border-border pl-4">
+          <div class="menu-tree ml-[21px] flex flex-col gap-1 pl-3">
             @for (child of item.children; track child.menuId) {
               @if (child.children.length) {
                 <!-- Subgrupo (ej. Reportes / Contabilidad): se despliega igual que un grupo. -->
@@ -139,7 +139,7 @@
                   </svg>
                 </button>
                 @if (isExpanded(child.menuId)) {
-                  <div class="ml-2 flex flex-col gap-1 border-l border-border pl-3">
+                  <div class="menu-tree menu-tree-sub ml-[13px] flex flex-col gap-1 pl-3">
                     @for (leaf of child.children; track leaf.menuId) {
                       <a
                         [routerLink]="leaf.route"
@@ -253,6 +253,18 @@
           <app-language-switcher />
           <app-theme-toggle />
         </div>
+
+        <button
+          type="button"
+          class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors hover:bg-surface"
+          (click)="openProfile()"
+        >
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5" />
+            <path d="M4 21c0-3.866 3.582-7 8-7s8 3.134 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          {{ 'profile.title' | translate }}
+        </button>
 
         <button
           type="button"

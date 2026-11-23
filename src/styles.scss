@@ -18,6 +18,27 @@ body {
   color-scheme: dark;
 }
 
+/* Sombras suaves en todo el sistema: tarjetas, campos y botones se despegan del fondo.
+   Van con :where() (sin peso), así el anillo de foco (focus:ring) y cualquier shadow-* propio
+   de un elemento siguen mandando. */
+:root {
+  --app-shadow-field: 0 1px 2px rgb(29 52 86 / 0.10);
+  --app-shadow-card: 0 1px 3px rgb(29 52 86 / 0.10), 0 8px 24px rgb(29 52 86 / 0.10);
+}
+.dark {
+  --app-shadow-field: 0 1px 2px rgb(0 0 0 / 0.35);
+  --app-shadow-card: 0 1px 3px rgb(0 0 0 / 0.5), 0 8px 24px rgb(0 0 0 / 0.45);
+}
+/* En la capa "components": por debajo de las utilidades de Tailwind (el anillo de foco gana). */
+@layer components {
+  :where(.rounded-lg.border, .rounded-md.border.p-4) {
+    box-shadow: var(--app-shadow-card);
+  }
+  :where(input.rounded-md.border, textarea.rounded-md.border, button.rounded-md.border, button.rounded-md.bg-primary, a.rounded-md.bg-primary) {
+    box-shadow: var(--app-shadow-field);
+  }
+}
+
 .app-dialog-backdrop {
   background-color: color-mix(in srgb, var(--color-brand-900) 60%, transparent);
 }
@@ -65,4 +86,47 @@ input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Submenú del menú lateral: un tronco vertical y una curva hacia cada opción (en vez de la
+   línea recta). Cada opción dibuja su curva (::before) y, si no es la última, el tramo de
+   tronco que baja hasta la siguiente (::after). El bloque de un subgrupo abierto no lleva curva. */
+:root {
+  --menu-tree-line: color-mix(in srgb, var(--color-muted-foreground) 45%, var(--color-surface));
+}
+.menu-tree > * {
+  position: relative;
+}
+.menu-tree > :not(.menu-tree-sub)::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: -4px;
+  width: 18px;
+  height: calc(50% + 4px);
+  border-left: 1.5px solid var(--menu-tree-line);
+  border-bottom: 1.5px solid var(--menu-tree-line);
+  border-bottom-left-radius: 10px;
+  pointer-events: none;
+}
+.menu-tree > :first-child::before {
+  top: -6px;
+  height: calc(50% + 6px);
+}
+.menu-tree > :not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  bottom: -4px;
+  border-left: 1.5px solid var(--menu-tree-line);
+  pointer-events: none;
+}
+/* El bloque de un subgrupo abierto: el tronco lo atraviesa entero solo si hay más opciones abajo. */
+.menu-tree > .menu-tree-sub:not(:last-child)::after {
+  top: -4px;
+}
+/* Subgrupo abierto que es lo último: el tronco termina en su curva, no sigue por sus hijos. */
+.menu-tree > :has(+ .menu-tree-sub:last-child)::after {
+  display: none;
 }

@@ -130,9 +130,46 @@ export class Input implements ControlValueAccessor {
   }
 
   protected onInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+    const field = event.target as HTMLInputElement;
+    let value = field.value;
+    // Campo de números: no entra ninguna letra ni símbolo (tampoco pegando texto). Solo números,
+    // un punto decimal (la coma se cambia por punto) si admite decimales, y el signo menos al
+    // inicio solo si admite negativos.
+    if (this.type() === 'number') {
+      const clean = this.sanitizeNumber(value);
+      if (clean !== value) {
+        const caret = (field.selectionStart ?? value.length) - (value.length - clean.length);
+        field.value = clean;
+        field.setSelectionRange(Math.max(0, caret), Math.max(0, caret));
+        value = clean;
+      }
+    }
     this.value.set(value);
     this.onChange(value);
+  }
+
+  /** "1a2,5x" -> "12.5": deja solo lo que puede tener un número de este campo. */
+  private sanitizeNumber(raw: string): string {
+    const allowNegative = this.min() === null || this.min()! < 0;
+    const decimals = this.decimals();
+    const allowDecimal = decimals === null || decimals > 0;
+
+    const negative = allowNegative && raw.trimStart().startsWith('-');
+    let text = raw.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+    const dot = text.indexOf('.');
+    if (dot >= 0) {
+      if (!allowDecimal) {
+        text = text.slice(0, dot);
+      } else {
+        // Un solo punto; y no más decimales de los permitidos.
+        let fraction = text.slice(dot + 1).replace(/\./g, '');
+        if (decimals !== null) {
+          fraction = fraction.slice(0, decimals);
+        }
+        text = `${text.slice(0, dot)}.${fraction}`;
+      }
+    }
+    return (negative ? '-' : '') + text;
   }
 
   protected onBlur(): void {

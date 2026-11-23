@@ -18,6 +18,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { BATCH_ISSUE_TYPE } from '../../issues/issue-motives/issue-motives';
 import { PendingReceipt } from '../pending-receipt.models';
 import { PendingReceiptService, apiError } from '../pending-receipt.service';
+import { NumberOnlyDirective } from '../../../../shared/directives/number-only.directive';
 
 const PAYMENT_TYPE_CODES = ['cash', 'credit', 'installments'] as const;
 
@@ -27,7 +28,7 @@ const PAYMENT_TYPE_CODES = ['cash', 'credit', 'installments'] as const;
  */
 @Component({
   selector: 'app-pending-delivery-create',
-  imports: [FormsModule, Select, DatePicker, Checkbox, PartySearchInput, ProductPhoto, TranslatePipe, DecimalPipe],
+  imports: [NumberOnlyDirective, FormsModule, Select, DatePicker, Checkbox, PartySearchInput, ProductPhoto, TranslatePipe, DecimalPipe],
   templateUrl: './pending-delivery-create.html',
 })
 export class PendingDeliveryCreate {

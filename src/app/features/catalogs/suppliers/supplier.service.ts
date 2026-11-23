@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiMessage } from '../../../core/auth/auth.models';
 import { PagedResult } from '../../../core/http/paged-result';
-import { Supplier, SupplierFilters, SupplierRequest } from './supplier.models';
+import { PurchaseSupplier, Supplier, SupplierFilters, SupplierRequest } from './supplier.models';
 
 interface WriteResponse {
   id: number;
@@ -22,6 +22,20 @@ export class SupplierService {
       })
     );
     return response.data;
+  }
+
+  /** Buscador de la pantalla de compra: activos, los más usados primero (sin texto, los más usados). */
+  forPurchase(search: string, limit = 20): Promise<PurchaseSupplier[]> {
+    return firstValueFrom(
+      this.http.get<PurchaseSupplier[]>(`${environment.apiUrl}/Suppliers/for-purchase`, {
+        params: { search, limit },
+      })
+    );
+  }
+
+  /** Proveedor escrito en la compra: usa el que ya existe con ese nombre (aunque cambien mayúsculas o acentos) o lo crea. */
+  useOrCreateForPurchase(name: string): Promise<PurchaseSupplier> {
+    return firstValueFrom(this.http.post<PurchaseSupplier>(`${environment.apiUrl}/Suppliers/for-purchase`, { name }));
   }
 
   create(request: SupplierRequest): Promise<WriteResponse> {

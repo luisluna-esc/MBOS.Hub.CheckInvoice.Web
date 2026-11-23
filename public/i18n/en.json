@@ -436,19 +436,24 @@
     "loading": "Searching...",
     "taxId": "Tax ID",
     "noResults": "No results.",
-    "minChars": "Type at least {{count}} characters to search."
+    "minChars": "Type at least {{count}} characters to search.",
+    "mostUsed": "Most used",
+    "purchases": "{{count}} purchases",
+    "purchaseOne": "1 purchase",
+    "issues": "{{count}} issues",
+    "issueOne": "1 issue"
   },
   "productPicker": {
     "keyboardHint": "Type the name or code, move with ↑ ↓ and choose with Enter. Products already on another line are marked.",
     "title": "Select product",
     "alreadyAdded": "already added",
     "filters": {
-      "name": "Name",
+      "name": "Product name or code",
       "code": "Code"
     },
     "columns": {
       "code": "Code",
-      "name": "Name"
+      "name": "Product name"
     },
     "create": "Create product"
   },
@@ -459,7 +464,7 @@
     "title": "Products",
     "new": "New product",
     "filters": {
-      "search": "Search by name",
+      "search": "Search by product name or code",
       "department": "Department",
       "status": "Status",
       "active": "Active",
@@ -468,7 +473,7 @@
     "columns": {
       "photo": "Photo",
       "code": "Code",
-      "name": "Name",
+      "name": "Product name",
       "department": "Department",
       "status": "Status"
     },
@@ -489,7 +494,7 @@
       "newTitle": "New product",
       "editTitle": "Edit product",
       "code": "Code",
-      "name": "Name",
+      "name": "Product name",
       "department": "Department",
       "subDepartment": "Sub-department",
       "mediaType": "Product type",
@@ -825,8 +830,61 @@
       "pendingReceivable": "Pending receivable",
       "paymentsThisMonth": "Collections this month",
       "issuesChartTitle": "Issues in the last six months",
-      "receivableChartTitle": "Accounts Receivable: pending vs paid"
-    }
+      "receivableChartTitle": "Accounts Receivable: pending vs paid",
+      "departmentChartTitle": "Issues this month by department",
+      "departmentChartEmpty": "No issues this month."
+    },
+    "yourRole": "Your role: {{role}}",
+    "whatYouDo": "What you are in charge of",
+    "roles": {
+      "mbos": {
+        "summary": "You manage the whole system: users, roles and the menus each one sees. You can see every warehouse and account movement.",
+        "tasks": [
+          "Create users and assign their role",
+          "Decide which menus each role sees",
+          "Review the financial summary and all reports"
+        ]
+      },
+      "tesorero": {
+        "summary": "You look after the money and authorize changes. You follow the warehouse and the accounts, and approve or reject the edits and voids others request.",
+        "tasks": [
+          "Approve or reject edits and voids of receipts and issues",
+          "Follow accounts receivable and this month's collections",
+          "Check inventory and finance reports"
+        ]
+      },
+      "contador": {
+        "summary": "You keep the warehouse accounting: what comes in, what goes out and what it is worth. You also authorize the edits and voids the Accounting Assistant requests.",
+        "tasks": [
+          "Record material receipts and issues",
+          "Authorize edits and voids",
+          "Review the kardex, stock and reports"
+        ]
+      },
+      "auxiliar": {
+        "summary": "You record the warehouse day to day: purchases and receipts, issues to pastors and transfers between warehouses. You keep clients, suppliers and products up to date.",
+        "tasks": [
+          "Record receipts, issues and transfers",
+          "Add and correct clients, suppliers and products",
+          "Ask the Accountant or Treasurer to edit or void a record"
+        ]
+      },
+      "pastor": {
+        "summary": "You check your own account: the material you were given and what you still owe.",
+        "tasks": [
+          "See the material you received",
+          "Check your pending balance"
+        ]
+      },
+      "caja": {
+        "summary": "You receive accounts receivable payments and record each deposit, product by product.",
+        "tasks": [
+          "Record accounts receivable deposits",
+          "See which accounts are still pending"
+        ]
+      }
+    },
+    "yourRoleLabel": "Your role"
   },
   "dialog": {
     "save": "Save",
@@ -911,13 +969,14 @@
         "adjustment": "Stock corrections, for example after a physical count.",
         "donation": "Material received as a donation. Choose the donor and the estimated value of each product.",
         "initial": "Load of the inventory the system starts with.",
-        "pending": "Material that arrived without an invoice. It does not count in stock or reports until the invoice is attached."
+        "pending": "Material that arrived without an invoice. It does not count in stock or reports until the invoice is attached.",
+        "withoutInvoice": "Material bought without an invoice (for example, with a receipt). The cost is the price."
       },
       "typeDescription": "Record a receipt of type {{type}}.",
       "question": "Why is the material coming in? Choose the receipt type.",
       "soon": "Coming soon",
       "pending": {
-        "title": "No invoice yet (pending)"
+        "title": "Preliminary receipt (invoice pending)"
       },
       "purchases": {
         "title": "Purchases",
@@ -1010,7 +1069,7 @@
       "purchaseTotal": "Purchase total",
       "ci": "ID card (CI)",
       "documentNumber": "Document No. (optional)",
-      "withRetention": "With withholding (no invoice)",
+      "withRetention": "With withholding",
       "withInvoice": "With invoice",
       "purchaseType": "Purchase type",
       "title": "New purchase",
@@ -1044,7 +1103,13 @@
       "unitCost": "Unit cost (Bs.)",
       "workOrder": "Work order",
       "success": "Receipt created successfully.",
-      "error": "The receipt could not be created."
+      "error": "The receipt could not be created.",
+      "withoutInvoice": "Without invoice",
+      "supportDocument": "Supporting document (optional)",
+      "supportDocumentHint": "Invoice or receipt number, if any.",
+      "requestedBy": "Material requested by (optional)",
+      "requestedByPlaceholder": "E.g. Youth Department",
+      "editHeader": "Edit purchase details"
     },
     "details": {
       "title": "Receipt details",
@@ -1067,6 +1132,24 @@
       "detail": "From {{supplier}}, with {{count}} products, saved on {{date}}. Do you want to continue it?",
       "continue": "Continue",
       "discard": "Discard"
+    },
+    "supplierInput": {
+      "hint": "If it does not exist, it is created here with just the name.",
+      "create": "Create supplier \"{{name}}\"",
+      "created": "Supplier \"{{name}}\" created. Phone and email can be added later in Suppliers.",
+      "createError": "The supplier could not be created",
+      "reused": "Supplier \"{{name}}\" already existed: that one is used, no duplicate is created."
+    },
+    "regularize": {
+      "title": "Settle a preliminary purchase",
+      "detail": "{{count}} preliminary receipt(s) are waiting for an invoice. If this invoice belongs to one of them, join it to that note instead of registering another receipt.",
+      "action": "See pending and join invoice"
+    },
+    "saved": {
+      "title": "Receipt saved",
+      "message": "The receipt was registered. What do you want to do now?",
+      "home": "Go to home",
+      "another": "Register another receipt"
     }
   },
   "issues": {
@@ -1962,7 +2045,8 @@
       "taxId": "Tax ID",
       "country": "Country",
       "email": "Email",
-      "status": "Status"
+      "status": "Status",
+      "name": "Name"
     },
     "actions": {
       "edit": "Edit",
@@ -2139,6 +2223,15 @@
       "success": "Invoice attached",
       "error": "Could not attach the invoice",
       "nothing": "There are no pending notes to attach."
-    }
+    },
+    "pendingDays": "Pending for {{count}} days",
+    "pendingOneDay": "Pending for 1 day"
+  },
+  "profile": {
+    "title": "My profile",
+    "fullName": "Name",
+    "username": "Username",
+    "email": "Email",
+    "roles": "Roles"
   }
 }

@@ -43,18 +43,9 @@
           <app-party-search-input mode="supplier" (picked)="onSupplierPicked($event)" />
         }
       </div>
+      <!-- Sin NIT: es el de la ficha del proveedor. El documento de respaldo es opcional. -->
       <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
-        {{ (withRetention() ? 'pendingReceipts.validate.ci' : 'pendingReceipts.validate.nit') | translate }} *
-        <input
-          type="text"
-          maxlength="20"
-          class="rounded-md border border-border bg-background px-3 py-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-          [value]="taxId()"
-          (input)="taxId.set($any($event.target).value)"
-        />
-      </label>
-      <label class="flex flex-col gap-1 text-sm font-medium text-foreground">
-        {{ (withRetention() ? 'pendingReceipts.validate.documentNumber' : 'pendingReceipts.validate.invoiceNumber') | translate }}{{ withRetention() ? '' : ' *' }}
+        {{ 'receipts.form.supportDocument' | translate }}
         <input
           type="text"
           maxlength="50"

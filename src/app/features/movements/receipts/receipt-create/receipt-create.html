@@ -48,15 +48,66 @@
     </div>
   }
 
+  <!-- "Continuar" una entrada sin terminar: mientras se cargan sus datos se ve el esqueleto, no el formulario a medias. -->
+  @if (restoring()) {
+    <app-loading-skeleton variant="detail" />
+  }
+
+  <div class="flex flex-col gap-4" [class.hidden]="restoring()">
+  <!-- Llegó la factura de material que entró como ingreso preliminar: se regulariza uniéndola a la nota. -->
+  @if (withInvoice() && pendingNotesCount() > 0 && !isCorrection) {
+    <div class="flex flex-col gap-3 rounded-lg border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between" role="status">
+      <div class="flex flex-col gap-0.5">
+        <span class="text-sm font-semibold text-foreground">{{ 'receipts.regularize.title' | translate }}</span>
+        <span class="text-xs text-muted-foreground">{{ 'receipts.regularize.detail' | translate: { count: pendingNotesCount() } }}</span>
+      </div>
+      <button
+        type="button"
+        class="rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-surface"
+        (click)="goToRegularize()"
+      >
+        {{ 'receipts.regularize.action' | translate }}
+      </button>
+    </div>
+  }
+
   <form [formGroup]="headerForm" class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-foreground">{{ (isDonation() ? 'receipts.form.donor' : 'receipts.form.supplier') | translate }}</label>
-        <div class="truncate rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
-          {{ lockedSupplierName() ?? '—' }}
+      @if (isDonation() || isCorrection) {
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-foreground">{{ (isDonation() ? 'receipts.form.donor' : 'receipts.form.supplier') | translate }}</label>
+          <div class="truncate rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
+            {{ lockedSupplierName() ?? '—' }}
+          </div>
+          <p class="min-h-4 text-xs text-muted-foreground">{{ 'receipts.form.supplierLocked' | translate }}</p>
         </div>
-        <p class="min-h-4 text-xs text-muted-foreground">{{ 'receipts.form.supplierLocked' | translate }}</p>
-      </div>
+      } @else {
+        <!-- El buscador de siempre (busca desde 3 letras); si no existe, se crea aquí mismo con solo el nombre. -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-foreground">{{ 'receipts.form.supplier' | translate }}</label>
+          @if (lockedSupplierName() && headerForm.controls.supplierId.value) {
+            <div class="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-3 py-2 text-sm">
+              <span class="min-w-0 truncate text-foreground">{{ lockedSupplierName() }}</span>
+              @if (!headerConfirmed()) {
+                <button type="button" class="shrink-0 text-xs font-medium text-danger hover:underline" (click)="clearSupplier()">
+                  {{ 'pendingReceipts.form.changeSupplier' | translate }}
+                </button>
+              }
+            </div>
+          } @else if (creatingSupplier()) {
+            <div class="rounded-md border border-border bg-surface px-3 py-2 text-sm text-muted-foreground">{{ 'partySearch.loading' | translate }}</div>
+          } @else {
+            <app-party-search-input
+              mode="supplier"
+              [ranked]="true"
+              createLabelKey="receipts.supplierInput.create"
+              (picked)="onSupplierPicked({ kind: 'existing', supplierId: $event.id, name: $event.name })"
+              (createRequested)="onSupplierPicked({ kind: 'new', name: $event })"
+            />
+          }
+          <p class="min-h-4 text-xs text-muted-foreground">{{ 'receipts.supplierInput.hint' | translate }}</p>
+        </div>
+      }
       <app-select
         formControlName="warehouseId"
         [label]="'receipts.form.warehouse' | translate"
@@ -72,18 +123,12 @@
             [required]="true"
           />
         }
+        <!-- Documento de respaldo opcional (factura o recibo). El NIT ya no se pide: es el del proveedor. -->
         <app-input
           formControlName="invoiceNumber"
-          [label]="(withRetention() ? 'receipts.form.documentNumber' : 'receipts.form.invoiceNumber') | translate"
-          [required]="!withRetention()"
+          [label]="'receipts.form.supportDocument' | translate"
+          [hint]="'receipts.form.supportDocumentHint' | translate"
           [maxLength]="50"
-        />
-        <app-input
-          formControlName="taxId"
-          [label]="(withRetention() ? 'receipts.form.ci' : 'receipts.form.taxId') | translate"
-          [hint]="(supplierTaxId() ? 'receipts.form.taxIdFromSupplier' : 'receipts.form.taxIdMissing') | translate"
-          [required]="true"
-          [maxLength]="20"
         />
         <app-input
           formControlName="invoiceTotal"
@@ -112,6 +157,17 @@
     </div>
 
     <app-input formControlName="description" [label]="'receipts.form.description' | translate" [maxLength]="255" />
+
+    @if (headerConfirmed() && !isCorrection) {
+      <!-- Lo ya cargado se puede corregir: vuelve a abrir los datos sin perder los productos. -->
+      <button
+        type="button"
+        class="self-end rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-background"
+        (click)="editHeader()"
+      >
+        {{ 'receipts.form.editHeader' | translate }}
+      </button>
+    }
 
     @if (!headerConfirmed()) {
       <button
@@ -154,12 +210,9 @@
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.product' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">{{ 'receipts.form.quantity' | translate }}</th>
                 <th class="whitespace-nowrap px-3 py-2 text-left font-semibold text-foreground">
-                  <!-- Con retención se escribe el precio de la factura: el costo es ese precio ÷ 0,92 (columna siguiente). -->
-                  {{ (isDonation() ? 'receipts.form.estimatedValue' : withRetention() ? 'receipts.form.unitPrice' : 'receipts.form.unitCost') | translate }}
+                  <!-- Al comprar siempre es "Costo unitario", también con retención (el ÷ 0,92 se explica abajo, no en otra columna). -->
+                  {{ (isDonation() ? 'receipts.form.estimatedValue' : 'receipts.form.unitCost') | translate }}
                 </th>
-                @if (withRetention()) {
-                  <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.unitCostRetention' | translate }}</th>
-                }
                 <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.lineTotal' | translate }}</th>
                 @if (!isDonation()) {
                   <th class="whitespace-nowrap px-3 py-2 text-right font-semibold text-foreground">%</th>
@@ -197,10 +250,11 @@
                     </button>
                     </div>
                   </td>
-                  <td class="w-32 px-3 py-2 align-middle">
+                  <!-- Ancho mínimo: con muchas columnas la tabla los achicaba y un 10 se veía "1". -->
+                  <td class="w-32 min-w-[6.5rem] px-3 py-2 align-middle">
                     <app-input formControlName="quantity" errorDisplay="icon" type="number" [required]="true" [min]="1" [decimals]="0" />
                   </td>
-                  <td class="w-32 px-3 py-2 align-middle">
+                  <td class="w-32 min-w-[7.5rem] px-3 py-2 align-middle">
                     <app-input
                       formControlName="unitPrice"
                       errorDisplay="icon"
@@ -211,9 +265,6 @@
                       (keydown.enter)="onPriceEnter(i, $event)"
                     />
                   </td>
-                  @if (withRetention()) {
-                    <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">{{ lineUnitCost(i) | number: '1.2-2' }}</td>
-                  }
                   <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">{{ lineTotal(i) | number: '1.2-2' }}</td>
                   @if (!isDonation()) {
                     <td class="whitespace-nowrap px-3 py-2 text-right align-middle text-foreground tabular-nums">
@@ -250,7 +301,7 @@
             </tbody>
             <tfoot class="bg-background">
               <tr>
-                <td [attr.colspan]="withRetention() ? 5 : 4" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.linesTotal' | translate }}</td>
+                <td colspan="4" class="px-3 py-2 text-right font-semibold text-foreground">{{ 'receipts.form.linesTotal' | translate }}</td>
                 <td class="whitespace-nowrap px-3 py-2 text-right font-semibold tabular-nums" [class.text-danger]="totalMismatch()" [class.text-foreground]="!totalMismatch()">
                   {{ linesTotalSum() | number: '1.2-2' }}
                 </td>
@@ -320,5 +371,6 @@
       {{ 'receipts.form.print' | translate }}
     </button>
     }
+  </div>
   </div>
 </div>

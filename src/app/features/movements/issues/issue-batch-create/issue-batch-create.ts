@@ -29,6 +29,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { BatchPastor } from '../issue-batch-pastors/issue-batch-pastors';
 import { IssueBatchRequest } from '../issue.models';
 import { IssueService } from '../issue.service';
+import { NumberOnlyDirective } from '../../../../shared/directives/number-only.directive';
 
 const PAYMENT_TYPE_CODES = ['cash', 'credit', 'installments'] as const;
 
@@ -44,7 +45,7 @@ interface BatchMaterial {
  */
 @Component({
   selector: 'app-issue-batch-create',
-  imports: [ShortcutDirective, ReactiveFormsModule, AppInput, Select, Checkbox, DatePicker, ProductPhoto, TranslatePipe, DecimalPipe],
+  imports: [NumberOnlyDirective, ShortcutDirective, ReactiveFormsModule, AppInput, Select, Checkbox, DatePicker, ProductPhoto, TranslatePipe, DecimalPipe],
   templateUrl: './issue-batch-create.html',
 })
 export class IssueBatchCreate {

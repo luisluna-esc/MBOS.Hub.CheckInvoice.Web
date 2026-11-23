@@ -65,6 +65,9 @@ export class SuppliersList {
 
     return [
       { key: 'code', header: this.languageService.t('suppliers.columns.code'), format: (value) => (value as string) || '—' },
+      // El nombre siempre está (un proveedor creado en la compra tiene solo el nombre; la razón
+      // social y lo demás se completan después aquí).
+      { key: 'name', header: this.languageService.t('suppliers.columns.name'), format: (value) => (value as string) || '—' },
       { key: 'legalName', header: this.languageService.t('suppliers.columns.legalName'), format: (value) => (value as string) || '—' },
       { key: 'taxId', header: this.languageService.t('suppliers.columns.taxId'), format: (value) => (value as string) || '—' },
       {

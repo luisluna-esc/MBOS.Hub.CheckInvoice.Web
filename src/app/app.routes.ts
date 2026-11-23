@@ -116,13 +116,13 @@ export const routes: Routes = [
           import('./features/movements/receipts/receipts-list/receipts-list').then((m) => m.ReceiptsList),
       },
       {
+        // Compra: directo al registro; el proveedor se escribe o se crea dentro del formulario.
         path: 'receipts/new',
         loadComponent: () =>
-          import('./features/movements/receipts/receipt-supplier-picker/receipt-supplier-picker').then(
-            (m) => m.ReceiptSupplierPicker
-          ),
+          import('./features/movements/receipts/receipt-create/receipt-create').then((m) => m.ReceiptCreate),
       },
       {
+        // Ruta anterior (con el paso de elegir proveedor): las entradas sin terminar guardadas con ella siguen abriendo.
         path: 'receipts/new/details',
         loadComponent: () =>
           import('./features/movements/receipts/receipt-create/receipt-create').then((m) => m.ReceiptCreate),

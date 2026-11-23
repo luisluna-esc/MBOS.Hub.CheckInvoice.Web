@@ -38,6 +38,28 @@ export interface SupplierRequest {
   churchId?: number | null;
 }
 
+/** Proveedor en el buscador de la compra. */
+export interface PurchaseSupplier {
+  supplierId: number;
+  partyId: number;
+  name: string;
+  taxId: string | null;
+  purchases: number;
+  /** Al escribirlo en la compra: true si se creó, false si ya existía y se usó ese. */
+  created?: boolean;
+}
+
+/** "  Juan  PÉREZ " -> "juan perez": para comparar nombres sin mayúsculas, acentos ni espacios de más. */
+export function normalizeName(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .join(' ');
+}
+
 export interface SupplierFilters {
   supplierId?: number;
   code?: string;

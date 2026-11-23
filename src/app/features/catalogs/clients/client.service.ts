@@ -55,6 +55,16 @@ export class ClientService {
     return response.data;
   }
 
+  /** Buscador de "Cliente o pastor" (Salidas y Entregas): activos, los que más salidas tienen primero. */
+  forIssue(search: string, limit = 8): Promise<{ clientId: number; partyId: number; name: string; taxId: string | null; issues: number }[]> {
+    return firstValueFrom(
+      this.http.get<{ clientId: number; partyId: number; name: string; taxId: string | null; issues: number }[]>(
+        `${environment.apiUrl}/Clients/for-issue`,
+        { params: { search, limit } }
+      )
+    );
+  }
+
   async list(pageNumber: number, pageSize: number, filters: ClientFilters): Promise<PagedResult<Client>> {
     const response = await firstValueFrom(
       this.http.get<{ data: PagedResult<Client> }>(`${environment.apiUrl}/Clients`, {

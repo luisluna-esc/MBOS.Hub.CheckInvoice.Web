@@ -21,6 +21,7 @@ import { ProductPhoto } from '../../../../shared/components/product-photo/produc
 import { Select, SelectOption } from '../../../../shared/components/select/select';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { PendingReceiptService, apiError } from '../pending-receipt.service';
+import { NumberOnlyDirective } from '../../../../shared/directives/number-only.directive';
 
 interface NoteLine {
   product: ProductPickerResult;
@@ -33,7 +34,7 @@ interface NoteLine {
  */
 @Component({
   selector: 'app-pending-receipt-create',
-  imports: [FormsModule, Select, DatePicker, PartySearchInput, ProductPhoto, TranslatePipe],
+  imports: [NumberOnlyDirective, FormsModule, Select, DatePicker, PartySearchInput, ProductPhoto, TranslatePipe],
   templateUrl: './pending-receipt-create.html',
 })
 export class PendingReceiptCreate {

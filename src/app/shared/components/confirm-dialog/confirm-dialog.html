@@ -1,6 +1,7 @@
 <app-dialog
   [title]="data.title"
   [saveLabel]="data.confirmLabel ?? ('dialog.confirm' | translate)"
+  [cancelLabel]="data.cancelLabel ?? null"
   [saveDisabled]="false"
   (save)="confirm()"
   (cancel)="cancel()"

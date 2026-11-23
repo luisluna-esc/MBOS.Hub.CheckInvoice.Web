@@ -436,19 +436,24 @@
     "loading": "Buscando...",
     "taxId": "NIT",
     "noResults": "Sem resultados.",
-    "minChars": "Digite pelo menos {{count}} caracteres para buscar."
+    "minChars": "Digite pelo menos {{count}} caracteres para buscar.",
+    "mostUsed": "Mais usados",
+    "purchases": "{{count}} compras",
+    "purchaseOne": "1 compra",
+    "issues": "{{count}} saídas",
+    "issueOne": "1 saída"
   },
   "productPicker": {
     "keyboardHint": "Digite o nome ou o código, mova-se com ↑ ↓ e escolha com Enter. Os que já estão em outra linha aparecem marcados.",
     "title": "Selecionar produto",
     "alreadyAdded": "já adicionado",
     "filters": {
-      "name": "Nome",
+      "name": "Nome do produto ou código",
       "code": "Código"
     },
     "columns": {
       "code": "Código",
-      "name": "Nome"
+      "name": "Nome do produto"
     },
     "create": "Criar produto"
   },
@@ -459,7 +464,7 @@
     "title": "Produtos",
     "new": "Novo produto",
     "filters": {
-      "search": "Buscar por nome",
+      "search": "Buscar por nome do produto ou código",
       "department": "Departamento",
       "status": "Status",
       "active": "Ativo",
@@ -468,7 +473,7 @@
     "columns": {
       "photo": "Foto",
       "code": "Código",
-      "name": "Nome",
+      "name": "Nome do produto",
       "department": "Departamento",
       "status": "Status"
     },
@@ -489,7 +494,7 @@
       "newTitle": "Novo produto",
       "editTitle": "Editar produto",
       "code": "Código",
-      "name": "Nome",
+      "name": "Nome do produto",
       "department": "Departamento",
       "subDepartment": "Subdepartamento",
       "mediaType": "Tipo de produto",
@@ -825,8 +830,61 @@
       "pendingReceivable": "Pendente a receber",
       "paymentsThisMonth": "Cobranças do mês",
       "issuesChartTitle": "Saídas dos últimos seis meses",
-      "receivableChartTitle": "Contas a Receber: pendente vs pago"
-    }
+      "receivableChartTitle": "Contas a Receber: pendente vs pago",
+      "departmentChartTitle": "Saídas do mês por departamento",
+      "departmentChartEmpty": "Não há saídas este mês."
+    },
+    "yourRole": "Seu papel: {{role}}",
+    "whatYouDo": "Do que você cuida",
+    "roles": {
+      "mbos": {
+        "summary": "Você administra todo o sistema: usuários, papéis e os menus que cada um vê. Você vê todo o movimento do almoxarifado e das contas.",
+        "tasks": [
+          "Criar usuários e atribuir seu papel",
+          "Definir quais menus cada papel vê",
+          "Revisar o resumo financeiro e todos os relatórios"
+        ]
+      },
+      "tesorero": {
+        "summary": "Você cuida do dinheiro e autoriza as alterações. Acompanha o almoxarifado e as contas, e aprova ou rejeita as edições e anulações que os outros pedem.",
+        "tasks": [
+          "Aprovar ou rejeitar edições e anulações de entradas e saídas",
+          "Acompanhar as contas a receber e as cobranças do mês",
+          "Consultar os relatórios de estoque e finanças"
+        ]
+      },
+      "contador": {
+        "summary": "Você mantém o registro contábil do almoxarifado: o que entra, o que sai e quanto vale. Também autoriza as edições e anulações que o Auxiliar Contábil pede.",
+        "tasks": [
+          "Registrar entradas e saídas de material",
+          "Autorizar edições e anulações",
+          "Revisar o kardex, o estoque e os relatórios"
+        ]
+      },
+      "auxiliar": {
+        "summary": "Você registra o dia a dia do almoxarifado: compras e entradas, saídas para pastores e transferências entre almoxarifados. Mantém clientes, fornecedores e produtos em dia.",
+        "tasks": [
+          "Registrar entradas, saídas e transferências",
+          "Cadastrar e corrigir clientes, fornecedores e produtos",
+          "Pedir ao Contador ou ao Tesoureiro que edite ou anule um registro"
+        ]
+      },
+      "pastor": {
+        "summary": "Você consulta sua própria conta: o material que recebeu e o que tem pendente de pagamento.",
+        "tasks": [
+          "Ver o material que você recebeu",
+          "Revisar seu saldo pendente"
+        ]
+      },
+      "caja": {
+        "summary": "Você recebe os pagamentos das contas a receber e registra cada depósito, produto por produto.",
+        "tasks": [
+          "Registrar os depósitos das contas a receber",
+          "Ver quais contas continuam pendentes"
+        ]
+      }
+    },
+    "yourRoleLabel": "Seu papel"
   },
   "dialog": {
     "save": "Salvar",
@@ -911,13 +969,14 @@
         "adjustment": "Correções de estoque, por exemplo depois de uma contagem física.",
         "donation": "Material recebido em doação. Escolhe-se quem doa e o valor estimado de cada produto.",
         "initial": "Carga do estoque com o qual o sistema começa.",
-        "pending": "Material que chegou sem fatura. Não conta no estoque nem nos relatórios até anexar a fatura."
+        "pending": "Material que chegou sem fatura. Não conta no estoque nem nos relatórios até anexar a fatura.",
+        "withoutInvoice": "Material comprado sem fatura (por exemplo, com recibo). O custo é o preço."
       },
       "typeDescription": "Registrar uma entrada do tipo {{type}}.",
       "question": "Por que o material está entrando no almoxarifado? Escolha o tipo de entrada.",
       "soon": "Em breve",
       "pending": {
-        "title": "Sem fatura (pendente)"
+        "title": "Entrada preliminar (fatura pendente)"
       },
       "purchases": {
         "title": "Compras",
@@ -1010,7 +1069,7 @@
       "purchaseTotal": "Valor total da compra",
       "ci": "CI",
       "documentNumber": "N° do documento (opcional)",
-      "withRetention": "Com retenção (sem nota fiscal)",
+      "withRetention": "Com retenção",
       "withInvoice": "Com nota fiscal",
       "purchaseType": "Tipo de compra",
       "title": "Nova compra",
@@ -1044,7 +1103,13 @@
       "unitCost": "Custo unitário (Bs.)",
       "workOrder": "Ordem de trabalho",
       "success": "Entrada registrada com sucesso.",
-      "error": "Não foi possível registrar a entrada."
+      "error": "Não foi possível registrar a entrada.",
+      "withoutInvoice": "Sem fatura",
+      "supportDocument": "Documento de respaldo (opcional)",
+      "supportDocumentHint": "N° da fatura ou do recibo, se houver.",
+      "requestedBy": "Material solicitado por (opcional)",
+      "requestedByPlaceholder": "Ex. Departamento de Jovens",
+      "editHeader": "Editar dados da compra"
     },
     "details": {
       "title": "Detalhe da entrada",
@@ -1067,6 +1132,24 @@
       "detail": "De {{supplier}}, com {{count}} produtos, salva em {{date}}. Deseja continuá-la?",
       "continue": "Continuar",
       "discard": "Descartar"
+    },
+    "supplierInput": {
+      "hint": "Se não existir, é criado aqui mesmo só com o nome.",
+      "create": "Criar fornecedor «{{name}}»",
+      "created": "Fornecedor «{{name}}» criado. Celular e e-mail podem ser completados depois em Fornecedores.",
+      "createError": "Não foi possível criar o fornecedor",
+      "reused": "O fornecedor «{{name}}» já existia: usa-se esse, não se cria outro."
+    },
+    "regularize": {
+      "title": "Regularizar compra preliminar",
+      "detail": "Há {{count}} entrada(s) preliminar(es) aguardando fatura. Se esta fatura for de uma delas, una-a à nota em vez de registrar outra entrada.",
+      "action": "Ver pendentes e unir fatura"
+    },
+    "saved": {
+      "title": "Entrada salva",
+      "message": "A entrada foi registrada. O que deseja fazer agora?",
+      "home": "Ir ao início",
+      "another": "Registrar outra entrada"
     }
   },
   "issues": {
@@ -1962,7 +2045,8 @@
       "taxId": "NIT",
       "country": "País",
       "email": "Email",
-      "status": "Status"
+      "status": "Status",
+      "name": "Nome"
     },
     "actions": {
       "edit": "Editar",
@@ -2139,6 +2223,15 @@
       "success": "Fatura anexada",
       "error": "Não foi possível anexar a fatura",
       "nothing": "Não há notas pendentes para anexar."
-    }
+    },
+    "pendingDays": "Pendente há {{count}} dias",
+    "pendingOneDay": "Pendente há 1 dia"
+  },
+  "profile": {
+    "title": "Meu perfil",
+    "fullName": "Nome",
+    "username": "Usuário",
+    "email": "E-mail",
+    "roles": "Papéis"
   }
 }

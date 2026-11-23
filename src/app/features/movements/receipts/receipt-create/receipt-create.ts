@@ -3,7 +3,7 @@ import { Component, ElementRef, computed, inject, signal, LOCALE_ID, viewChildre
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { debounceTime, map, merge, startWith } from 'rxjs';
+import { debounceTime, firstValueFrom, map, merge, startWith } from 'rxjs';
 import { CatalogItem } from '../../../../core/catalogs/catalog.models';
 import { CatalogService } from '../../../../core/catalogs/catalog.service';
 import { minIssueDateIso } from '../../../../core/catalogs/current-warehouse-periods';
@@ -29,6 +29,13 @@ import { ReceiptDraft, ReceiptDraftStore } from '../receipt-draft';
 import { localDateIso } from '../../../../core/dates/calendar-date';
 import { openPdfTab, showPdf } from '../../../../core/files/pdf';
 import { ShortcutDirective } from '../../../../shared/directives/shortcut.directive';
+import { ConfirmDialog, ConfirmDialogData } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { PendingReceiptService } from '../../pending-receipts/pending-receipt.service';
+import { PartySearchInput } from '../../../../shared/components/party-search-input/party-search-input';
+
+/** Proveedor de la compra: uno que ya existe, o crear uno nuevo con el nombre escrito. */
+type PurchaseSupplierChoice = { kind: 'existing'; supplierId: number; name: string } | { kind: 'new'; name: string };
+import { LoadingSkeleton } from '../../../../shared/components/loading-skeleton/loading-skeleton';
 
 type DetailLineGroup = FormGroup<{
   productId: FormControl<string>;
@@ -40,6 +47,7 @@ type DetailLineGroup = FormGroup<{
 // e inventario inicial tienen su propio camino desde Entradas.
 const PURCHASE_WITH_INVOICE = 'Compras con Factura';
 const PURCHASE_WITH_RETENTION = 'Compras con Retencion';
+const PURCHASE_WITHOUT_INVOICE = 'Compras sin Factura';
 const DONATION = 'Donacion';
 
 /** Con retención (sin factura) el costo unitario es el precio dividido entre este factor. Igual que ReceiptCosting en el backend. */
@@ -47,7 +55,18 @@ const RETENTION_COST_FACTOR = 0.92;
 
 @Component({
   selector: 'app-receipt-create',
-  imports: [ShortcutDirective, ReactiveFormsModule, AppInput, Select, DatePicker, ProductPhoto, TranslatePipe, DecimalPipe],
+  imports: [
+    ShortcutDirective,
+    ReactiveFormsModule,
+    AppInput,
+    Select,
+    DatePicker,
+    ProductPhoto,
+    PartySearchInput,
+    LoadingSkeleton,
+    TranslatePipe,
+    DecimalPipe,
+  ],
   templateUrl: './receipt-create.html',
 })
 export class ReceiptCreate {
@@ -56,6 +75,7 @@ export class ReceiptCreate {
   private readonly receiptService = inject(ReceiptService);
   private readonly reportService = inject(ReportService);
   private readonly supplierService = inject(SupplierService);
+  private readonly pendingReceiptService = inject(PendingReceiptService);
   private readonly toastService = inject(ToastService);
   private readonly languageService = inject(LanguageService);
   private readonly locale = inject(LOCALE_ID);
@@ -124,6 +144,9 @@ export class ReceiptCreate {
       if (item.name === PURCHASE_WITH_INVOICE) {
         return [{ value: String(item.id), label: this.languageService.t('receipts.form.withInvoice') }];
       }
+      if (item.name === PURCHASE_WITHOUT_INVOICE) {
+        return [{ value: String(item.id), label: this.languageService.t('receipts.form.withoutInvoice') }];
+      }
       if (item.name === PURCHASE_WITH_RETENTION) {
         return [{ value: String(item.id), label: this.languageService.t('receipts.form.withRetention') }];
       }
@@ -131,16 +154,29 @@ export class ReceiptCreate {
     })
   );
 
+  // El NIT ya no se pide: el backend toma el de la ficha del proveedor. El documento de respaldo
+  // (factura o recibo) es opcional. El proveedor se escribe o se crea aquí mismo.
   protected readonly headerForm = new FormGroup({
     warehouseId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    supplierId: new FormControl('', { nonNullable: true }),
+    supplierId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     receiptTypeId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     invoiceNumber: new FormControl('', { nonNullable: true }),
-    taxId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    taxId: new FormControl('', { nonNullable: true }),
     invoiceTotal: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     purchaseDate: new FormControl(this.todayIso, { nonNullable: true, validators: [Validators.required] }),
     issueDate: new FormControl(this.todayIso, { nonNullable: true, validators: [Validators.required] }),
     description: new FormControl('', { nonNullable: true }),
+    requestedBy: new FormControl('', { nonNullable: true }),
+  });
+
+  /** Se está creando el proveedor escrito (no se deja continuar mientras tanto). */
+  protected readonly creatingSupplier = signal(false);
+
+  /** Notas de ingreso preliminar que esperan factura: se ofrece regularizarlas desde la compra con factura. */
+  protected readonly pendingNotesCount = signal(0);
+  protected readonly withInvoice = computed(() => {
+    const typeId = Number(this.receiptTypeIdValue());
+    return this.receiptTypes().find((item) => item.id === typeId)?.name === PURCHASE_WITH_INVOICE;
   });
 
   protected readonly detailsArray = new FormArray<DetailLineGroup>([]);
@@ -177,7 +213,9 @@ export class ReceiptCreate {
     { initialValue: true }
   );
 
-  protected readonly continueDisabled = computed(() => this.headerInvalid() || this.headerConfirmed());
+  protected readonly continueDisabled = computed(
+    () => this.headerInvalid() || this.headerConfirmed() || this.creatingSupplier()
+  );
 
   protected readonly detailsValues = toSignal(
     this.detailsArray.valueChanges.pipe(startWith(this.detailsArray.value), takeUntilDestroyed())
@@ -266,6 +304,8 @@ export class ReceiptCreate {
       const state = history.state as { supplierId?: number; receiptTypeId?: number | null; restoreDraft?: boolean };
       const draft = this.draftStore.get();
       if (state.restoreDraft && draft) {
+        // Viene de "Continuar" en Entradas: el esqueleto se ve desde que se abre la pantalla.
+        this.restoring.set(true);
         void catalogsLoaded.then(() => this.restoreDraft(draft));
       } else if (draft) {
         this.pendingDraft.set(draft);
@@ -275,15 +315,17 @@ export class ReceiptCreate {
       if (state.supplierId && !state.restoreDraft) {
         void this.lockSupplier(state.supplierId);
       }
-      // El tipo viene de la tarjeta elegida en Entradas: ya no se vuelve a preguntar.
-      if (state.receiptTypeId && !state.restoreDraft) {
-        this.headerForm.controls.receiptTypeId.setValue(String(state.receiptTypeId));
-        this.presetReceiptTypeId.set(state.receiptTypeId);
+      // El tipo viene de la tarjeta elegida en Entradas (?type=): ya no se vuelve a preguntar.
+      const presetType = state.receiptTypeId ?? (Number(this.route.snapshot.queryParamMap.get('type')) || null);
+      if (presetType && !state.restoreDraft) {
+        this.headerForm.controls.receiptTypeId.setValue(String(presetType));
+        this.presetReceiptTypeId.set(presetType);
+      }
+      if (!this.isDonation()) {
+        void this.loadPendingNotesCount();
       }
     }
 
-    // Con factura el N° de factura es obligatorio; con retención el N° de documento es opcional
-    // (a veces no hay ningún papel). El NIT del proveedor no se cambia con factura.
     this.headerForm.controls.receiptTypeId.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
       this.applyPurchaseTypeRules();
     });
@@ -352,8 +394,20 @@ export class ReceiptCreate {
     this.saveDraft();
   }
 
+  /** Mientras se cargan los datos de la entrada sin terminar se muestra el esqueleto de carga. */
+  protected readonly restoring = signal(false);
+
   /** Deja el formulario como estaba la entrada sin terminar. */
   private async restoreDraft(draft: ReceiptDraft): Promise<void> {
+    this.restoring.set(true);
+    try {
+      await this.applyDraft(draft);
+    } finally {
+      this.restoring.set(false);
+    }
+  }
+
+  private async applyDraft(draft: ReceiptDraft): Promise<void> {
     this.pendingDraft.set(null);
     this.headerForm.enable();
     this.headerConfirmed.set(false);
@@ -417,6 +471,9 @@ export class ReceiptCreate {
     }
     this.warehouses.set(warehouses);
     this.receiptTypes.set(receiptTypes);
+    // Notas viejas pueden no tener proveedor: al corregir no se exige.
+    this.headerForm.controls.supplierId.clearValidators();
+    this.headerForm.controls.supplierId.updateValueAndValidity();
     this.correctionNote.set(summary.noteNumber);
     this.lockedSupplierName.set(summary.supplierName);
     if (summary.receiptTypeName === DONATION) {
@@ -467,23 +524,16 @@ export class ReceiptCreate {
     this.headerConfirmed.set(true);
   }
 
+  /**
+   * El documento de respaldo (factura o recibo) es opcional en todas las compras y el NIT no se
+   * pide en la pantalla: se manda el de la ficha del proveedor, si lo tiene.
+   */
   private applyPurchaseTypeRules(): void {
     if (this.isDonation() || this.isCorrection) {
       return;
     }
-    const invoiceNumber = this.headerForm.controls.invoiceNumber;
-    invoiceNumber.setValidators(this.withRetention() ? [] : [Validators.required]);
-    invoiceNumber.updateValueAndValidity();
-
-    // NIT (con factura) o CI (con retención): sale siempre de la ficha del proveedor y no se
-    // edita en la nota, para que coincidan. Solo se escribe si el proveedor no lo tiene registrado.
     const taxId = this.headerForm.controls.taxId;
-    if (this.supplierTaxId()) {
-      taxId.setValue(this.supplierTaxId()!);
-      taxId.disable();
-    } else {
-      taxId.enable();
-    }
+    taxId.setValue(this.supplierTaxId() ?? '');
   }
 
   private async lockSupplier(supplierId: number): Promise<void> {
@@ -498,6 +548,74 @@ export class ReceiptCreate {
     this.supplierTaxId.set(supplier.taxId || null);
     this.lockedSupplierName.set(supplier.legalName || supplier.name);
     this.applyPurchaseTypeRules();
+  }
+
+  /**
+   * Proveedor elegido en el buscador, o uno nuevo con solo el nombre (celular y correo se
+   * completan después en Proveedores).
+   */
+  protected async onSupplierPicked(choice: PurchaseSupplierChoice): Promise<void> {
+    if (choice.kind === 'existing') {
+      this.headerForm.controls.supplierId.setValue(String(choice.supplierId));
+      this.lockedSupplierName.set(choice.name);
+      void this.lockSupplier(choice.supplierId);
+      return;
+    }
+
+    // Siempre se guarda como proveedor, también con retención (así se pueden sacar todas las
+    // compras de ese proveedor si las pide el fiscalizador). Si no se le vuelve a comprar en un
+    // año, pasa solo a inactivo y deja de salir en la lista.
+    this.creatingSupplier.set(true);
+    try {
+      // Si ya hay uno con ese nombre (aunque cambien mayúsculas o acentos) se usa ese: no se duplica.
+      const supplier = await this.supplierService.useOrCreateForPurchase(choice.name);
+      this.headerForm.controls.supplierId.setValue(String(supplier.supplierId));
+      this.headerForm.controls.taxId.setValue(supplier.taxId ?? '');
+      this.supplierTaxId.set(supplier.taxId || null);
+      this.lockedSupplierName.set(supplier.name);
+      this.toastService.success(
+        this.languageService.t(supplier.created ? 'receipts.supplierInput.created' : 'receipts.supplierInput.reused', {
+          name: supplier.name,
+        })
+      );
+    } catch (error) {
+      const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]?.description;
+      this.toastService.error(this.languageService.t('receipts.supplierInput.createError'), message);
+    } finally {
+      this.creatingSupplier.set(false);
+    }
+  }
+
+  /** "Cambiar": vuelve a mostrar el buscador para elegir otro proveedor. */
+  protected clearSupplier(): void {
+    this.headerForm.controls.supplierId.setValue('');
+    this.headerForm.controls.taxId.setValue('');
+    this.supplierTaxId.set(null);
+    this.lockedSupplierName.set(null);
+  }
+
+  /** "Editar datos de la compra": vuelve a abrir la cabecera sin perder los productos cargados. */
+  protected editHeader(): void {
+    this.headerForm.enable();
+    if (this.presetReceiptTypeId()) {
+      // El tipo vino de la tarjeta: se sigue mostrando en el título, no como campo.
+      this.headerForm.controls.receiptTypeId.setValue(String(this.presetReceiptTypeId()));
+    }
+    this.headerConfirmed.set(false);
+  }
+
+  private async loadPendingNotesCount(): Promise<void> {
+    try {
+      const result = await this.pendingReceiptService.list(1, 1, { status: 'pendiente' });
+      this.pendingNotesCount.set(result.totalRecords ?? result.items.length);
+    } catch {
+      this.pendingNotesCount.set(0);
+    }
+  }
+
+  /** "Regularizar compra preliminar": lista de notas pendientes para unirles esta factura. */
+  protected goToRegularize(): void {
+    void this.router.navigate(['/receipts/pending'], { queryParams: { status: 'pendiente' } });
   }
 
   private async loadCatalogs(): Promise<void> {
@@ -651,6 +769,7 @@ export class ReceiptCreate {
       issueDate: raw.issueDate || null,
       purchaseDate: this.isDonation() ? null : raw.purchaseDate || null,
       description: raw.description || null,
+      requestedBy: raw.requestedBy.trim() || null,
       details: details.map((line) => ({
         productId: Number(line.productId),
         quantity: Number(line.quantity),
@@ -676,7 +795,7 @@ export class ReceiptCreate {
           newTab?.close();
         }
       }
-      void this.router.navigate(['/receipts']);
+      await this.askWhatNext(response.id);
     } catch (error) {
       newTab?.close();
       const message = (error as { error?: { messages?: { description: string }[] } })?.error?.messages?.[0]
@@ -685,6 +804,23 @@ export class ReceiptCreate {
     } finally {
       this.saving.set(false);
     }
+  }
+
+  /**
+   * Guardada (e impresa) la entrada, una salida clara: ir al inicio o registrar otra. Si se cierra
+   * la ventana, se vuelve a Entradas.
+   */
+  private async askWhatNext(receiptId: number): Promise<void> {
+    const ref = this.dialogService.open<boolean, ConfirmDialogData, ConfirmDialog>(ConfirmDialog, {
+      data: {
+        title: this.languageService.t('receipts.saved.title'),
+        message: this.languageService.t('receipts.saved.message', { id: String(receiptId) }),
+        confirmLabel: this.languageService.t('receipts.saved.home'),
+        cancelLabel: this.languageService.t('receipts.saved.another'),
+      },
+    });
+    const goHome = (await firstValueFrom(ref.closed)) === true;
+    void this.router.navigate([goHome ? '/' : '/receipts']);
   }
 
   private async sendCorrection(

@@ -5,30 +5,46 @@
     </label>
   }
 
-  <button
+  <!-- Campo de texto de verdad: la fecha se escribe (dd/mm/aaaa, la "/" se pone sola) o se elige
+       en el calendario con el botón de la derecha. -->
+  <div
     #origin="cdkOverlayOrigin"
-    #trigger
     cdkOverlayOrigin
-    type="button"
-    [id]="pickerId"
-    [disabled]="disabled()"
-    [attr.aria-haspopup]="'dialog'"
-    [attr.aria-expanded]="open()"
-    [attr.aria-labelledby]="label() ? pickerId + '-label' : null"
-    [attr.aria-invalid]="showError"
-    class="flex w-full items-center justify-between rounded-md border bg-surface px-3 py-2 text-left text-sm text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-60"
-    [class.border-border]="!showError"
-    [class.border-danger]="showError"
-    (click)="toggle()"
-    (keydown)="onTriggerKeydown($event)"
-    (blur)="onTriggerBlur()"
+    class="flex w-full items-center rounded-md border bg-surface text-sm text-foreground shadow-sm transition-colors focus-within:ring-2 focus-within:ring-accent"
+    [class.border-border]="!showError && !typedError()"
+    [class.border-danger]="showError || typedError()"
+    [class.opacity-60]="disabled()"
   >
-    @if (typed()) {
-      <span class="min-w-0 truncate text-foreground">{{ typed() }}<span class="animate-pulse text-accent">|</span></span>
-    } @else {
-      <span class="min-w-0 truncate" [class.text-muted-foreground]="!displayValue()">{{ (displayValue() ?? placeholder()) || ' ' }}</span>
-    }
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0 text-muted-foreground">
+    <input
+      #trigger
+      type="text"
+      inputmode="numeric"
+      autocomplete="off"
+      [id]="pickerId"
+      [disabled]="disabled()"
+      placeholder="dd/mm/aaaa"
+      [value]="typed() ?? displayValue() ?? ''"
+      [attr.aria-labelledby]="label() ? pickerId + '-label' : null"
+      [attr.aria-invalid]="showError"
+      class="w-full min-w-0 flex-1 rounded-l-md bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed"
+      (focus)="onFieldFocus($event)"
+      (mouseup)="onFieldMouseUp($event)"
+      (input)="onTyping($event)"
+      (keydown)="onTriggerKeydown($event)"
+      (blur)="onTriggerBlur()"
+    />
+    <button
+      type="button"
+      tabindex="-1"
+      class="flex shrink-0 items-center self-stretch rounded-r-md px-2.5 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground disabled:cursor-not-allowed"
+      [disabled]="disabled()"
+      [attr.aria-haspopup]="'dialog'"
+      [attr.aria-expanded]="open()"
+      aria-label="Abrir calendario"
+      (mousedown)="$event.preventDefault()"
+      (click)="toggle()"
+    >
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0">
       <path
         d="M8 2V5M16 2V5"
         stroke="currentColor"
@@ -43,7 +59,8 @@
       />
       <rect x="3.5" y="4.5" width="17" height="16" rx="2" stroke="currentColor" stroke-width="1.5" />
     </svg>
-  </button>
+    </button>
+  </div>
 
   <ng-template
     cdkConnectedOverlay
@@ -169,7 +186,9 @@
     </div>
   </ng-template>
 
-  @if (showError) {
+  @if (typedError()) {
+    <p class="min-h-4 text-xs text-danger" role="alert">{{ typedError() }}</p>
+  } @else if (showError) {
     <p class="min-h-4 text-xs text-danger">{{ errorMessage }}</p>
   } @else if (hint()) {
     <p class="min-h-4 text-xs text-muted-foreground">{{ hint() }}</p>

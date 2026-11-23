@@ -14,10 +14,12 @@ import { Select, SelectOption } from '../../../../shared/components/select/selec
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { PendingReceipt } from '../pending-receipt.models';
 import { PendingReceiptService, apiError } from '../pending-receipt.service';
+import { NumberOnlyDirective } from '../../../../shared/directives/number-only.directive';
 
 // Nombres de la tabla receipt_type: la nota se vuelve una compra con factura o con retención.
 const PURCHASE_WITH_INVOICE = 'Compras con Factura';
 const PURCHASE_WITH_RETENTION = 'Compras con Retencion';
+const PURCHASE_WITHOUT_INVOICE = 'Compras sin Factura';
 
 interface InvoiceLine {
   key: string;
@@ -39,7 +41,7 @@ interface InvoiceLine {
  */
 @Component({
   selector: 'app-pending-receipt-validate',
-  imports: [FormsModule, Select, DatePicker, PartySearchInput, TranslatePipe, DecimalPipe],
+  imports: [NumberOnlyDirective, FormsModule, Select, DatePicker, PartySearchInput, TranslatePipe, DecimalPipe],
   templateUrl: './pending-receipt-validate.html',
 })
 export class PendingReceiptValidate {
@@ -60,6 +62,9 @@ export class PendingReceiptValidate {
     this.receiptTypes().flatMap((item) => {
       if (item.name === PURCHASE_WITH_INVOICE) {
         return [{ value: String(item.id), label: this.languageService.t('receipts.form.withInvoice') }];
+      }
+      if (item.name === PURCHASE_WITHOUT_INVOICE) {
+        return [{ value: String(item.id), label: this.languageService.t('receipts.form.withoutInvoice') }];
       }
       if (item.name === PURCHASE_WITH_RETENTION) {
         return [{ value: String(item.id), label: this.languageService.t('receipts.form.withRetention') }];
@@ -96,8 +101,6 @@ export class PendingReceiptValidate {
       this.notes().length > 0 &&
       !!this.receiptTypeId() &&
       !!this.supplier() &&
-      !!this.taxId().trim() &&
-      (this.withRetention() || !!this.invoiceNumber().trim()) &&
       !!this.purchaseDate() &&
       this.invoiceTotal() !== null &&
       !this.mismatch() &&

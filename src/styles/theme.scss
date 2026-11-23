@@ -13,16 +13,13 @@
   --color-brand-800: #091c38;
   --color-brand-900: #061930;
 
-  /* Tokens semánticos — valores por defecto (modo claro). Antes usaban una escala "slate"
-     aparte, sin relación con la marca; ahora salen de la misma escala brand-* que usa el
-     login, para que el modo claro se vea de la misma familia de color en vez de gris
-     genérico — background/surface son tintes muy claros de brand-100, primary es el mismo
-     azul intermedio del degradado del login (brand-500). */
-  --color-background: color-mix(in srgb, var(--color-brand-100) 35%, white);
-  --color-surface: var(--color-brand-100);
+  /* Tokens semánticos, modo claro. Primary es el azul de la marca (brand-500). */
+  /* Fondo azul grisáceo claro y tarjetas blancas: así las tarjetas se despegan y las sombras se notan. */
+  --color-background: #eef2f7;
+  --color-surface: #ffffff;
   --color-foreground: var(--color-brand-900);
-  --color-muted-foreground: var(--color-brand-400);
-  --color-border: var(--color-brand-300);
+  --color-muted-foreground: #52627a;
+  --color-border: #c8d0dc;
   --color-primary: var(--color-brand-500);
   --color-primary-foreground: #ffffff;
   /* Primary usado como texto, borde o anillo de foco (enlaces, íconos, selección). En modo
@@ -33,6 +30,13 @@
   --color-danger: #b91c1c;
   /* Confirmaciones (ej. firma digital válida). */
   --color-success: #15803d;
+  /* Colores de apoyo para tarjetas y gráficos (más vida sin salirse de la marca). */
+  --color-chart-1: #1d3456;
+  --color-chart-2: #0ea5e9;
+  --color-chart-3: #10b981;
+  --color-chart-4: #f59e0b;
+  --color-chart-5: #8b5cf6;
+  --color-chart-6: #f43f5e;
   /* Avisos (toast): advertencia e información. */
   --color-warning: #b45309;
   --color-info: #1d4ed8;
@@ -47,16 +51,23 @@
 
 /* Modo oscuro: se activa con la clase .dark en <html> (controlada por ThemeService) */
 .dark {
-  --color-background: var(--color-dark-500);
-  --color-surface: var(--color-dark-400);
-  --color-foreground: var(--color-dark-100);
-  --color-muted-foreground: var(--color-dark-200);
-  --color-border: var(--color-dark-300);
-  --color-primary: var(--color-dark-300);
-  --color-primary-foreground: var(--color-dark-100);
-  --color-accent: var(--color-dark-100);
+  /* Azul noche de la marca en vez de gris plano: fondo, tarjetas y botones con color. */
+  --color-background: #0d1522;
+  --color-surface: #162133;
+  --color-foreground: #e6ebf2;
+  --color-muted-foreground: #9aa9be;
+  --color-border: #2a3a52;
+  --color-primary: #2d5a96;
+  --color-primary-foreground: #ffffff;
+  --color-accent: #8db6ee;
   --color-danger: #f87171;
   --color-success: #4ade80;
   --color-warning: #fbbf24;
   --color-info: #60a5fa;
+  --color-chart-1: #5b8fd6;
+  --color-chart-2: #38bdf8;
+  --color-chart-3: #34d399;
+  --color-chart-4: #fbbf24;
+  --color-chart-5: #a78bfa;
+  --color-chart-6: #fb7185;
 }

@@ -1,8 +1,53 @@
 <div class="flex flex-col gap-6">
   <div class="flex flex-col gap-2">
     <h1 class="text-2xl font-semibold text-foreground">{{ 'home.greeting' | translate: { username: username() } }}</h1>
-    <p class="text-sm text-muted-foreground">{{ 'home.placeholder' | translate }}</p>
   </div>
+
+  <!-- Qué hace el rol con el que se entró: cambia al cambiar de rol. -->
+  @if (roleInfo(); as info) {
+    <!-- Portada del rol: fondo de la marca, ícono grande y las tareas como tarjetas numeradas. -->
+    <section
+      class="relative overflow-hidden rounded-xl bg-primary p-6 text-primary-foreground shadow-lg sm:p-8"
+    >
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/35 via-transparent to-white/10"></div>
+      <!-- Adornos: círculos suaves y el ícono del rol en grande, de fondo. -->
+      <div class="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-white/5"></div>
+      <div class="pointer-events-none absolute -bottom-24 right-24 size-56 rounded-full bg-white/5"></div>
+      <div class="pointer-events-none absolute right-8 top-6 text-primary-foreground/10 [&_svg]:size-40">
+        <app-icon [name]="info.icon" />
+      </div>
+
+      <div class="relative flex flex-col gap-6">
+        <div class="flex items-start gap-4">
+          <div class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25 [&_svg]:size-7">
+            <app-icon [name]="info.icon" />
+          </div>
+          <div class="flex min-w-0 flex-col gap-1">
+            <span class="text-xs font-semibold uppercase tracking-widest text-primary-foreground/70">{{ 'home.yourRoleLabel' | translate }}</span>
+            <h2 class="text-3xl font-bold leading-tight">{{ activeRole() }}</h2>
+          </div>
+        </div>
+
+        <p class="max-w-3xl text-base leading-relaxed text-primary-foreground/90">{{ info.summary | translate }}</p>
+
+        @if (info.tasks.length > 0) {
+          <div class="flex flex-col gap-3">
+            <span class="text-xs font-semibold uppercase tracking-widest text-primary-foreground/70">{{ 'home.whatYouDo' | translate }}</span>
+            <ul class="grid grid-cols-1 gap-3" [class.md:grid-cols-2]="info.tasks.length === 2" [class.md:grid-cols-3]="info.tasks.length !== 2">
+              @for (task of info.tasks; track task; let i = $index) {
+                <li class="flex items-start gap-3 rounded-lg bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
+                  <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-sm font-bold text-primary">{{ i + 1 }}</span>
+                  <span class="text-sm font-medium leading-snug">{{ task }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </section>
+  } @else {
+    <p class="text-sm text-muted-foreground">{{ 'home.placeholder' | translate }}</p>
+  }
 
   @if (showDashboard()) {
     @if (errorCode()) {
@@ -21,33 +66,67 @@
         }
       </div>
     } @else if (data(); as d) {
+      <!-- Cada número con su color e ícono, para distinguirlos de un vistazo. -->
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-4">
-        <div class="rounded-md border border-border p-4">
-          <span class="text-sm text-muted-foreground">{{ 'home.dashboard.issuesThisMonth' | translate }}</span>
-          <p class="text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalIssuesThisMonth) }}</p>
+        <div class="relative overflow-hidden rounded-md border border-border bg-surface p-4">
+          <div class="absolute inset-x-0 top-0 h-1 bg-chart-2"></div>
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-sm text-muted-foreground">{{ 'home.dashboard.issuesThisMonth' | translate }}</span>
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-chart-2/15 text-chart-2">
+              <app-icon name="issue" />
+            </span>
+          </div>
+          <p class="mt-1 text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalIssuesThisMonth) }}</p>
         </div>
-        <div class="rounded-md border border-border p-4">
-          <span class="text-sm text-muted-foreground">{{ 'home.dashboard.receiptsThisMonth' | translate }}</span>
-          <p class="text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalReceiptsThisMonth) }}</p>
+        <div class="relative overflow-hidden rounded-md border border-border bg-surface p-4">
+          <div class="absolute inset-x-0 top-0 h-1 bg-chart-3"></div>
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-sm text-muted-foreground">{{ 'home.dashboard.receiptsThisMonth' | translate }}</span>
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-chart-3/15 text-chart-3">
+              <app-icon name="receipt" />
+            </span>
+          </div>
+          <p class="mt-1 text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalReceiptsThisMonth) }}</p>
         </div>
-        <div class="rounded-md border border-border p-4">
-          <span class="text-sm text-muted-foreground">{{ 'home.dashboard.pendingReceivable' | translate }}</span>
-          <p class="text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalPendingReceivable) }}</p>
+        <div class="relative overflow-hidden rounded-md border border-border bg-surface p-4">
+          <div class="absolute inset-x-0 top-0 h-1 bg-chart-4"></div>
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-sm text-muted-foreground">{{ 'home.dashboard.pendingReceivable' | translate }}</span>
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-chart-4/15 text-chart-4">
+              <app-icon name="pending" />
+            </span>
+          </div>
+          <p class="mt-1 text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalPendingReceivable) }}</p>
         </div>
-        <div class="rounded-md border border-border p-4">
-          <span class="text-sm text-muted-foreground">{{ 'home.dashboard.paymentsThisMonth' | translate }}</span>
-          <p class="text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalPaymentsThisMonth) }}</p>
+        <div class="relative overflow-hidden rounded-md border border-border bg-surface p-4">
+          <div class="absolute inset-x-0 top-0 h-1 bg-chart-5"></div>
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-sm text-muted-foreground">{{ 'home.dashboard.paymentsThisMonth' | translate }}</span>
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-chart-5/15 text-chart-5">
+              <app-icon name="receivable" />
+            </span>
+          </div>
+          <p class="mt-1 text-2xl font-semibold text-foreground">{{ formatAmount(d.summary.totalPaymentsThisMonth) }}</p>
         </div>
       </div>
 
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div class="flex flex-col gap-3 rounded-md border border-border p-4">
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-surface p-4">
           <h2 class="text-sm font-semibold text-foreground">{{ 'home.dashboard.issuesChartTitle' | translate }}</h2>
           <app-bar-chart [items]="issuesByMonthItems()" />
         </div>
-        <div class="flex flex-col gap-3 rounded-md border border-border p-4">
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-surface p-4">
           <h2 class="text-sm font-semibold text-foreground">{{ 'home.dashboard.receivableChartTitle' | translate }}</h2>
           <app-bar-chart [items]="receivableStatusItems()" />
+        </div>
+        <!-- Salidas del mes divididas por departamento (pedido en la reunión). -->
+        <div class="flex flex-col gap-3 rounded-md border border-border bg-surface p-4 lg:col-span-2">
+          <h2 class="text-sm font-semibold text-foreground">{{ 'home.dashboard.departmentChartTitle' | translate }}</h2>
+          @if (issuesByDepartmentItems().length > 0) {
+            <app-bar-chart [items]="issuesByDepartmentItems()" />
+          } @else {
+            <p class="text-sm text-muted-foreground">{{ 'home.dashboard.departmentChartEmpty' | translate }}</p>
+          }
         </div>
       </div>
     }

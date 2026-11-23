@@ -1,0 +1,55 @@
+<div class="flex w-[min(94vw,28rem)] flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-xl">
+  <!-- Cabecera con el color de la marca: iniciales, nombre y rol con el que entró. -->
+  <div class="relative flex flex-col items-center gap-2 bg-primary px-6 pb-6 pt-8 text-primary-foreground">
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-black/35 via-transparent to-white/10"></div>
+    <span class="relative flex size-20 items-center justify-center rounded-full bg-white/15 text-2xl font-bold ring-4 ring-white/25">
+      {{ initials() }}
+    </span>
+    <h2 class="relative text-center text-xl font-bold">{{ fullName() }}</h2>
+    @if (activeRole()) {
+      <span class="relative rounded-full bg-white/15 px-3 py-0.5 text-xs font-semibold">{{ activeRole() }}</span>
+    }
+  </div>
+
+  <dl class="flex flex-col divide-y divide-border px-6 py-2">
+    <div class="flex flex-col gap-0.5 py-3">
+      <dt class="text-xs font-semibold uppercase text-muted-foreground">{{ 'profile.fullName' | translate }}</dt>
+      <dd class="text-sm text-foreground">{{ fullName() }}</dd>
+    </div>
+    <div class="flex flex-col gap-0.5 py-3">
+      <dt class="text-xs font-semibold uppercase text-muted-foreground">{{ 'profile.username' | translate }}</dt>
+      <dd class="text-sm text-foreground">{{ session()?.username }}</dd>
+    </div>
+    <div class="flex flex-col gap-0.5 py-3">
+      <dt class="text-xs font-semibold uppercase text-muted-foreground">{{ 'profile.email' | translate }}</dt>
+      <dd class="break-all text-sm text-foreground">{{ session()?.email || '—' }}</dd>
+    </div>
+    <div class="flex flex-col gap-1.5 py-3">
+      <dt class="text-xs font-semibold uppercase text-muted-foreground">{{ 'profile.roles' | translate }}</dt>
+      <dd class="flex flex-wrap gap-1.5">
+        @for (role of session()?.roles ?? []; track role) {
+          <span
+            class="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+            [class.border-accent]="role === activeRole()"
+            [class.text-accent]="role === activeRole()"
+            [class.border-border]="role !== activeRole()"
+            [class.text-muted-foreground]="role !== activeRole()"
+          >
+            {{ role }}
+          </span>
+        }
+      </dd>
+    </div>
+  </dl>
+
+  <div class="flex justify-end border-t border-border px-6 py-3">
+    <button
+      type="button"
+      appShortcut="cancel"
+      class="rounded-md border border-border px-4 py-1.5 text-sm text-foreground transition-colors hover:bg-background"
+      (click)="close()"
+    >
+      {{ 'dialog.close' | translate }}
+    </button>
+  </div>
+</div>

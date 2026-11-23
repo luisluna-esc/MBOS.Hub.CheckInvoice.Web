@@ -51,7 +51,7 @@
   >
     <div
       #panel
-      class="min-w-[12rem] overflow-hidden rounded-md border border-border bg-surface shadow-lg"
+      class="min-w-[12rem] overflow-hidden rounded-lg border border-border bg-surface shadow-lg"
       (keydown)="onPanelKeydown($event)"
     >
       @if (showSearch()) {
@@ -62,27 +62,29 @@
             (input)="onSearchInput($event)"
             placeholder="Buscar..."
             autocomplete="off"
-            class="w-full rounded border border-border bg-background px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+            class="w-full rounded-md border border-border bg-background px-2.5 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
       }
-      <ul role="listbox" tabindex="-1" class="max-h-60 overflow-auto py-1 focus:outline-none">
+      <!-- Un solo diseño para todas las listas: la opción señalada con un fondo suave y la elegida con ✓. -->
+      <ul role="listbox" tabindex="-1" class="max-h-60 overflow-auto p-1 focus:outline-none">
         @for (option of filteredOptions(); track option.value; let i = $index) {
           <li
             role="option"
             [attr.data-index]="i"
             [attr.aria-selected]="option.value === value()"
-            class="cursor-pointer px-3 py-2 text-sm transition-colors"
-            [class.bg-primary]="option.value === value()"
-            [class.text-primary-foreground]="option.value === value()"
-            [class.text-foreground]="option.value !== value()"
-            [class.hover:bg-brand-300]="option.value !== value()"
-            [class.bg-brand-300]="i === activeIndex() && option.value !== value()"
-            [class.underline]="i === activeIndex() && option.value === value()"
+            class="flex cursor-pointer items-center justify-between gap-2 rounded-md px-2.5 py-2 text-sm text-foreground transition-colors"
+            [class.bg-primary/10]="i === activeIndex()"
+            [class.font-semibold]="option.value === value()"
             (mouseenter)="activeIndex.set(i)"
             (click)="selectOption(option)"
           >
-            {{ option.label }}
+            <span class="min-w-0 truncate">{{ option.label }}</span>
+            @if (option.value === value()) {
+              <svg viewBox="0 0 24 24" fill="none" class="size-4 shrink-0 text-accent" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            }
           </li>
         } @empty {
           <li class="px-3 py-2 text-sm text-muted-foreground">Sin resultados.</li>

@@ -436,19 +436,24 @@
     "loading": "Buscando...",
     "taxId": "NIT",
     "noResults": "Sin resultados.",
-    "minChars": "Escribe al menos {{count}} caracteres para buscar."
+    "minChars": "Escribe al menos {{count}} caracteres para buscar.",
+    "mostUsed": "Más usados",
+    "purchases": "{{count}} compras",
+    "purchaseOne": "1 compra",
+    "issues": "{{count}} salidas",
+    "issueOne": "1 salida"
   },
   "productPicker": {
     "keyboardHint": "Escribe el nombre o el código, muévete con ↑ ↓ y elige con Enter. Los que ya están en otra línea aparecen marcados.",
     "title": "Seleccionar producto",
     "alreadyAdded": "ya agregado",
     "filters": {
-      "name": "Nombre",
+      "name": "Nombre del producto o código",
       "code": "Código"
     },
     "columns": {
       "code": "Código",
-      "name": "Nombre"
+      "name": "Nombre del producto"
     },
     "create": "Crear producto"
   },
@@ -459,7 +464,7 @@
     "title": "Productos",
     "new": "Nuevo producto",
     "filters": {
-      "search": "Buscar por nombre",
+      "search": "Buscar por nombre del producto o código",
       "department": "Departamento",
       "status": "Estado",
       "active": "Activo",
@@ -468,7 +473,7 @@
     "columns": {
       "photo": "Foto",
       "code": "Código",
-      "name": "Nombre",
+      "name": "Nombre del producto",
       "department": "Departamento",
       "status": "Estado"
     },
@@ -489,7 +494,7 @@
       "newTitle": "Nuevo producto",
       "editTitle": "Editar producto",
       "code": "Código",
-      "name": "Nombre",
+      "name": "Nombre del producto",
       "department": "Departamento",
       "subDepartment": "Subdepartamento",
       "mediaType": "Tipo de producto",
@@ -825,8 +830,61 @@
       "pendingReceivable": "Pendiente por cobrar",
       "paymentsThisMonth": "Cobranzas del mes",
       "issuesChartTitle": "Salidas de los últimos seis meses",
-      "receivableChartTitle": "Cuentas por Cobrar: pendiente vs pagado"
-    }
+      "receivableChartTitle": "Cuentas por Cobrar: pendiente vs pagado",
+      "departmentChartTitle": "Salidas del mes por departamento",
+      "departmentChartEmpty": "No hay salidas este mes."
+    },
+    "yourRole": "Tu rol: {{role}}",
+    "whatYouDo": "De qué te encargas",
+    "roles": {
+      "mbos": {
+        "summary": "Administras el sistema completo: usuarios, roles y los menús que ve cada uno. Tienes a la vista todo el movimiento del almacén y de las cuentas.",
+        "tasks": [
+          "Crear usuarios y asignarles su rol",
+          "Definir qué menús ve cada rol",
+          "Revisar el resumen financiero y todos los reportes"
+        ]
+      },
+      "tesorero": {
+        "summary": "Cuidas el dinero y autorizas los cambios. Revisas cómo va el almacén y las cuentas, y apruebas o rechazas las ediciones y anulaciones que piden los demás.",
+        "tasks": [
+          "Aprobar o rechazar ediciones y anulaciones de entradas y salidas",
+          "Seguir las cuentas por cobrar y las cobranzas del mes",
+          "Consultar los reportes de inventario y finanzas"
+        ]
+      },
+      "contador": {
+        "summary": "Llevas el registro contable del almacén: lo que entra, lo que sale y cuánto vale. También autorizas las ediciones y anulaciones que pide el Auxiliar Contador.",
+        "tasks": [
+          "Registrar entradas y salidas de material",
+          "Autorizar ediciones y anulaciones",
+          "Revisar el kardex, el stock y los reportes"
+        ]
+      },
+      "auxiliar": {
+        "summary": "Registras el día a día del almacén: las compras y entradas, las salidas a pastores y los traspasos entre almacenes. Mantienes al día clientes, proveedores y productos.",
+        "tasks": [
+          "Registrar entradas, salidas y transferencias",
+          "Cargar y corregir clientes, proveedores y productos",
+          "Pedir al Contador o al Tesorero que edite o anule un registro"
+        ]
+      },
+      "pastor": {
+        "summary": "Consultas tu propia cuenta: el material que se te entregó y lo que tienes pendiente de pago.",
+        "tasks": [
+          "Ver el material que recibiste",
+          "Revisar tu saldo pendiente"
+        ]
+      },
+      "caja": {
+        "summary": "Recibes los pagos de las cuentas por cobrar y registras cada depósito, producto por producto.",
+        "tasks": [
+          "Registrar los depósitos de las cuentas por cobrar",
+          "Ver qué cuentas siguen pendientes"
+        ]
+      }
+    },
+    "yourRoleLabel": "Tu rol"
   },
   "dialog": {
     "save": "Guardar",
@@ -906,22 +964,23 @@
     "motives": {
       "byType": {
         "invoice": "Material comprado a un proveedor, con factura.",
-        "retention": "Material comprado sin factura: el costo es el precio dividido entre 0,92.",
+        "retention": "Material comprado con retención: el costo es el precio dividido entre 0,92.",
         "return": "Material que vuelve de una salida ya registrada.",
         "adjustment": "Correcciones de stock, por ejemplo después de un conteo físico.",
         "donation": "Material recibido en donación. Se elige quién dona y el valor estimado de cada producto.",
         "initial": "Carga del inventario con el que empieza el sistema.",
-        "pending": "Material que llegó sin factura. No cuenta en el stock ni en los reportes hasta unirle la factura."
+        "pending": "El material llegó antes que la factura: se anota solo la cantidad y quién lo envió. No cuenta en el stock hasta unirle la factura.",
+        "withoutInvoice": "Material comprado sin factura (por ejemplo, con recibo). El costo es el precio."
       },
       "typeDescription": "Registrar una entrada de tipo {{type}}.",
       "question": "¿Por qué entra el material al almacén? Elige el tipo de entrada.",
       "soon": "Próximamente",
       "pending": {
-        "title": "Sin factura (pendiente)"
+        "title": "Ingreso preliminar (pendiente de factura)"
       },
       "purchases": {
         "title": "Compras",
-        "description": "Material comprado a un proveedor, con factura o con retención."
+        "description": "Material comprado a un proveedor: con factura, sin factura o con retención."
       },
       "transfers": {
         "title": "Transferencias de almacén",
@@ -1010,7 +1069,7 @@
       "purchaseTotal": "Valor total de la compra",
       "ci": "CI",
       "documentNumber": "N° de documento (opcional)",
-      "withRetention": "Con retención (sin factura)",
+      "withRetention": "Con retención",
       "withInvoice": "Con factura",
       "purchaseType": "Tipo de compra",
       "title": "Nueva compra",
@@ -1044,7 +1103,13 @@
       "unitCost": "Costo unitario (Bs.)",
       "workOrder": "Orden de trabajo",
       "success": "Entrada registrada correctamente.",
-      "error": "No se pudo registrar la entrada."
+      "error": "No se pudo registrar la entrada.",
+      "withoutInvoice": "Sin factura",
+      "supportDocument": "Documento de respaldo (opcional)",
+      "supportDocumentHint": "N° de factura o de recibo, si hay.",
+      "requestedBy": "Material solicitado por (opcional)",
+      "requestedByPlaceholder": "Ej. Departamento de Jóvenes",
+      "editHeader": "Editar datos de la compra"
     },
     "details": {
       "title": "Detalle de la entrada",
@@ -1067,6 +1132,24 @@
       "detail": "De {{supplier}}, con {{count}} productos, guardada el {{date}}. ¿Quieres continuarla?",
       "continue": "Continuar",
       "discard": "Descartar"
+    },
+    "supplierInput": {
+      "hint": "Si no existe, se crea aquí mismo con solo el nombre.",
+      "create": "Crear proveedor «{{name}}»",
+      "created": "Proveedor «{{name}}» creado. El celular y el correo se completan después en Proveedores.",
+      "createError": "No se pudo crear el proveedor",
+      "reused": "Ya existía el proveedor «{{name}}»: se usa ese, no se crea otro."
+    },
+    "regularize": {
+      "title": "Regularizar compra preliminar",
+      "detail": "Hay {{count}} ingreso(s) preliminar(es) esperando factura. Si esta factura es de uno de ellos, únela a la nota en vez de registrar otra entrada.",
+      "action": "Ver pendientes y unir factura"
+    },
+    "saved": {
+      "title": "Entrada guardada",
+      "message": "La entrada quedó registrada. ¿Qué quieres hacer ahora?",
+      "home": "Ir al inicio",
+      "another": "Registrar otra entrada"
     }
   },
   "issues": {
@@ -1962,7 +2045,8 @@
       "taxId": "NIT",
       "country": "País",
       "email": "Email",
-      "status": "Estado"
+      "status": "Estado",
+      "name": "Nombre"
     },
     "actions": {
       "edit": "Editar",
@@ -2139,6 +2223,15 @@
       "success": "Factura unida",
       "error": "No se pudo unir la factura",
       "nothing": "No hay notas pendientes para unir."
-    }
+    },
+    "pendingDays": "Pendiente hace {{count}} días",
+    "pendingOneDay": "Pendiente hace 1 día"
+  },
+  "profile": {
+    "title": "Mi perfil",
+    "fullName": "Nombre",
+    "username": "Usuario",
+    "email": "Correo",
+    "roles": "Roles"
   }
 }

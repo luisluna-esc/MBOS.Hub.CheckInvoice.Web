@@ -40,6 +40,7 @@ export interface ReceiptSummary {
   taxId: string | null;
   invoiceNumber: string | null;
   description: string | null;
+  requestedBy: string | null;
   invoiceTotal: number | null;
   isVoided: boolean;
   createdByName: string | null;
@@ -85,6 +86,8 @@ export interface ReceiptRequest {
   receiptTypeId?: number | null;
   invoiceNumber?: string | null;
   description?: string | null;
+  /** Opcional: "Material solicitado por …" (sale en Observaciones de la nota). */
+  requestedBy?: string | null;
   invoiceTotal?: number | null;
   /** Fecha de ingreso al almacén (mes anterior o actual, hasta hoy). */
   issueDate?: string | null;

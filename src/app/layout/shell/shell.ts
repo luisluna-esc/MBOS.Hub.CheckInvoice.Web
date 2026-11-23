@@ -12,6 +12,7 @@ import { MenuService } from '../../core/menu/menu.service';
 import { GO_TO_SHORTCUTS, ShortcutService } from '../../core/shortcuts/shortcut.service';
 import { ThemeService } from '../../core/theme/theme.service';
 import { CommandPalette, CommandPaletteData, CommandPaletteEntry } from '../../shared/components/command-palette/command-palette';
+import { ProfileDialog } from '../../shared/components/profile-dialog/profile-dialog';
 import { ShortcutsHelp, ShortcutsHelpData } from '../../shared/components/shortcuts-help/shortcuts-help';
 import { Icon } from '../../shared/components/icon/icon';
 import { LanguageSwitcher } from '../../shared/components/language-switcher/language-switcher';
@@ -172,6 +173,12 @@ export class Shell {
         void this.router.navigateByUrl(route);
       }
     });
+  }
+
+  /** Mi perfil: ventana que solo muestra los datos del usuario. */
+  protected openProfile(): void {
+    this.accountMenuOpen.set(false);
+    this.dialogService.open<void>(ProfileDialog);
   }
 
   protected openShortcutsHelp(): void {

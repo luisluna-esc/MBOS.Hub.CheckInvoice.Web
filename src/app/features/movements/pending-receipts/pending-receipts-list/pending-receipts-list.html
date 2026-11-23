@@ -109,6 +109,19 @@
                 >
                   {{ 'pendingReceipts.status.' + note.status | translate }}
                 </span>
+                @if (note.status === 'pendiente') {
+                  <!-- Contador del tiempo que lleva esperando la factura: más de 30 días se resalta. -->
+                  @let days = daysPending(note.receivedDate);
+                  <span
+                    class="rounded-full px-2 py-0.5 text-xs font-medium"
+                    [class.bg-danger/10]="days > 30"
+                    [class.text-danger]="days > 30"
+                    [class.bg-background]="days <= 30"
+                    [class.text-muted-foreground]="days <= 30"
+                  >
+                    {{ (days === 1 ? 'pendingReceipts.pendingOneDay' : 'pendingReceipts.pendingDays') | translate: { count: days } }}
+                  </span>
+                }
               </div>
               <span class="text-xs text-muted-foreground">
                 {{ 'pendingReceipts.receivedOn' | translate: { date: day(note.receivedDate) } }}

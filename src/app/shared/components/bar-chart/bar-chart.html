@@ -1,15 +1,18 @@
-<div class="flex items-end gap-3">
-  @for (item of items(); track item.label) {
-    <div class="flex flex-1 flex-col items-center gap-1" [style.height.px]="height()">
-      <span class="text-xs font-medium text-foreground">{{ valueFormatter()(item.value) }}</span>
-      <div class="flex w-full flex-1 items-end">
-        <div
-          class="w-full rounded-t-sm transition-[height]"
-          [class]="item.colorClass ?? 'bg-primary'"
-          [style.height.%]="barHeightPercent(item.value)"
-        ></div>
+<!-- En pantallas chicas, si las barras no entran, el gráfico se desliza de costado (no estira la página). -->
+<div class="overflow-x-auto">
+  <div class="flex min-w-full items-end gap-2 sm:gap-3">
+    @for (item of items(); track item.label) {
+      <div class="flex min-w-14 flex-1 flex-col items-center gap-1" [style.height.px]="height()">
+        <span class="whitespace-nowrap text-[11px] font-medium text-foreground sm:text-xs">{{ valueFormatter()(item.value) }}</span>
+        <div class="flex w-full flex-1 items-end">
+          <div
+            class="w-full rounded-t-sm transition-[height]"
+            [class]="item.colorClass ?? 'bg-primary'"
+            [style.height.%]="barHeightPercent(item.value)"
+          ></div>
+        </div>
+        <span class="w-full truncate text-center text-xs text-muted-foreground" [title]="item.label">{{ item.label }}</span>
       </div>
-      <span class="text-xs text-muted-foreground">{{ item.label }}</span>
-    </div>
-  }
+    }
+  </div>
 </div>

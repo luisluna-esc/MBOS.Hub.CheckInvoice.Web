@@ -2,7 +2,7 @@ import { ConnectionPositionPair, OverlayModule } from '@angular/cdk/overlay';
 import { Component, inject, input, output, signal } from '@angular/core';
 import { Client } from '../../../features/catalogs/clients/client.models';
 import { ClientService } from '../../../features/catalogs/clients/client.service';
-import { Supplier } from '../../../features/catalogs/suppliers/supplier.models';
+import { Supplier, normalizeName } from '../../../features/catalogs/suppliers/supplier.models';
 import { SupplierService } from '../../../features/catalogs/suppliers/supplier.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -35,6 +35,20 @@ export class PartySearchInput {
   readonly mode = input.required<'supplier' | 'client'>();
   readonly label = input<string>('');
   readonly picked = output<PartySearchResult>();
+  /**
+   * Texto de la opción "Crear «…»" al final de la lista (ej. 'receipts.supplierInput.create').
+   * Sin él no se ofrece crear (como en las demás pantallas). Con él, si lo escrito no es
+   * exactamente uno de la lista, se puede crear ahí mismo y se avisa por `createRequested`.
+   */
+  readonly createLabelKey = input<string | null>(null);
+  /**
+   * Búsqueda de las pantallas de trabajo (Proveedor en Compras; Cliente o pastor en Salidas y
+   * Entregas): solo activos, sin importar mayúsculas, acentos ni el orden de las palabras, y
+   * primero los más usados. Sin esto busca en la lista completa (formularios de Clientes y
+   * Proveedores, reportes).
+   */
+  readonly ranked = input(false);
+  readonly createRequested = output<string>();
 
   private readonly clientService = inject(ClientService);
   private readonly supplierService = inject(SupplierService);
@@ -76,12 +90,23 @@ export class PartySearchInput {
     const token = ++this.requestToken;
     this.loading.set(true);
     try {
-      const result =
-        this.mode() === 'supplier'
-          ? await this.supplierService.list(1, 8, { searchCriteria: term })
-          : await this.clientService.list(1, 8, { searchCriteria: term });
+      let items: (Client | Supplier)[];
+      if (this.ranked() && this.mode() === 'supplier') {
+        // Compra: de paso pasa a inactivo el proveedor que lleva un año sin compras.
+        const rows = await this.supplierService.forPurchase(term, 8);
+        items = rows.map((row) => ({ supplierId: row.supplierId, partyId: row.partyId, name: row.name, taxId: row.taxId, email: null, mobilePhone: null, uses: row.purchases }) as unknown as Supplier);
+      } else if (this.ranked()) {
+        const rows = await this.clientService.forIssue(term, 8);
+        items = rows.map((row) => ({ clientId: row.clientId, partyId: row.partyId, name: row.name, taxId: row.taxId, email: null, mobilePhone: null, uses: row.issues }) as unknown as Client);
+      } else {
+        const result =
+          this.mode() === 'supplier'
+            ? await this.supplierService.list(1, 8, { searchCriteria: term })
+            : await this.clientService.list(1, 8, { searchCriteria: term });
+        items = result.items;
+      }
       if (token === this.requestToken) {
-        this.results.set(result.items);
+        this.results.set(items);
         this.activeIndex.set(0);
       }
     } finally {
@@ -112,6 +137,34 @@ export class PartySearchInput {
     this.open.set(false);
   }
 
+  /** Compras (proveedor) o salidas (cliente) que tiene; 0 o sin dato no se muestra. */
+  protected usesOf(row: Client | Supplier): number {
+    return Number((row as { uses?: number }).uses ?? 0);
+  }
+
+  /**
+   * Se ofrece "Crear «…»" cuando está permitido, ya se buscó (3 letras o más) y lo escrito no es
+   * exactamente uno de la lista (sin importar mayúsculas, acentos ni espacios de más).
+   */
+  protected canCreate(): boolean {
+    if (!this.createLabelKey() || this.loading()) {
+      return false;
+    }
+    const text = normalizeName(this.query());
+    return text.length >= MIN_QUERY_LENGTH && !this.results().some((row) => normalizeName(row.name) === text);
+  }
+
+  protected requestCreate(): void {
+    const name = this.query().trim().replace(/\s+/g, ' ');
+    if (!name) {
+      return;
+    }
+    this.createRequested.emit(name);
+    this.query.set('');
+    this.results.set([]);
+    this.open.set(false);
+  }
+
   /** ↑ ↓ para moverse entre los resultados, Enter o Tab para elegir, Esc para cerrar la lista. */
   protected onKeydown(event: KeyboardEvent): void {
     const items = this.results();
@@ -121,26 +174,36 @@ export class PartySearchInput {
       this.close();
       return;
     }
-    if (!this.open() || items.length === 0) {
+    // La opción "Crear" va después de los resultados y también se elige con el teclado.
+    const count = items.length + (this.canCreate() ? 1 : 0);
+    if (!this.open() || count === 0) {
       return;
     }
+    const choose = () => {
+      const row = items[this.activeIndex()];
+      if (row) {
+        this.select(row);
+      } else {
+        this.requestCreate();
+      }
+    };
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        this.activeIndex.set((this.activeIndex() + 1) % items.length);
+        this.activeIndex.set((this.activeIndex() + 1) % count);
         break;
       case 'ArrowUp':
         event.preventDefault();
-        this.activeIndex.set((this.activeIndex() - 1 + items.length) % items.length);
+        this.activeIndex.set((this.activeIndex() - 1 + count) % count);
         break;
       case 'Enter':
         event.preventDefault();
-        this.select(items[this.activeIndex()]);
+        choose();
         break;
       case 'Tab':
         // Sin preventDefault: toma el resultado y el foco sigue al próximo campo.
         if (!event.shiftKey) {
-          this.select(items[this.activeIndex()]);
+          choose();
         }
         break;
     }

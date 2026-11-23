@@ -7,6 +7,8 @@ export interface ConfirmDialogData {
   title: string;
   message: string;
   confirmLabel?: string;
+  /** Texto del otro botón (por defecto, Cancelar). */
+  cancelLabel?: string;
 }
 
 @Component({

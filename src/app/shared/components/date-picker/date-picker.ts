@@ -18,6 +18,9 @@ const MONTH_NAMES = [
 
 let nextId = 0;
 
+/** Año más antiguo que se acepta al escribir una fecha. */
+const MIN_TYPED_YEAR = 2000;
+
 @Component({
   selector: 'app-date-picker',
   imports: [OverlayModule],
@@ -46,7 +49,7 @@ export class DatePicker implements ControlValueAccessor {
   /** Día resaltado con el teclado en el calendario abierto (ISO). */
   protected readonly focusedIso = signal<string | null>(null);
 
-  private readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
+  private readonly trigger = viewChild.required<ElementRef<HTMLInputElement>>('trigger');
   private readonly panel = viewChild<ElementRef<HTMLElement>>('panel');
 
   protected readonly weekdayLabels = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
@@ -233,18 +236,111 @@ export class DatePicker implements ControlValueAccessor {
   }
 
   /**
-   * Sobre el campo cerrado, igual que un campo de fecha común:
-   *  - números: escribir la fecha ("13102026", "13/10/26" o solo "13/10" para este año);
-   *  - ↑ ↓: un día más o menos;  Supr / Retroceso: borrar;
+   * Se escribe en el campo como en cualquier texto: "13102026" queda "13/10/2026" (la "/" se pone
+   * sola); también vale "13/10/26" o solo "13/10" (este año). Con los 8 números la fecha se toma
+   * sola; si no, al salir del campo o con Enter.
+   */
+  /**
+   * Al entrar al campo (con clic o con Tab) se selecciona la fecha que tiene: lo que se escriba
+   * la reemplaza. Antes, con la fecha ya puesta, el campo estaba lleno y no se podía escribir.
+   */
+  private selectOnMouseUp = false;
+
+  protected onFieldFocus(event: FocusEvent): void {
+    (event.target as HTMLInputElement).select();
+    this.selectOnMouseUp = true;
+  }
+
+  /** El clic que da el foco suelta la selección al levantar el botón: se evita solo esa vez. */
+  protected onFieldMouseUp(event: MouseEvent): void {
+    if (this.selectOnMouseUp) {
+      event.preventDefault();
+      this.selectOnMouseUp = false;
+    }
+  }
+
+  /**
+   * Arma "dd/mm/aaaa" mientras se escribe, con el cero y la barra solos:
+   *  - día: si el primer número es 4 a 9 ya no puede ser de dos cifras ("5" queda "05/");
+   *  - mes: si el primer número es 2 a 9, igual ("3" queda "03/");
+   *  - un día o mes de una cifra seguido de "/", "." o "-" también lleva el cero ("1/" queda "01/");
+   *  - con 1, 2 o 3 en el día (o 0 o 1 en el mes) se espera la segunda cifra.
+   */
+  private maskDate(raw: string): string {
+    const parts = ['', '', ''];
+    let index = 0;
+    for (const ch of raw) {
+      if (/[0-9]/.test(ch)) {
+        if (index === 2) {
+          if (parts[2].length < 4) {
+            parts[2] += ch;
+          }
+          continue;
+        }
+        parts[index] += ch;
+        const highest = index === 0 ? '3' : '1';
+        if (parts[index].length === 1 && ch > highest) {
+          parts[index] = `0${ch}`;
+          index++;
+        } else if (parts[index].length === 2) {
+          index++;
+        }
+      } else if (/[/.\-]/.test(ch) && index < 2 && parts[index].length === 1) {
+        parts[index] = `0${parts[index]}`;
+        index++;
+      }
+    }
+    let text = parts[0];
+    if (index >= 1) {
+      text += `/${parts[1]}`;
+    }
+    if (index >= 2) {
+      text += `/${parts[2]}`;
+    }
+    return text;
+  }
+
+  protected onTyping(event: Event): void {
+    this.selectOnMouseUp = false;
+    const field = event.target as HTMLInputElement;
+    let raw = field.value;
+    // Si ya había una fecha completa y se sigue escribiendo números, se empieza una fecha nueva
+    // con lo que se acaba de escribir (no se ignora la tecla).
+    const typedNow = ((event as InputEvent).data ?? '').replace(/\D/g, '');
+    if (raw.replace(/\D/g, '').length > 8 && typedNow) {
+      raw = typedNow;
+    }
+    const deleting = ((event as InputEvent).inputType ?? '').startsWith('delete');
+    let text = this.maskDate(raw);
+    // Al borrar no se vuelve a poner la "/" del final (si no, nunca se podría borrar).
+    if (deleting) {
+      text = text.replace(/\/$/, '');
+    }
+    field.value = text;
+    this.typed.set(text || null);
+    this.typedError.set(null);
+    if (!text && !this.required()) {
+      this.setValue(null);
+      return;
+    }
+    // Fecha completa (dd/mm/aaaa): se toma sin esperar a salir del campo.
+    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text)) {
+      this.commitTyped();
+    }
+  }
+
+  /**
+   * Teclas sobre el campo (además de escribir):
+   *  - ↑ ↓: un día más o menos;
    *  - Enter: confirma lo escrito (sin nada escrito, abre el calendario);
-   *  - Alt+↓ o Espacio: abre el calendario;  Esc: descarta lo escrito.
+   *  - Alt+↓: abre el calendario;  Esc: descarta lo escrito.
    */
   protected onTriggerKeydown(event: KeyboardEvent): void {
     if (this.disabled() || this.open() || event.ctrlKey || event.metaKey) {
       return;
     }
     const key = event.key;
-    if ((key === 'ArrowDown' && event.altKey) || key === ' ') {
+    if (key === 'ArrowDown' && event.altKey) {
       event.preventDefault();
       this.openCalendar();
       return;
@@ -252,32 +348,7 @@ export class DatePicker implements ControlValueAccessor {
     if (event.altKey) {
       return;
     }
-    if (/^[0-9]$/.test(key) || ((key === '/' || key === '-' || key === '.') && this.typed())) {
-      event.preventDefault();
-      const next = (this.typed() ?? '') + (/[0-9]/.test(key) ? key : '/');
-      this.typed.set(next);
-      if (next.replace(/\D/g, '').length === 8) {
-        this.commitTyped();
-      }
-      return;
-    }
     switch (key) {
-      case 'Backspace':
-        if (this.typed()) {
-          event.preventDefault();
-          const rest = this.typed()!.slice(0, -1);
-          this.typed.set(rest || null);
-        } else if (this.value() && !this.required()) {
-          event.preventDefault();
-          this.setValue(null);
-        }
-        return;
-      case 'Delete':
-        if (this.value() && !this.required()) {
-          event.preventDefault();
-          this.setValue(null);
-        }
-        return;
       case 'Escape':
         if (this.typed()) {
           event.preventDefault();
@@ -307,7 +378,7 @@ export class DatePicker implements ControlValueAccessor {
   /** Al salir del campo, lo que se escribió y es una fecha válida se guarda; si no, se descarta. */
   protected onTriggerBlur(): void {
     if (this.typed() && !this.open()) {
-      this.commitTyped();
+      this.commitTyped(true);
     }
   }
 
@@ -390,6 +461,19 @@ export class DatePicker implements ControlValueAccessor {
     return this.open() && this.focusedIso() === this.toIso(day.date);
   }
 
+  /** Mensaje cuando lo escrito no es una fecha que se pueda usar (ej. "01/02/2202"). */
+  protected readonly typedError = signal<string | null>(null);
+
+  /**
+   * Años que se aceptan al escribir: desde 2000 hasta el año que viene. Así no entra "2202" ni
+   * "1926" por un error de tipeo. Si el campo tiene su propio mínimo o máximo, manda ese.
+   */
+  private yearBounds(): { min: number; max: number } {
+    const min = this.min() ? Number(this.min()!.slice(0, 4)) : MIN_TYPED_YEAR;
+    const max = this.max() ? Number(this.max()!.slice(0, 4)) : this.today.getFullYear() + 1;
+    return { min: Math.max(min, MIN_TYPED_YEAR), max: Math.min(max, this.today.getFullYear() + 1) };
+  }
+
   /** "13", "13/10", "13/10/26", "13102026"... a fecha ISO; null si no es una fecha válida. */
   private parseTyped(text: string): string | null {
     const base = this.value() ? this.parseIso(this.value()!) : this.today;
@@ -418,15 +502,35 @@ export class DatePicker implements ControlValueAccessor {
     if (!day || date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
       return null;
     }
+    const { min, max } = this.yearBounds();
+    if (year < min || year > max) {
+      return null;
+    }
     return this.toIso(date);
   }
 
-  private commitTyped(): boolean {
-    const iso = this.parseTyped(this.typed() ?? '');
-    this.typed.set(null);
+  /**
+   * Toma lo escrito. Si no es una fecha válida (día o mes que no existe, o un año fuera de rango
+   * como 2202) avisa en rojo y no la guarda: mientras se escribe deja el texto para corregirlo;
+   * al salir del campo vuelve a la fecha que había.
+   */
+  private commitTyped(leaving = false): boolean {
+    const text = this.typed() ?? '';
+    const iso = this.parseTyped(text);
     if (!iso) {
+      const { min, max } = this.yearBounds();
+      this.typedError.set(
+        leaving
+          ? `"${text}" no es una fecha válida (año entre ${min} y ${max}). Se dejó la fecha anterior.`
+          : `Fecha no válida: revisa el día, el mes y el año (entre ${min} y ${max}).`
+      );
+      if (leaving) {
+        this.typed.set(null);
+      }
       return false;
     }
+    this.typed.set(null);
+    this.typedError.set(null);
     this.setValue(iso);
     return true;
   }
@@ -439,6 +543,7 @@ export class DatePicker implements ControlValueAccessor {
   }
 
   private setValue(iso: string | null): void {
+    this.typedError.set(null);
     if (iso === this.value()) {
       return;
     }

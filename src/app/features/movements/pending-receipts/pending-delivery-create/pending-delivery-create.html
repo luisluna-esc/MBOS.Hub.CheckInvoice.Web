@@ -45,7 +45,7 @@
               </button>
             </div>
           } @else {
-            <app-party-search-input mode="client" (picked)="client.set($event)" />
+            <app-party-search-input mode="client" [ranked]="true" (picked)="client.set($event)" />
           }
         </div>
       </div>

@@ -44,6 +44,15 @@ export class PendingReceiptsList {
   /** Recepción y entrega son días, no instantes: se muestran sin correrlos por zona horaria. */
   protected readonly day = formatCalendarDate;
 
+  /** Días que lleva la nota esperando su factura (desde que llegó el material). */
+  protected daysPending(receivedDate: string): number {
+    const [year, month, dayOfMonth] = receivedDate.slice(0, 10).split('-').map(Number);
+    const received = new Date(year, month - 1, dayOfMonth);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.max(0, Math.round((today.getTime() - received.getTime()) / 86_400_000));
+  }
+
   protected readonly warehouses = signal<CatalogItem[]>([]);
   protected readonly warehouseOptions = computed<SelectOption[]>(() => [
     { value: '', label: this.languageService.t('pendingReceipts.filters.allWarehouses') },

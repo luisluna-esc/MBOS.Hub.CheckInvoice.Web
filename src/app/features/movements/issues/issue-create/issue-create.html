@@ -46,7 +46,7 @@
           </div>
           <p class="min-h-4 text-xs" aria-hidden="true">&nbsp;</p>
         } @else {
-          <app-party-search-input mode="client" (picked)="onClientPicked($event)" />
+          <app-party-search-input mode="client" [ranked]="true" (picked)="onClientPicked($event)" />
           @if (continueAttempted() && sendToAccountsReceivable() && !headerValues()?.clientId) {
             <p class="min-h-4 text-xs text-danger">{{ 'issues.form.clientRequiredForAr' | translate }}</p>
           } @else {

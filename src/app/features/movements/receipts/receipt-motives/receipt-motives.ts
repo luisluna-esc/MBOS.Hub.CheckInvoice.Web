@@ -26,6 +26,7 @@ interface ReceiptMotive {
 /** Formulario de cada tipo de entrada (por nombre de la tabla receipt_type, como en el backend). */
 const FORMS: Record<string, { key: string; icon: string; route: string; withType: boolean }> = {
   'compras con factura': { key: 'invoice', icon: 'receipt', route: '/receipts/new', withType: true },
+  'compras sin factura': { key: 'withoutInvoice', icon: 'receipt', route: '/receipts/new', withType: true },
   'compras con retencion': { key: 'retention', icon: 'receipt', route: '/receipts/new', withType: true },
   devolucion: { key: 'return', icon: 'return', route: '/issue-returns', withType: false },
   ajuste: { key: 'adjustment', icon: 'adjustment', route: '/stock-adjustments', withType: false },
@@ -81,7 +82,14 @@ export class ReceiptMotives {
   // Se recalcula cuando llega el menú del usuario (Inventario Inicial depende de él).
   protected readonly motives = computed<ReceiptMotive[]>(() => {
     const allowedRoutes = new Set(menuRoutes(this.menuService.items()));
-    const types = this.receiptTypes().flatMap<ReceiptMotive>((type) => {
+    // Las compras van primero y en este orden: con factura, sin factura, con retención.
+    const purchaseOrder = ['compras con factura', 'compras sin factura', 'compras con retencion'];
+    const rank = (name: string) => {
+      const index = purchaseOrder.indexOf(normalize(name));
+      return index < 0 ? purchaseOrder.length : index;
+    };
+    const ordered = [...this.receiptTypes()].sort((a, b) => rank(a.name) - rank(b.name));
+    const types = ordered.flatMap<ReceiptMotive>((type) => {
       const form = FORMS[normalize(type.name)];
       if (form?.key === 'initial' && !allowedRoutes.has(form.route)) {
         return [];

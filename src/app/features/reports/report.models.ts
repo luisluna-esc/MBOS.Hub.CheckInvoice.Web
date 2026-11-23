@@ -10,6 +10,12 @@ export interface MonthlyTotal {
   total: number;
 }
 
+/** Salidas del mes de un departamento (el del producto). */
+export interface DepartmentTotal {
+  name: string;
+  total: number;
+}
+
 export interface ReceivableStatusSummary {
   pendingTotal: number;
   paidTotal: number;
@@ -18,6 +24,7 @@ export interface ReceivableStatusSummary {
 export interface FinancialDashboardData {
   summary: FinancialDashboardSummary;
   issuesByMonth: MonthlyTotal[];
+  issuesByDepartment: DepartmentTotal[];
   receivableStatus: ReceivableStatusSummary;
 }
 

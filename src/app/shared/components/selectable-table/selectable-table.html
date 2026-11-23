@@ -71,11 +71,11 @@
   </table>
 
   @if (totalRecords() > 0) {
-    <div class="flex items-center justify-between border-t border-border bg-surface px-3 py-2 text-xs text-muted-foreground">
+    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border bg-surface px-3 py-2 text-xs text-muted-foreground">
       <div class="flex items-center gap-3">
-        <span>{{ 'table.pageInfo' | translate: { page: pageNumber(), total: totalPages() } }}</span>
+        <span class="whitespace-nowrap">{{ 'table.pageInfo' | translate: { page: pageNumber(), total: totalPages() } }}</span>
         <div class="flex items-center gap-1">
-          <span>{{ 'table.pageSize' | translate }}</span>
+          <span class="whitespace-nowrap">{{ 'table.pageSize' | translate }}</span>
           <span class="h-9 w-16 overflow-hidden">
             <app-select
               [options]="pageSizeSelectOptions()"
@@ -85,10 +85,10 @@
           </span>
         </div>
       </div>
-      <div class="flex gap-2">
+      <div class="ml-auto flex shrink-0 gap-2">
         <button
           type="button"
-          class="rounded border border-border px-2 py-1 transition-colors hover:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          class="whitespace-nowrap rounded border border-border px-2 py-1 transition-colors hover:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
           [disabled]="pageNumber() <= 1"
           (click)="goToPage(pageNumber() - 1)"
         >
@@ -96,7 +96,7 @@
         </button>
         <button
           type="button"
-          class="rounded border border-border px-2 py-1 transition-colors hover:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          class="whitespace-nowrap rounded border border-border px-2 py-1 transition-colors hover:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
           [disabled]="pageNumber() >= totalPages()"
           (click)="goToPage(pageNumber() + 1)"
         >

@@ -27,8 +27,8 @@
     (backdropClick)="close()"
     (detach)="close()"
   >
-    <div class="min-w-[16rem] overflow-hidden rounded-md border border-border bg-surface shadow-lg">
-      <ul role="listbox" class="max-h-60 overflow-auto py-1">
+    <div class="min-w-[16rem] overflow-hidden rounded-lg border border-border bg-surface shadow-lg">
+      <ul role="listbox" class="max-h-60 overflow-auto p-1">
         @if (query().trim().length > 0 && query().trim().length < minQueryLength) {
           <li class="px-3 py-2 text-sm text-muted-foreground">
             {{ 'partySearch.minChars' | translate: { count: minQueryLength } }}
@@ -36,22 +36,43 @@
         } @else if (loading()) {
           <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'partySearch.loading' | translate }}</li>
         } @else {
+          @if (ranked() && results().length > 0) {
+            <li class="px-2.5 pb-1 pt-1.5 text-xs font-semibold uppercase text-muted-foreground">{{ 'partySearch.mostUsed' | translate }}</li>
+          }
+          <!-- Un renglón por nombre (sin la línea "NIT:"); a la derecha, cuántas compras o salidas tiene. -->
           @for (row of results(); track row.partyId; let i = $index) {
             <li
               role="option"
               [attr.aria-selected]="i === activeIndex()"
-              class="cursor-pointer px-3 py-2 text-sm text-foreground transition-colors hover:bg-brand-300"
-              [class.bg-brand-300]="i === activeIndex()"
+              class="flex cursor-pointer items-center justify-between gap-2 rounded-md px-2.5 py-2 text-sm text-foreground transition-colors hover:bg-primary/10"
+              [class.bg-primary/10]="i === activeIndex()"
               (mouseenter)="activeIndex.set(i)"
               (click)="select(row)"
             >
-              <div>{{ row.name }}</div>
-              @if (row.taxId) {
-                <div class="text-xs text-muted-foreground">{{ 'partySearch.taxId' | translate }}: {{ row.taxId }}</div>
+              <span class="min-w-0 truncate">{{ row.name }}</span>
+              @if (usesOf(row); as uses) {
+                <span class="shrink-0 text-xs text-muted-foreground">
+                  {{ (mode() === 'supplier' ? (uses === 1 ? 'partySearch.purchaseOne' : 'partySearch.purchases') : (uses === 1 ? 'partySearch.issueOne' : 'partySearch.issues')) | translate: { count: uses } }}
+                </span>
               }
             </li>
           } @empty {
-            <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'partySearch.noResults' | translate }}</li>
+            @if (!canCreate()) {
+              <li class="px-3 py-2 text-sm text-muted-foreground">{{ 'partySearch.noResults' | translate }}</li>
+            }
+          }
+          <!-- Solo donde se pide (createLabelKey): si no existe, se crea ahí mismo con lo escrito. -->
+          @if (canCreate()) {
+            <li
+              role="option"
+              [attr.aria-selected]="activeIndex() === results().length"
+              class="mt-1 cursor-pointer rounded-md border-t border-border px-2.5 py-2 text-sm font-medium text-accent transition-colors hover:bg-primary/10"
+              [class.bg-primary/10]="activeIndex() === results().length"
+              (mouseenter)="activeIndex.set(results().length)"
+              (click)="requestCreate()"
+            >
+              + {{ createLabelKey()! | translate: { name: query().trim() } }}
+            </li>
           }
         }
       </ul>
